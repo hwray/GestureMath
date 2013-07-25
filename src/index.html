@@ -3,32 +3,46 @@
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 
-  <title>Interactive Math</title>
- 
-  <meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
-  <meta name="apple-touch-fullscreen" content="YES">
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title>Interactive Math</title>
 
-  <link rel="stylesheet" href="/stylesheets/style.css">
+	<meta name="viewport" content="initial-scale=1.0, width=device-width, user-scalable=no" />
+	<meta name="apple-touch-fullscreen" content="YES">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+	<link rel="stylesheet" href="/public/stylesheets/style.css">
+
+	<script src="/public/jslibs/jsxgraphcore.js" type="text/javascript" charset="utf-8"></script>
+
+	<script src="/public/js/client.js" type="text/javascript" charset="utf-8"></script>
 
 </head>
 
-<script src="/jslib/jsxgraphcore" type="text/javascript" charset="utf-8"></script>
-
 <body>
-<div id="container">
+	<div id="container">
 
-	<div id="inputs_container">
+		<div id="inputs_container">
+		</div>
+
+		<div id="graph_container">
+		</div>
+
+		<div id="whiteboard_container">
+		</div>
+
 	</div>
 
-	<div id="graph_container">
-	</div>
+	<script>
 
-	<div id="whiteboard_container">
-	</div>
+	/*setTimeout(function() {
+		var graphView = new GraphView({
+			el: document.getElementById("graph_container")
+		}); 
+			console.log(graphView.getElement()); 
+	}, 5000); */
 
-</div>
+	</script>
+
 </body>
 
 </html>

@@ -67,33 +67,34 @@ var loadAll = function() {
 // ### Libaries
 
 //jQuery simplifies working with the DOM
-requireScript("/jslibs/jquery-2.0.2.min.js",   false);
+requireScript("/public/jslibs/jquery-2.0.2.min.js",   false);
 
 //Underscore provides functional programming for javascript
-requireScript('/jslibs/underscore-min.js',     false);
+requireScript('/public/jslibs/underscore-min.js',     false);
 
 //Backbone provides a simple router, event, model and view system
-requireScript('/jslibs/backbone-min.js',       false);
+requireScript('/public/jslibs/backbone-min.js',       false);
 
 //Async provides functional programming abstractions to work with asynchronous calls
-requireScript('/jslibs/async.js',              false);
+requireScript('/public/jslibs/async.js',              false);
 
 //Base64 provides methods useful for doing data-uri encoding.
-requireScript('/jslibs/Base64.js',             false);
+requireScript('/public/jslibs/Base64.js',             false);
+
+//JSXGraphCore provides plotting functionality
+requireScript('/public/jslibs/JSXGraphCore.js',             false);
 
 // ### App modules
 
-requireScript('/js/Calculations.js');
+requireScript('/public/js/MathModel.js');
 
-requireScript('/js/InputsView.js');
+requireScript('/public/js/InputsView.js');
 
-requireScript('/js/GraphView.js');
-requireScript('/js/WhiteBoardView.js');
+requireScript('/public/js/GraphView.js');
+requireScript('/public/js/WhiteBoardView.js');
 
 // Our very last script to load is the app's initialization module, where everything is started.
-requireScript('/js/app.js');
+requireScript('/public/js/app.js');
 
 //Kick off loading the scripts one by one.
 loadAll();
-
-// # See [app.js](app.js.html) Next
