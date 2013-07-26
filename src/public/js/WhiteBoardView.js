@@ -5,7 +5,8 @@ WhiteBoardView = (function() {
     this.model = options.model || undefined;
     this.modelView = options.modelView || undefined;
     this.setElement(options.el);
-    this.el.innerHTML = "hello world!"; 
+
+    this.el.innerHTML = "Whiteboard here (where you can play with the equation)"; 
   }
 
   _.extend(WhiteBoardView.prototype, Backbone.Events, {

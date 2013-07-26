@@ -5,7 +5,8 @@ InputsView = (function() {
     this.model = options.model || undefined;
     this.modelView = options.modelView || undefined;
     this.setElement(options.el);
-    this.el.innerHTML = "hello world!"; 
+
+    this.el.innerHTML = "Formula and variable inputs here"; 
   }
 
   _.extend(InputsView.prototype, Backbone.Events, {
