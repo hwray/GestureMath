@@ -16,7 +16,6 @@ GraphView = (function() {
       var f, curve; // global objects
 
       var plotButton = document.getElementById("plot"); 
-      var clearButton = document.getElementById("clear"); 
 
       plotButton.onclick = function() {
         var txtraw = document.getElementById('input').value;
@@ -39,6 +38,8 @@ GraphView = (function() {
           ], 
           {fontSize:15});
       };  
+
+      var clearButton = document.getElementById("clear"); 
 
       clearButton.onclick = function() {
         JXG.JSXGraph.freeBoard(board);
