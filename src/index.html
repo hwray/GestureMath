@@ -12,8 +12,6 @@
 
 	<link rel="stylesheet" href="/public/stylesheets/style.css">
 
-	<script src="/public/jslibs/jsxgraphcore.js" type="text/javascript" charset="utf-8"></script>
-
 	<script src="/public/js/client.js" type="text/javascript" charset="utf-8"></script>
 
 </head>
@@ -26,22 +24,19 @@
 
 
 		<div id="graph_container">
+			<div id="board_inputs">
+				<input type="text" id="input" value="sin(x)*x">
+				<input type="button" id="plot" value="plot">
+				<input type="button" id="clear" value="clear all"> 
+			</div>
+
+			<div id="board_container" style="height:500px">
+			</div>
 		</div>
 
 
 
 	</div>
-
-	<script>
-
-	/*setTimeout(function() {
-		var graphView = new GraphView({
-			el: document.getElementById("graph_container")
-		}); 
-			console.log(graphView.getElement()); 
-	}, 5000); */
-
-	</script>
 
 </body>
 

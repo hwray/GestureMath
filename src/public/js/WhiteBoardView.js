@@ -5,7 +5,12 @@ WhiteBoardView = (function() {
     this.model = options.model || undefined;
     this.modelView = options.modelView || undefined;
     this.setElement(options.el);
+<<<<<<< HEAD
     this.renderEmptyWhiteBoard();
+=======
+
+    this.el.innerHTML = "Whiteboard here (where you can play with the equation)"; 
+>>>>>>> 77a1699d8e10eb0bfa1a5b582664dfcc8c545e49
   }
 
   _.extend(WhiteBoardView.prototype, Backbone.Events, {

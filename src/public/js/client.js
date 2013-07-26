@@ -82,7 +82,7 @@ requireScript('/public/jslibs/async.js',              false);
 requireScript('/public/jslibs/Base64.js',             false);
 
 //JSXGraphCore provides plotting functionality
-requireScript('/public/jslibs/JSXGraphCore.js',             false);
+requireScript('/public/jslibs/JSXGraphCore.js',       false);
 
 // ### App modules
 
