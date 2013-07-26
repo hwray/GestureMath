@@ -5,12 +5,7 @@ WhiteBoardView = (function() {
     this.model = options.model || undefined;
     this.modelView = options.modelView || undefined;
     this.setElement(options.el);
-<<<<<<< HEAD
     this.renderEmptyWhiteBoard();
-=======
-
-    this.el.innerHTML = "Whiteboard here (where you can play with the equation)"; 
->>>>>>> 77a1699d8e10eb0bfa1a5b582664dfcc8c545e49
   }
 
   _.extend(WhiteBoardView.prototype, Backbone.Events, {
@@ -32,11 +27,11 @@ WhiteBoardView = (function() {
       var expInputBox = drawInputElement('text', this.el, "Enter a math expression: ");
       expInputBox.size = 50;
       this.el.innerHTML += "&nbsp;&nbsp;&nbsp;&nbsp;";
-      var solveForSelector = drawInputElement('radio', this.el, "I want to solve for:");
-      this.el.innerHTML += "<br/>";
       var submitButton = drawInputElement('button', this.el, null, "Submit");
       var clearButton = drawInputElement('button', this.el, null, "Clear Board");
       var helpButton = drawInputElement('button', this.el, null, "Help");
+      this.el.innerHTML += "<br/>";
+      var solveForSelector = drawInputElement('radio', this.el, "I want to solve for:");
     }
 
   }); 
