@@ -88,8 +88,6 @@ requireScript('/public/jslibs/JSXGraphCore.js',             false);
 
 requireScript('/public/js/MathModel.js');
 
-requireScript('/public/js/InputsView.js');
-
 requireScript('/public/js/GraphView.js');
 requireScript('/public/js/WhiteBoardView.js');
 

@@ -7,12 +7,6 @@ $(document).ready(function(event) {
 		model: mathModel
 	}); 
 
-
-	var inputsView = new InputsView({
-		el: document.getElementById("inputs_container"),
-		model: mathModel
-	}); 
-
 	var whiteboardView = new WhiteBoardView({
 		el: document.getElementById("whiteboard_container"), 
 		model: mathModel

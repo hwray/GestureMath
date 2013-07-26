@@ -6,30 +6,23 @@
 	overflow: hidden;
 	background: white;
 }
-#inputs_container {
-	margin: 0;
-	width: 1000px;
-	height: 200px;
-	border-bottom: solid 2px #000;
-}
 
 #graph_container {
-	margin: 0;
-	float: left;
 	z-index: 1;
+	border-left: solid 2px #000;
 	width: 500px;
 	height: 547px;
-	top: 202px;
 	color: red;
+	margin-top: 200px;
+	margin-left:  500px;
 }
 
 #whiteboard_container{
+	float:left;
 	margin: 0;
-	width: 500px;
-	height: 547px;
+	width: 1000px;
+	height: 700px;
 	top: 202px;
-	margin-left: 500px;
-	border-left: solid 2px #000;
 	overflow: auto;
 
 }
