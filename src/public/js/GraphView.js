@@ -2,7 +2,6 @@ GraphView = (function() {
 
   function GraphView(options) {
     this.options = options || {};
-    this.model = options.model || undefined;
     this.modelView = options.modelView || undefined;
     this.setElement(options.el);
     this.initialize(); 

@@ -69,6 +69,8 @@ var loadAll = function() {
 //jQuery simplifies working with the DOM
 requireScript("/public/jslibs/jquery-2.0.2.min.js",   false);
 
+requireScript("/public/jslibs/jquery-ui.min.js",   false);
+
 //Underscore provides functional programming for javascript
 requireScript('/public/jslibs/underscore-min.js',     false);
 
@@ -85,9 +87,7 @@ requireScript('/public/jslibs/Base64.js',             false);
 requireScript('/public/jslibs/JSXGraphCore.js',       false);
 
 // ### App modules
-
-requireScript('/public/js/MathModel.js');
-
+requireScript('/public/js/InputsView.js');
 requireScript('/public/js/GraphView.js');
 requireScript('/public/js/WhiteBoardView.js');
 

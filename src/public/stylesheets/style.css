@@ -2,8 +2,8 @@
 	position: relative;
 	margin: 0;
 	padding: 0;
-	width: 924px;
-	height: 748px;
+	width: 1024px;
+	height: 740px;
 	overflow: hidden;
 	background: white;
 }
@@ -11,19 +11,18 @@
 #graph_container {
 	position: absolute;
 	z-index: 1;
-	border-left: solid 2px #000;
-	width: 500px;
-	height: 530px;
+	border: solid 2px #000;
+	width: 400px;
+	height: 740px;
 	color: red;
-	margin-top: 200px;
-	margin-left:  500px;
+	margin-left:  600px;
 }
 
 #whiteboard_container{
 	position: absolute;
 	float:left;
 	margin: 0;
-	width: 1000px;
+	width: 600px;
 	height: 700px;
 	overflow: auto;
 
