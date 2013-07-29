@@ -86,6 +86,9 @@ requireScript('/public/jslibs/Base64.js',             false);
 //JSXGraphCore provides plotting functionality
 requireScript('/public/jslibs/JSXGraphCore.js',       false);
 
+//SilentMatt's expression parser library is used for plotting/equation manipulation
+requireScript('/public/jslibs/parser.js',             false); 
+
 // ### App modules
 requireScript('/public/js/InputsView.js');
 requireScript('/public/js/GraphView.js');

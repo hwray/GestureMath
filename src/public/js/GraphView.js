@@ -4,6 +4,7 @@ GraphView = (function() {
     this.options = options || {};
     this.modelView = options.modelView || undefined;
     this.setElement(options.el);
+    this.expr = options.expr; 
     this.initialize(); 
   }
 
@@ -13,12 +14,19 @@ GraphView = (function() {
     // Pinch-to-zoom? 
     // Remove dash marks from graph grid? 
     initialize: function() {
+
       var board = JXG.JSXGraph.initBoard('board_container', {boundingbox:[-10,10,10,-10], axis:true, showCopyright:false, zoom:true});
       var f, curve; // global objects
 
-      var plotButton = document.getElementById("plot"); 
+      var self = this; 
 
+      var plotButton = document.getElementById("plot"); 
+      
       plotButton.onclick = function() {
+
+        // NEED: 
+        // - Metaprogrammed Javascript function that takes in params, returns value
+        // - Sliders for each undefined param
 
         // var txtraw = document.getElementById('input').value;
         // f = board.jc.snippet(txtraw, true, 'x', true);

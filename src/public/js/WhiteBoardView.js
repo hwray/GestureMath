@@ -4,6 +4,7 @@ WhiteBoardView = (function() {
     this.options = options || {};
     this.modelView = options.modelView || undefined;
     this.setElement(options.el);
+    this.expr = options.expr; 
     this.renderEmptyWhiteBoard();
   }
 
@@ -22,7 +23,8 @@ WhiteBoardView = (function() {
   		return this.el; 
   	},
 
-    renderEmptyWhiteBoard: function() {
+    renderEmptyWhiteBoard: function() { 
+
     }
 
   }); 

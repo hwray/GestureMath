@@ -40,6 +40,7 @@ InputsView = (function() {
     },
 
 
+    // Fix hard-coded container names? 
     initialize: function() {
       var self = this;
 
@@ -47,12 +48,12 @@ InputsView = (function() {
         alert(self.inputBox.value);
         var graphView = new GraphView({
           el: document.getElementById("graph_container"),
+          expr: self.inputBox.value
         }); 
 
         var whiteboardView = new WhiteBoardView({
           el: document.getElementById("whiteboard_container"), 
           expr: self.inputBox.value
-
         });
 
         self.$el.dialog("close");
