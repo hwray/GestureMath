@@ -3,7 +3,11 @@ InputsView = (function() {
   function InputsView(options) {
     this.options = options || {};
     this.setElement(options.el);
-    this.renderInputForm();
+    this.setTextbox(options.inputBox);
+    this.setSubmitButton(options.inputSubmit);
+    this.setClearButton(options.inputClear);
+
+    this.initialize();
     popUpDialog(this.$el);
   }
 
@@ -15,34 +19,51 @@ InputsView = (function() {
   			throw new Error("View requires a container element");
   		this.el = el instanceof $ ? el.get(0) : el;
   		this.$el = el instanceof $ ? el : $(el);
-  		console.log(this.el); 
   	},
 
-  	getElement: function() {
-  		return this.el; 
-  	},
+    setTextbox: function(el) {
+      if (!el)
+        throw new Error("View requires a input text element");
+      this.inputBox = el instanceof $ ? el.get(0) : el;
+    },
 
-    renderInputForm: function() {
-        
-      var expInputBox = drawInputElement('text', this.el, "Enter a math expression: ");
-      expInputBox.size = 40;
-      var helpButton = drawInputElement('button', this.el, null, "Help");
-      var submitButton = drawInputElement('button', this.el, null, "Submit");
-      var clearButton = drawInputElement('button', this.el, null, "Clear");
+    setSubmitButton: function(el) {
+      if (!el)
+        throw new Error("View requires a submit input button element");
+      this.inputSubmit = el instanceof $ ? el.get(0) : el;
+    },
+
+    setClearButton: function(el) {
+      if (!el)
+        throw new Error("View requires a clear input button element");
+      this.inputClear = el instanceof $ ? el.get(0) : el;
+    },
+
+
+    initialize: function() {
       var self = this;
-      handleSubmit = function(){
+
+      handleSubmit = function() {
+        alert(self.inputBox.value);
         var graphView = new GraphView({
           el: document.getElementById("graph_container"),
         }); 
 
         var whiteboardView = new WhiteBoardView({
           el: document.getElementById("whiteboard_container"), 
+          expr: self.inputBox.value
+
         });
 
         self.$el.dialog("close");
       }
 
-      submitButton.addEventListener("click", handleSubmit);
+      handleClear = function() {
+        self.inputBox.value = "";
+      }
+
+      this.inputSubmit.addEventListener("click", handleSubmit);
+      this.inputClear.addEventListener("click", handleClear);
     }
 
   });
@@ -51,29 +72,20 @@ InputsView = (function() {
 
   function popUpDialog(el) {
     el.dialog({
-        height: 170,
+        height: 130,
         width: 500,
         resizable: false,
         modal: true,
-        closeText: "Submit"
+        title: "Enter a math expression:" 
     });
   }
 
-  function drawInputElement(type, parent, labelText, value) {
+  function drawInputElement(type, parent, value) {
     var elem = document.createElement('input');
     elem.type = type;
     elemId = type + 'input';
     elem.setAttribute('id', elemId);
-    if (labelText) {
-      var elemLabel = document.createElement('label')
-      elemLabel.innerHTML = labelText;
-      elemLabel.setAttribute('for', elemId);
-      elemLabel.setAttribute('class', 'whiteboardInputLabel');
-      parent.appendChild(elemLabel);
-    }
-    if (value) {
-      elem.value = value;
-    }
+    elem.value = value;
     parent.appendChild(elem);
     return elem;
   }
