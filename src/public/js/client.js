@@ -83,19 +83,16 @@ requireScript('/public/jslibs/async.js',              false);
 //Base64 provides methods useful for doing data-uri encoding.
 requireScript('/public/jslibs/Base64.js',             false);
 
-//JSXGraphCore provides plotting functionality
-requireScript('/public/jslibs/JSXGraphCore.js',       false);
-
-//SilentMatt's expression parser library is used for plotting/equation manipulation
-requireScript('/public/jslibs/parser.js',             false); 
+//requireScript('http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML',       false);
 
 // ### App modules
-requireScript('/public/js/InputsView.js');
-requireScript('/public/js/GraphView.js');
-requireScript('/public/js/WhiteBoardView.js');
+requireScript('/public/js/Expressions.js');
+requireScript('/public/js/Parsers.js');
+requireScript('/public/js/Mutations.js');
+requireScript('/public/js/Interactions.js');
+requireScript('/public/js/Transformations.js');
 
-// Our very last script to load is the app's initialization module, where everything is started.
-requireScript('/public/js/app.js');
+requireScript('/public/js/test.js');
 
 //Kick off loading the scripts one by one.
 loadAll();
