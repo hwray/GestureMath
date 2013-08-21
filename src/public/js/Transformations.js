@@ -39,3 +39,139 @@ var Transforms = {
 
   }
 };
+
+
+
+
+
+
+var testTransforms = {
+
+  // Matching wrinkles: 
+  // Negs? 
+     // But remember, we'll force people to select the neg anyways... 
+     // Impacts factoring: have to check not just NUM/VAR/CONST, but NEG --> any of those
+  // Functions? 
+
+  canCommute: function(shared) {
+
+  }, 
+
+  canSubtractOverEquals: function(shared) {
+    if (shared.parent &&
+        shared.parent.type == "EQUAL") {
+
+      return true; 
+    }
+    if (shared.parent &&
+        shared.parent.val == "add" &&
+        shared.parent.parent &&
+        shared.parent.parent.type == "EQUAL") {
+      return true; 
+    }
+    return false; 
+  }, 
+
+  canDivideOverEquals: function(shared) {
+    console.log("Parent before:");
+    console.log(shared.parent);
+    if (shared.parent &&
+        shared.parent.type == "EQUAL") {
+      var sibling = null; 
+      shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
+      var divTarget = drawDivideTarget(sibling);
+      divTarget.addEventListener("click", function() {
+        Transforms.divideOverEquals(sibling, shared);
+        console.log("After");
+        console.log(shared.parent);
+      });
+      
+      return true; 
+    }
+    if (shared.parent &&
+        shared.parent.val == "mult" && 
+        shared.parent.parent &&
+        shared.parent.parent.type == "EQUAL") {
+
+      var sibling = null; 
+      shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
+      drawDivideTarget(sibling);
+      return true; 
+    }
+    return false; 
+  }, 
+
+  canDistribute: function(shared) {
+    // Distributing a single coefficient/var of a term? 
+    // Mult operator with multiple sums as children? x(1 + 2)(x + 4)??? 
+    if (shared.parent &&
+        shared.parent.val == "mult") {
+      var parent = shared.parent; 
+      for (var i = 0; i < parent.children.length; i++) {
+        if (parent.children[i].val == "add" &&
+            parent.children[i] != shared) {
+          drawDisOrFacTarget(parent.children[i]);
+          return parent.children[i]; 
+        }
+      }
+    }
+    return null;  
+  }, 
+
+  canFactor: function(shared) {
+    // CHANGE FOR NEW STYLE OF FACTORING POLYNOMIALS
+    if (shared.type == "NUM") {
+      return false; 
+      // return true; 
+    } else if (shared.val == "pow") {
+      return false; 
+      // return true; 
+    }
+    var coefficients = false; 
+    var variables = false; 
+    var constants = false; 
+    for (var node in selections) {
+      if (selections[node].type == "NUM") {
+        coefficients = true; 
+      } else if (selections[node].type == "VAR") {
+        variables = true; 
+      } else if (selections[node].type == "CONST") {
+        constants = true; 
+      }
+    }
+    // TODO: FINISH
+    // CHECK FACTORS, etc. 
+    return false; 
+  }
+
+};
+
+
+
+function Factor(num) {
+  var factors = []; 
+
+  for (var i = 1; i <= Math.floor(Math.sqrt(num)); i++) {
+    if (num % i === 0) {
+      factors.push(i);
+      var quotient = num / i; 
+      if (quotient !== i) {
+        factors.push(quotient); 
+      }
+    }
+  }
+  factors.sort(function(a, b) { return a - b; }); 
+  return factors; 
+}
+
+function GreatestCommonFactor(nums) {
+  var factors = Factor(nums[0]); 
+  for (var i = factors.length - 1; i >= 0; i--) {
+    for (var j = 1; j < nums.length; j++) {
+      if (nums[j] % factors[i] === 0) {
+        return factors[i]; 
+      }
+    }
+  }
+  return 1; 
+}
