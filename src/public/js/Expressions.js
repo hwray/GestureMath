@@ -55,7 +55,15 @@ _.extend(Expression.prototype, {
     traverseTree(this, otherTree, matches, null);
 
     return matches;
-  }, 
+  },
+
+  getMasterNode: function() {
+    var master = this;
+    while (master.parent) {
+      master = master.parent;
+    }
+    return master;
+  },
 
 
   equals: function(otherTree) {
@@ -78,7 +86,7 @@ _.extend(Expression.prototype, {
             for (var j = 0; j < otherChildren.length; j++) {
               if (this.children[i].equals(otherChildren[j])) {
                 match = true; 
-                otherChildren.splice(j, 1); 
+                otherChildren.splice(j, 1);
                 break; 
               }
             }
@@ -92,11 +100,8 @@ _.extend(Expression.prototype, {
         // Non-commutative equals
         } else {
           for (var i = 0; i < this.children.length; i++) {
-            for (var j = 0; j < otherTree.children.length; j++) {
-              if (!this.children[i].equals(otherTree.children[j])) {
-                return false; 
-              }
-            }
+            if (!this.children[i].equals(otherTree.children[i]))
+              return false;
           }
           return true; 
         }
@@ -263,6 +268,18 @@ _.extend(Oper.prototype, Expression.prototype, {
         // Simplify numbers? 
         // Cancel vars/constants/numbers? 
       },
+      simpOp: function(exp) {
+        //very simple simplify
+        if (exp.children[0].equals(exp.children[1])) {
+
+          var identity = new Num("1");
+          var parent = exp.parent;
+          identity.parent = parent;
+          var thisIndex = parent.children.indexOf(exp);
+          parent.children[thisIndex] = identity;
+          exp.parent = null;
+        }
+      }
     }, 
 
     "neg" : {
@@ -280,6 +297,10 @@ _.extend(Oper.prototype, Expression.prototype, {
     }
 
     return this.validOpers[this.val].evalOp(values); 
+  },
+
+  simplify: function() {
+    return this.validOpers[this.val].simpOp(this);
   }
 });
 

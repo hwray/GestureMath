@@ -89,8 +89,9 @@ requireScript('/public/jslibs/Base64.js',             false);
 requireScript('/public/js/Expressions.js');
 requireScript('/public/js/Parsers.js');
 requireScript('/public/js/Mutations.js');
-requireScript('/public/js/Interactions.js');
 requireScript('/public/js/Transformations.js');
+requireScript('/public/js/Interactions.js');
+
 
 requireScript('/public/js/test.js');
 

@@ -13,7 +13,8 @@ Mutations = {
       var childArrIndex = swapParent.children.indexOf(match);
       swapParent.children[childArrIndex] = toSwap; 
     }
-      
+
+    return toSwap;
     
   }, 
 

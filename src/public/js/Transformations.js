@@ -8,11 +8,14 @@ var Transforms = {
   }, 
 
   divideOverEquals: function(numer, denom) {
+    var dividedBy = denom.clone(false);
     var divide = function (exp) {
-      var children = new Array(exp, denom);
+      var children = new Array(exp, dividedBy);
       return new Oper("frac", children);
     }
     Mutations.swapInExp(numer, divide);
+    var toSimplify = Mutations.swapInExp(denom, divide);
+    toSimplify.simplify();
   }, 
 
   distribute: function(select, target) {
@@ -38,4 +41,5 @@ var Transforms = {
   factor: function() {
 
   }
+
 };
