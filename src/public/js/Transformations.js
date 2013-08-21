@@ -15,6 +15,9 @@ var Transforms = {
     }
     Mutations.swapInExp(numer, divide);
     var toSimplify = Mutations.swapInExp(denom, divide);
+
+    this.rerender(numer); 
+    
     toSimplify.simplify();
   }, 
 
