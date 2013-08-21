@@ -16,6 +16,25 @@ _.extend(Expression.prototype, {
       }
     }
   },
+
+  clone: function(setHistory) {
+    var children = null;
+
+    if (this.children) {
+      children = new Array(this.children.length);
+      for (var i = 0; i < this.children.length; i++) {
+        var child = this.children[i].clone(false);
+        children[i] = child;
+      }
+    }
+
+    var clone = new this.constructor(this.val, children);
+    if (setHistory)
+      clone.history = this;
+
+    return clone;
+  },
+
 //do we want to return an array of matches?
   searchForTreeMatches: function(otherTree) {
     var matches = new Array();
@@ -394,31 +413,12 @@ _.extend(Paren.prototype, Expression.prototype, {
   }
 });
 
-function CloneTree(exprTree) {
-  var type = exprTree.type; 
-  var val = exprTree.val;
-  var children = null;
-
-  if (exprTree.children) {
-    children = new Array(exprTree.children.length);
-    for (var i = 0; i < exprTree.children.length; i++) {
-      var child = CloneTree(exprTree.children[i]);
-      children[i] = child;
-    }
-  }
-
-  var clone = new exprTree.constructor(type, val, children);
-  return clone;
-}
-
 
 function CloneForest(exprForest, setHistory) {
   var forestClone = new Array(exprForest.length);
   for (var i = 0; i < exprForest.length; i++) {
     var currExpr = exprForest[i];
-    var treeClone = CloneTree(currExpr);
-    if (setHistory) 
-      treeClone.history = currExpr;
+    var treeClone = currExpr.clone(setHistory);
     forestClone[i] = treeClone;
   } 
   return forestClone;
