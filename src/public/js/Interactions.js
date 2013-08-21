@@ -1,6 +1,5 @@
 var selections = {}; 
 
-
 function findSharedParent(exp1, exp2) {
   var exp1_depth = 0;
   var exp2_depth = 0;

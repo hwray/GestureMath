@@ -1,10 +1,18 @@
+var targets = []; 
+
+function clearTargets() {
+  for (var i = 0; i < targets.length; i++) {
+    targets[i].parentNode.removeChild(targets[i]); 
+  }
+}
+
 function drawTarget(top, left) {
   var div = document.createElement("div"); 
   div.setAttribute("class", "target"); 
   div.style.top = top; 
   div.style.left = left; 
-  console.log(div);
   document.getElementById("container").appendChild(div);
+  targets.push(div); 
   return div;
 }
 
@@ -34,7 +42,7 @@ function getCenterX(tree) {
 function drawDisOrFacTarget(tree) {
   var left = getCenterX(tree);
   var top = document.getElementById("mathDisplay").offsetTop;
-  drawTarget(top, left);
+  return drawTarget(top, left);
 }
 
 function drawDivideTarget(tree) {

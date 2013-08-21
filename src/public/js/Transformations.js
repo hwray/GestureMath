@@ -20,7 +20,7 @@ var Transforms = {
 
   distribute: function(select, target) {
     for (var i = 0; i < target.children.length; i++) {
-      var mult = new Oper("mult", [CloneTree(select), CloneTree(target.children[i])]); 
+      var mult = new Oper("mult", [select.clone(), target.children[i].clone()]); 
       mult.parent = target; 
       target.children[i] = mult; 
     }
@@ -36,10 +36,30 @@ var Transforms = {
       grandParentChildren[swapIndex] = target; 
       target.parent = grandParent; 
     }
+
+    this.rerender(select); 
   }, 
 
   factor: function() {
 
+  }, 
+
+  rerender: function(tree) {
+    while (tree.parent != null) {
+      tree = tree.parent; 
+    }
+
+    var texObj = Parser.TreeToTex(tree); 
+
+    var texStr = texObj.texString; 
+
+    texMap = texObj.texMap; 
+
+    document.getElementById("mathDisplay").innerHTML = texStr; 
+
+    clearTargets(); 
+
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
   }
 };
 
@@ -108,12 +128,17 @@ var testTransforms = {
       for (var i = 0; i < parent.children.length; i++) {
         if (parent.children[i].val == "add" &&
             parent.children[i] != shared) {
-          drawDisOrFacTarget(parent.children[i]);
-          return parent.children[i]; 
+
+          var distributeOver = parent.children[i]; 
+
+          var divTarget = drawDisOrFacTarget(distributeOver);
+
+          divTarget.addEventListener("click", function(event) {
+            Transforms.distribute(shared, distributeOver); 
+          }); 
         }
       }
     }
-    return null;  
   }, 
 
   canFactor: function(shared) {

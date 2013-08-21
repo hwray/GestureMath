@@ -253,6 +253,17 @@ Parser = {
               texString += "\\cssId{" + id + "}{*}"; 
               idArr.push(id); 
             }
+
+            // THIS IS SUPER JANK
+            // ADDING ONLY FOR DISTRIBUTION TESTING
+            // FIND A BETTER WAY TO DO!!
+            if (expTree.children[i].type == "NUM" &&
+                expTree.children[i + 1] &&
+                expTree.children[i + 1].val == "mult") {
+              var id = computeID(expTree); 
+              texString += "\\cssId{" + id + "}{*}"; 
+              idArr.push(id); 
+            }
           }
           expTree.idArr = idArr; 
 

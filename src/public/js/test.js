@@ -62,10 +62,10 @@ $(document).ready(function(event) {
 
     colorTreeTex(sharedParent, "red"); 
 
+    clearTargets(); 
+
     for (var func in testTransforms) {
-      if (testTransforms[func](sharedParent)) {
-        // DRAW TARGETS! 
-      } 
+      testTransforms[func](sharedParent); 
     }
 
     console.log(sharedParent); 
@@ -80,6 +80,9 @@ $(document).ready(function(event) {
         selections[id].selected = false; 
       }
       selections = {}; 
+
+      clearTargets(); 
+
       sharedParent = null; 
     }; 
 
