@@ -18,11 +18,8 @@ var Transforms = {
     var toSimplify = Mutations.swapInExp(term, subtract);
     var simplified = toSimplify.simplify({childIndex: 0});
 
-    while (simplified.parent != null) {
-      simplified = simplified.parent; 
-    }
+    simplified = simplified.getTopMostParent(); 
     flattenTree(simplified); 
-
     this.rerender(simplified);
   }, 
 
@@ -36,6 +33,7 @@ var Transforms = {
     var toSimplify = Mutations.swapInExp(denom, divide);
     var simplified = toSimplify.simplify();
 
+    simplified = simplified.getTopMostParent(); 
     flattenTree(simplified); 
 
     this.rerender(simplified.getTopMostParent()); 
@@ -61,11 +59,8 @@ var Transforms = {
       target.parent = grandParent; 
     }
 
-    while (select.parent != null) {
-      select = select.parent; 
-    }
+    select = select.getTopMostParent(); 
     flattenTree(select); 
-    console.log(Parser.TreeToString(select)); 
 
     this.rerender(select); 
   }, 
@@ -75,10 +70,6 @@ var Transforms = {
   }, 
 
   rerender: function(tree) {
-    while (tree.parent != null) {
-      tree = tree.parent; 
-    }
-
     var texObj = Parser.TreeToTex(tree); 
 
     var texStr = texObj.texString; 
@@ -210,6 +201,12 @@ var testTransforms = {
 
 // propagate 0s in mult ops? 
 function flattenTree(tree) {
+  if (tree.children) {
+    for (var i = 0; i < tree.children.length; i++) {
+      flattenTree(tree.children[i]); 
+    }
+  }
+
   // Eliminate double-nested "add" and "mult" ops
   if (tree.val == "add" ||
       tree.val == "mult") {
@@ -221,24 +218,6 @@ function flattenTree(tree) {
         for (var j = 0; j < grandChildren.length; j++) {
           grandChildren[j].parent = tree; 
         }
-      }
-    }
-  }
-
-  // Eliminate "0" children from add ops
-  if (tree.val == "add") {
-    for (var i = 0; i < tree.children.length; i++) {
-      if (tree.children[i].val === 0) {
-        tree.children.splice(i, 1); 
-      }
-    }
-  }
-
-  // Eliminate "1" children from mult ops
-  if (tree.val == "mult") {
-    for (var i = 0; i < tree.children.length; i++) {
-      if (tree.children[i].val === 1) {
-        tree.children.splice(i, 1); 
       }
     }
   }
@@ -273,9 +252,21 @@ function flattenTree(tree) {
     add.parent = parent; 
   }
 
-  if (tree.children) {
+  // Eliminate "0" children from add ops
+  if (tree.val == "add") {
     for (var i = 0; i < tree.children.length; i++) {
-      flattenTree(tree.children[i]); 
+      if (tree.children[i].val === 0) {
+        tree.children.splice(i, 1); 
+      }
+    }
+  }
+
+  // Eliminate "1" children from mult ops
+  if (tree.val == "mult") {
+    for (var i = 0; i < tree.children.length; i++) {
+      if (tree.children[i].val === 1) {
+        tree.children.splice(i, 1); 
+      }
     }
   }
 }

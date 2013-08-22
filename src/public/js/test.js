@@ -23,7 +23,7 @@ $(document).ready(function(event) {
   var test = "( = y ( / ( exp ( / ( - ( pow ( + x ( - \\mu ) ) 2 ) ) ( * 2 ( pow \\sigma 2 ) ) ) ) ( * \\sigma ( pow ( * 2 \\pi ) ( / 1 2 ) ) ) ) )"; 
   var poly = "( = y ( + (* 4 (pow x 2) ) (* 9 (pow x 3) ) 14 ) )"; 
   var distribute = "( = y ( + 50 ( * 10 ( + (* 9 (pow x 2) ) (* 7 x) 4))))"; 
-  var distribute2 = "( = y ( + 50 ( * (+ 10 x) ( + (* 9 (pow x 2) ) (* 7 x) 4))))"
+  var distribute2 = "( = y ( * (+ 10 x) ( + (* 9 (pow x 2) ) (* 7 x) 4)))"
 
 
   var parsed = Parser.StringToTree(distribute2);
