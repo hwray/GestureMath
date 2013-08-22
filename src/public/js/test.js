@@ -43,15 +43,12 @@ $(document).ready(function(event) {
   var sharedParent = null; 
 
 
-  // Add selected field to expression tree nodes upon being clicked? 
   mathDiv.ontouch = mathDiv.onclick = function (event) {
     if (!event) { event = window.event }
     var selected = event.toElement || event.target;
     while (selected && !selected.id) { selected = selected.parentNode }
 
-    if (selections[selected.id]) {
-      delete selections[selected.id]; 
-    } else {
+    if (texMap[selected.id]) {
       selections[selected.id] = texMap[selected.id]; 
       selections[selected.id].selected = true; 
       if (sharedParent == null) {
@@ -59,16 +56,12 @@ $(document).ready(function(event) {
       } else {
         sharedParent = findSharedParent(sharedParent, selections[selected.id]); 
       }
+      colorTreeTex(sharedParent, "red"); 
+      clearTargets(); 
+      for (var func in testTransforms) {
+        testTransforms[func](sharedParent); 
+      }
     }
-
-    colorTreeTex(sharedParent, "red"); 
-
-    clearTargets(); 
-
-    for (var func in testTransforms) {
-      testTransforms[func](sharedParent); 
-    }
-
     console.log(sharedParent); 
   }; 
 
