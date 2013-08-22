@@ -36,6 +36,8 @@ var Transforms = {
     simplified = simplified.getTopMostParent(); 
     flattenTree(simplified); 
 
+    console.log(Parser.TreeToString(simplified)); 
+
     this.rerender(simplified.getTopMostParent()); 
   }, 
 
@@ -207,6 +209,36 @@ function flattenTree(tree) {
     }
   }
 
+  // Eliminate "0" children from add ops
+  if (tree.val == "add") {
+    for (var i = 0; i < tree.children.length; i++) {
+      if (tree.children[i].val === 0) {
+        tree.children.splice(i, 1); 
+      }
+    }
+  }
+
+  // Eliminate "1" children from mult ops
+  if (tree.val == "mult") {
+    for (var i = 0; i < tree.children.length; i++) {
+      if (tree.children[i].val === 1) {
+        tree.children.splice(i, 1); 
+      }
+    }
+  }
+
+  // Eliminate "add" or "mult" ops with a single child
+  if ((tree.val == "add" ||
+      tree.val == "mult") &&
+      tree.children.length == 1) {
+    var parent = tree.parent; 
+    var index = parent.children.indexOf(tree); 
+    var child = tree.children[0]; 
+
+    parent.children[index] = child; 
+    child.parent = parent; 
+  }
+
   // Eliminate double-nested "add" and "mult" ops
   if (tree.val == "add" ||
       tree.val == "mult") {
@@ -250,24 +282,6 @@ function flattenTree(tree) {
     var index = parent.children.indexOf(tree); 
     parent.children[index] = add; 
     add.parent = parent; 
-  }
-
-  // Eliminate "0" children from add ops
-  if (tree.val == "add") {
-    for (var i = 0; i < tree.children.length; i++) {
-      if (tree.children[i].val === 0) {
-        tree.children.splice(i, 1); 
-      }
-    }
-  }
-
-  // Eliminate "1" children from mult ops
-  if (tree.val == "mult") {
-    for (var i = 0; i < tree.children.length; i++) {
-      if (tree.children[i].val === 1) {
-        tree.children.splice(i, 1); 
-      }
-    }
   }
 }
 
