@@ -4,19 +4,23 @@ var Transforms = {
   }, 
 
   subtractOverEquals: function(toSide, term) {
-    var subtract = term.clone(false); 
+    var toSubtract = term.clone(false); 
     
     var subtract = function(exp) {
-      var neg = new Oper("neg", subtract); 
+      var negChildren = new Array();
+      negChildren.push(toSubtract);
+      var neg = new Oper("neg", negChildren); 
       var children = new Array(exp, neg); 
       return new Oper("add", children); 
     }
+
     Mutations.swapInExp(toSide, subtract); 
-    var simp = Mutations.swapInExp(term, subtract); 
+    var simp = Mutations.swapInExp(term, subtract);
+    flattenTree(simp); 
+    console.log(simp);
+    var simplified = simp.simplify({childIndex: 0});
 
-    simp.simplify({childIndex: 0}); 
-
-    this.rerender(toSide); 
+    this.rerender(simplified);
   }, 
 
   divideOverEquals: function(numer, denom) {
