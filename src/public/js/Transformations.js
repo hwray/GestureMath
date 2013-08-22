@@ -3,8 +3,20 @@ var Transforms = {
 
   }, 
 
-  subtractOverEquals: function() {
+  subtractOverEquals: function(toSide, term) {
+    var subtract = term.clone(false); 
+    
+    var subtract = function(exp) {
+      var neg = new Oper("neg", subtract); 
+      var children = new Array(exp, neg); 
+      return new Oper("add", children); 
+    }
+    Mutations.swapInExp(toSide, subtract); 
+    var simp = Mutations.swapInExp(term, subtract); 
 
+    simp.simplify({childIndex: 0}); 
+
+    this.rerender(toSide); 
   }, 
 
   divideOverEquals: function(numer, denom) {
@@ -23,6 +35,7 @@ var Transforms = {
     this.rerender(simplified.getTopMostParent()); 
   }, 
 
+  // CALL toSimplify in here? 
   distribute: function(select, target) {
     for (var i = 0; i < target.children.length; i++) {
       var mult = new Oper("mult", [select.clone(), target.children[i].clone()]); 
@@ -41,6 +54,11 @@ var Transforms = {
       grandParentChildren[swapIndex] = target; 
       target.parent = grandParent; 
     }
+
+    while (select.parent != null) {
+      select = select.parent; 
+    }
+    flattenTree(select); 
 
     this.rerender(select); 
   }, 
@@ -84,32 +102,40 @@ var testTransforms = {
     if (shared.parent &&
         shared.parent.type == "EQUAL") {
 
-      return true; 
+      var sibling = null; 
+      shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
+
+      var subTarget = drawSubtractTarget(sibling); 
+      subTarget.addEventListener("click", function(event) {
+        Transforms.subtractOverEquals(sibling, shared); 
+      }); 
     }
+
     if (shared.parent &&
         shared.parent.val == "add" &&
         shared.parent.parent &&
         shared.parent.parent.type == "EQUAL") {
-      return true; 
+
+      var sibling = null; 
+      shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
+
+      var subTarget = drawSubtractTarget(sibling); 
+      subTarget.addEventListener("click", function(event) {
+        Transforms.subtractOverEquals(sibling, shared); 
+      }); 
     }
-    return false; 
   }, 
 
   canDivideOverEquals: function(shared) {
-    console.log("Parent before:");
-    console.log(shared.parent);
     if (shared.parent &&
         shared.parent.type == "EQUAL") {
       var sibling = null; 
       shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
+
       var divTarget = drawDivideTarget(sibling);
-      divTarget.addEventListener("click", function() {
+      divTarget.addEventListener("click", function(event) {
         Transforms.divideOverEquals(sibling, shared);
-        console.log("After");
-        console.log(shared.parent);
-      });
-      
-      return true; 
+      });      
     }
     if (shared.parent &&
         shared.parent.val == "mult" && 
@@ -118,15 +144,16 @@ var testTransforms = {
 
       var sibling = null; 
       shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
-      drawDivideTarget(sibling);
-      return true; 
+      var divTarget = drawDivideTarget(sibling);
+      divTarget.addEventListener("click", function(event) {
+        Transforms.divideOverEquals(sibling, shared);
+      });  
     }
-    return false; 
   }, 
 
   canDistribute: function(shared) {
     // Distributing a single coefficient/var of a term? 
-    // Mult operator with multiple sums as children? x(1 + 2)(x + 4)??? 
+    // Distributing over multiple sums? x(1 + 2)(x + 4)??? 
     if (shared.parent &&
         shared.parent.val == "mult") {
       var parent = shared.parent; 
@@ -136,9 +163,9 @@ var testTransforms = {
 
           var distributeOver = parent.children[i]; 
 
-          var divTarget = drawDisOrFacTarget(distributeOver);
+          var disTarget = drawDisOrFacTarget(distributeOver);
 
-          divTarget.addEventListener("click", function(event) {
+          disTarget.addEventListener("click", function(event) {
             Transforms.distribute(shared, distributeOver); 
           }); 
         }
@@ -174,6 +201,28 @@ var testTransforms = {
 
 };
 
+// Eliminate double negs
+function flattenTree(tree) {
+  if (tree.val == "add" ||
+      tree.val == "mult") {
+    for (var i = 0; i < tree.children.length; i++) {
+      if (tree.val == tree.children[i].val) {
+        var grandChildren = tree.children[i].children; 
+        tree.children.splice(i, 1, grandChildren); 
+        tree.children = _.flatten(tree.children); 
+        for (var j = 0; j < grandChildren.length; j++) {
+          grandChildren[j].parent = tree; 
+        }
+      }
+    }
+  }
+
+  if (tree.children) {
+    for (var i = 0; i < tree.children.length; i++) {
+      flattenTree(tree.children[i]); 
+    }
+  }
+}
 
 
 function Factor(num) {
