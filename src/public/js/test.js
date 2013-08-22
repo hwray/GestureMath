@@ -55,7 +55,7 @@ $(document).ready(function(event) {
     var selected = event.toElement || event.target;
     while (selected && !selected.id) { selected = selected.parentNode }
 
-    while (!texMap[selected.id]) { selected = selected.parentNode }
+    while (selected.id && !texMap[selected.id]) { console.log(selected); selected = selected.parentNode; }
 
     if (texMap[selected.id]) {
       selections[selected.id] = texMap[selected.id]; 
@@ -65,6 +65,12 @@ $(document).ready(function(event) {
       } else {
         sharedParent = findSharedParent(sharedParent, selections[selected.id]); 
       }
+
+      // Pow selection
+      if (sharedParent.parent.val == "pow") {
+        sharedParent = sharedParent.parent; 
+      }
+
       colorTreeTex(sharedParent, "red"); 
       clearTargets(); 
       for (var func in testTransforms) {
