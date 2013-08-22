@@ -320,23 +320,17 @@ Parser = {
           if (expTree.children[1].type == "NUM" ||
               expTree.children[1].type == "CONST" ||
               expTree.children[1].type == "VAR") {
-            texString += printTreeToTex(expTree.children[0]); 
+            texString += printTreeToTex(expTree.children[1]); 
           } else {
-            texString += "(" + printTreeToTex(expTree.children[0]) + ")"; 
+            texString += "(" + printTreeToTex(expTree.children[1]) + ")"; 
           }
           texString += "}"; 
         } else {
           var id = computeID(expTree); 
           expTree.id = id; 
           texString += "\\cssId{" + id + "}{" + expTree.val; 
-          if (expTree.children[0].type == "NUM" ||
-              expTree.children[0].type == "CONST" ||
-              expTree.children[0].type == "VAR") {
-            texString += printTreeToTex(expTree.children[0]); 
-          } else {
-            texString += "(" + printTreeToTex(expTree.children[0]) + ")"; 
-          }
-           texString += "}"; 
+          texString += "(" + printTreeToTex(expTree.children[0]) + ")"
+          texString += "}"; 
         }
       }
       return texString; 
