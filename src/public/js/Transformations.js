@@ -201,8 +201,9 @@ var testTransforms = {
 
 };
 
-// Eliminate double negs
+// propagate 0s in mult ops? 
 function flattenTree(tree) {
+  // Eliminate double-nested "add" and "mult" ops
   if (tree.val == "add" ||
       tree.val == "mult") {
     for (var i = 0; i < tree.children.length; i++) {
@@ -217,6 +218,35 @@ function flattenTree(tree) {
     }
   }
 
+  // Eliminate "0" children from add ops
+  if (tree.val == "add") {
+    for (var i = 0; i < tree.children.length; i++) {
+      if (tree.children[i].val === 0) {
+        tree.children.splice(i, 1); 
+      }
+    }
+  }
+
+  // Eliminate "1" children from mult ops
+  if (tree.val == "mult") {
+    for (var i = 0; i < tree.children.length; i++) {
+      if (tree.children[i].val === 1) {
+        tree.children.splice(i, 1); 
+      }
+    }
+  }
+
+  // Eliminate double-nested "neg" ops
+  if (tree.val == "neg" &&
+      tree.children[0].val == "neg") {
+    var parent = tree.parent; 
+    var grandChild = tree.children[0].children[0]; 
+
+    var index = parent.children.indexOf(tree);
+    parent.children[index] = grandChild; 
+    grandChild.parent = parent; 
+  }
+
   if (tree.children) {
     for (var i = 0; i < tree.children.length; i++) {
       flattenTree(tree.children[i]); 
@@ -225,12 +255,27 @@ function flattenTree(tree) {
 }
 
 
-function Factor(num) {
+function pairFactorNum(exp) {
+  var num = exp.val; 
   var factors = []; 
-
   for (var i = 1; i <= Math.floor(Math.sqrt(num)); i++) {
     if (num % i === 0) {
-      factors.push(i);
+      var quotient = num / i; 
+      if (quotient !== i) {
+        factors.push([i, quotient]); 
+      }
+    }
+  }
+  factors.sort(function(a, b) { return a[0] - b[0]; }); 
+  return factors; 
+}
+
+function factorNum(exp) {
+  var num = exp.val; 
+  var factors = []; 
+  for (var i = 1; i <= Math.floor(Math.sqrt(num)); i++) {
+    if (num % i === 0) {
+      factors.push(i); 
       var quotient = num / i; 
       if (quotient !== i) {
         factors.push(quotient); 
@@ -241,14 +286,56 @@ function Factor(num) {
   return factors; 
 }
 
-function GreatestCommonFactor(nums) {
-  var factors = Factor(nums[0]); 
+function greatestCommonFactorNums(nums) {
+  var factors = factorNum(nums[0]); 
   for (var i = factors.length - 1; i >= 0; i--) {
+    var common = true; 
     for (var j = 1; j < nums.length; j++) {
-      if (nums[j] % factors[i] === 0) {
-        return factors[i]; 
+      if (nums[j].val < factors[i] ||
+          nums[j].val % factors[i] != 0) {
+        common = false; 
       }
     }
+    if (common == true) 
+      return factors[i]; 
   }
   return 1; 
+}
+
+function pairFactorPowVar(powVar) {
+  var exponent = powVar.children[1]; 
+  var factors = []; 
+  for (var i = 1; i < (exponent / 2); i++) {
+    factors.push([i, exponent - i]); 
+  }
+  return factors; 
+}
+
+function greatestCommonFactorVars(vars) {
+  var varArr = []; 
+  for (var i = 0; i < vars.length; i++) {
+    if (vars[i].type == "VAR" && 
+        varArr.indexOf(vars[i].val) == -1) {
+      varArr.push([vars[i], 1]); 
+    } else if (vars[i].val == "pow") {
+      varArr.push([vars[i].children[0], vars[i].children[1]]); 
+    }
+  }
+
+  var maxExp = {}; 
+  for (var i = 0; i < varArr.length; i++) {
+    if ((!maxExp[varArr[i][0]]) ||
+        (maxExp[varArr[i][0]] &&
+         maxExp[varArr[i][0]] < varArr[i][1])) {
+      maxExp[varArr[i]] = varArr[i][1]; 
+  }
+  
+  return maxExp; 
+}
+
+function greatestCommonFactor(exp) {
+  var nums = 
+  var vars = []; 
+
+
 }
