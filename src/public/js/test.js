@@ -33,7 +33,7 @@ $(document).ready(function(event) {
   var test6 = "(= (abs (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4))) 0)";
 
 
-  var parsed = Parser.StringToTree(test);
+  var parsed = Parser.StringToTree(test5);
 
 
 
@@ -55,6 +55,8 @@ $(document).ready(function(event) {
     var selected = event.toElement || event.target;
     while (selected && !selected.id) { selected = selected.parentNode }
 
+    while (!texMap[selected.id]) { selected = selected.parentNode }
+
     if (texMap[selected.id]) {
       selections[selected.id] = texMap[selected.id]; 
       selections[selected.id].selected = true; 
@@ -69,6 +71,7 @@ $(document).ready(function(event) {
         testTransforms[func](sharedParent); 
       }
     }
+
     console.log(sharedParent); 
   }; 
 

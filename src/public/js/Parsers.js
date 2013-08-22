@@ -326,9 +326,8 @@ Parser = {
         } else {
           var id = computeID(expTree); 
           expTree.id = id; 
-          texString += "\\cssId{" + id + "}{" + expTree.val; 
+          texString += "\\cssId{" + id + "}{" + expTree.val + "}"; 
           texString += "(" + printTreeToTex(expTree.children[0]) + ")"
-          texString += "}"; 
         }
       }
       return texString; 
