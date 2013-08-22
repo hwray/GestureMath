@@ -181,6 +181,12 @@ Parser = {
   }, 
 
 
+// REmove parens around funcs with single children
+// Deal with log base subscripts
+// Deal with exponents of functions (secX ^ 4)
+// Absolute value? 
+// Coloring parens? 
+// isLeaf method? 
   TreeToTex: function(expTree) {
 
     var texMap = {}; 
@@ -264,6 +270,7 @@ Parser = {
               texString += "\\cssId{" + id + "}{*}"; 
               idArr.push(id); 
             }
+
           }
           expTree.idArr = idArr; 
 
@@ -300,15 +307,36 @@ Parser = {
           texString += printTreeToTex(expTree.children[0]); 
           texString += "}"; 
         } else if (expTree.val == "abs") {
+          // compute id? 
           texString += "|"; 
           texString += printTreeToTex(expTree.children[0]); 
           texString += "| "; 
+
+        } else if (expTree.val == "log") {
+          var id = computeID(expTree); 
+          expTree.id = id; 
+          texString += "\\cssId{" + id + "}log_{"; 
+          texString += printTreeToTex(expTree.children[0]) + "}{"; 
+          if (expTree.children[1].type == "NUM" ||
+              expTree.children[1].type == "CONST" ||
+              expTree.children[1].type == "VAR") {
+            texString += printTreeToTex(expTree.children[0]); 
+          } else {
+            texString += "(" + printTreeToTex(expTree.children[0]) + ")"; 
+          }
+          texString += "}"; 
         } else {
           var id = computeID(expTree); 
           expTree.id = id; 
-          texString += "\\cssId{" + id + "}{" + expTree.val + "("; 
-          texString += printTreeToTex(expTree.children[0]); 
-           texString += ")}"; 
+          texString += "\\cssId{" + id + "}{" + expTree.val; 
+          if (expTree.children[0].type == "NUM" ||
+              expTree.children[0].type == "CONST" ||
+              expTree.children[0].type == "VAR") {
+            texString += printTreeToTex(expTree.children[0]); 
+          } else {
+            texString += "(" + printTreeToTex(expTree.children[0]) + ")"; 
+          }
+           texString += "}"; 
         }
       }
       return texString; 
