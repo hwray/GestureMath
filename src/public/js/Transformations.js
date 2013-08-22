@@ -15,10 +15,12 @@ var Transforms = {
     }
     Mutations.swapInExp(numer, divide);
     var toSimplify = Mutations.swapInExp(denom, divide);
-
-    this.rerender(numer); 
     
-    toSimplify.simplify();
+    //toSimplify.simplify();
+    var simplified = toSimplify.simplify();
+    console.log(simplified.getTopMostParent());
+
+    this.rerender(simplified.getTopMostParent()); 
   }, 
 
   distribute: function(select, target) {

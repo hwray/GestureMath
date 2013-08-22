@@ -57,7 +57,7 @@ _.extend(Expression.prototype, {
     return matches;
   },
 
-  getMasterNode: function() {
+  getTopMostParent: function() {
     var master = this;
     while (master.parent) {
       master = master.parent;
@@ -259,6 +259,54 @@ _.extend(Oper.prototype, Expression.prototype, {
           return accum + val; 
         });      
       },
+
+      //adapt for negative numbers
+      simpOp: function(exp, options) {
+        //check to see that the chind Index exists
+        var child1 = exp.children[options.childIndex1];
+        var child2 = exp.children[options.childIndex1 + 1];
+        if (child1 && child2) {
+          var splitChild1 = splitExp(child1);
+          var splitChild2 = splitExp(child2);
+          var newChild = null;
+          var numVal = splitChild1.num + splitChild2.num;
+          var numChild = null;
+          if (numVal < 0) {
+            numChild = new Oper("neg", numVal * -1);
+          } else {
+            numChild = new Num(numVal);
+          }
+          if (!splitChild1.notNum && !splitChild2.notNum) {
+            newChild = numChild;
+          } else if (splitChild1.notNum.equals(splitChild2.notNum)) {
+            if (numChild.val === 0) {
+              newChild = numChild;
+            } else {
+              var children = new Array(2);
+              children[0] = numChild;
+              children[1] = splitChild1.notNum;
+              newChild = new Oper("mult", children);
+            }
+          }
+          exp.children.splice(options.childIndex1, 2);
+          exp.children.push(newChild);
+          if (exp.validOpers[exp.val].validate(exp.children)) {
+            newChild.parent = exp;
+          } else {
+            var grandParent = exp.parent;
+            if (grandParent) {
+              var parentIndex = grandParent.children.indexOf(exp);
+              grandParent.children[parentIndex] = newChild;
+            }
+            newChild.parent = grandParent;
+            exp.parent = null;
+          }
+          return newChild;
+
+        } else {
+          throw "simplify function for the add operator requires the index of an operand that has an immediate sibling after it"
+        }
+      }
     },
 
     "frac": {
@@ -271,13 +319,13 @@ _.extend(Oper.prototype, Expression.prototype, {
       simpOp: function(exp) {
         //very simple simplify
         if (exp.children[0].equals(exp.children[1])) {
-
           var identity = new Num("1");
           var parent = exp.parent;
           identity.parent = parent;
           var thisIndex = parent.children.indexOf(exp);
           parent.children[thisIndex] = identity;
           exp.parent = null;
+          return identity;
         }
       }
     }, 
@@ -299,8 +347,8 @@ _.extend(Oper.prototype, Expression.prototype, {
     return this.validOpers[this.val].evalOp(values); 
   },
 
-  simplify: function() {
-    return this.validOpers[this.val].simpOp(this);
+  simplify: function(options) {
+    return this.validOpers[this.val].simpOp(this, options);
   }
 });
 
@@ -466,6 +514,37 @@ function SimplifyTree(expTree) {
   }
 }
 
+function splitExp(exp) {
+  var num = 1;
+  var notNum = null;
+  if (exp.val == "mult") {
+    var clone = exp.clone(false)
+    
+    for (var i = 0; i < clone.children.length; i++) {
+      var currChild = clone.children[i];
+      if (currChild.type === "NUM") {
+        num *= currChild.val;
+        clone.children.splice(i, 1);
+      } else if (currChild.val ==="neg" && currChild.children[0].type === "NUM") {
+        num *= -1 * currChild.children[0].val;
+        clone.children.splice(i, 1);
+      } 
+    }
+
+    if (clone.validOpers[clone.val].validate(clone.children)) {
+      notNum = clone;
+    } else {
+      clone.children.length > 0 ? notNum = clone.children[0] : notNum = null;
+    }
+  } else if (expression.type == "NUM") {
+    num = expression.val;
+  } else {
+    notNum = expression;
+  }
+  var splitExp = {num: num, notNum: notNum};
+  return splitExp;
+
+}
 
 //})();
 
