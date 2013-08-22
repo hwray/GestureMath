@@ -262,24 +262,25 @@ _.extend(Oper.prototype, Expression.prototype, {
 
       //adapt for negative numbers
       simpOp: function(exp, options) {
-        //check to see that the chind Index exists
-        var child1 = exp.children[options.childIndex1];
-        var child2 = exp.children[options.childIndex1 + 1];
-        if (child1 && child2) {
+        if (!options || options.childIndex == null || !exp.children[options.childIndex]) 
+          throw "Simplify function for add operator requires options object with a valid childIndex, the index of an operand with immediate sibling proceeding it, to be passed in" 
+        
+        var child1 = exp.children[options.childIndex];
+        var child2 = exp.children[options.childIndex + 1];
+
+        if (child2) {
           var splitChild1 = splitExp(child1);
           var splitChild2 = splitExp(child2);
+
           var newChild = null;
-          var numVal = splitChild1.num + splitChild2.num;
           var numChild = null;
-          if (numVal < 0) {
-            numChild = new Oper("neg", numVal * -1);
-          } else {
-            numChild = new Num(numVal);
-          }
-          if (!splitChild1.notNum && !splitChild2.notNum) {
-            newChild = numChild;
-          } else if (splitChild1.notNum.equals(splitChild2.notNum)) {
-            if (numChild.val === 0) {
+
+          if (splitChild1.notNum === splitChild2.notNum || (splitChild1.notNum && splitChild1.notNum.equals(splitChild2.notNum))) {
+
+            var numVal = splitChild1.num + splitChild2.num;
+            numVal < 0 ? numChild = new Oper("neg", numVal * -1) : numChild = new Num(numVal);
+
+            if (numVal === 0 || !splitChild1.notNum) {
               newChild = numChild;
             } else {
               var children = new Array(2);
@@ -288,23 +289,27 @@ _.extend(Oper.prototype, Expression.prototype, {
               newChild = new Oper("mult", children);
             }
           }
-          exp.children.splice(options.childIndex1, 2);
-          exp.children.push(newChild);
-          if (exp.validOpers[exp.val].validate(exp.children)) {
-            newChild.parent = exp;
-          } else {
-            var grandParent = exp.parent;
-            if (grandParent) {
-              var parentIndex = grandParent.children.indexOf(exp);
-              grandParent.children[parentIndex] = newChild;
-            }
-            newChild.parent = grandParent;
-            exp.parent = null;
-          }
-          return newChild;
 
+          if (newChild) {
+            exp.children.splice(options.childIndex1, 2);
+            exp.children.push(newChild);
+            if (exp.validOpers[exp.val].validate(exp.children)) {
+              newChild.parent = exp;
+            } else {
+              var grandParent = exp.parent;
+              if (grandParent) {
+                var parentIndex = grandParent.children.indexOf(exp);
+                grandParent.children[parentIndex] = newChild;
+              }
+              newChild.parent = grandParent;
+              exp.parent = null;
+            }
+            return newChild;
+          } else {
+            return exp;
+          }
         } else {
-          throw "simplify function for the add operator requires the index of an operand that has an immediate sibling after it"
+          throw "childIndex " + options.childIndex + " has no immediate sibling proceeding it"
         }
       }
     },
@@ -517,6 +522,10 @@ function SimplifyTree(expTree) {
 function splitExp(exp) {
   var num = 1;
   var notNum = null;
+  if (exp.val === "neg") {
+    exp = exp.children[0];
+    num = -1;
+  }
   if (exp.val == "mult") {
     var clone = exp.clone(false)
     
@@ -536,10 +545,10 @@ function splitExp(exp) {
     } else {
       clone.children.length > 0 ? notNum = clone.children[0] : notNum = null;
     }
-  } else if (expression.type == "NUM") {
-    num = expression.val;
+  } else if (exp.type == "NUM") {
+    num *= exp.val;
   } else {
-    notNum = expression;
+    notNum = exp;
   }
   var splitExp = {num: num, notNum: notNum};
   return splitExp;
