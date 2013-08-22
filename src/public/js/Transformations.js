@@ -15,10 +15,8 @@ var Transforms = {
     }
 
     Mutations.swapInExp(toSide, subtract); 
-    var simp = Mutations.swapInExp(term, subtract);
-    flattenTree(simp); 
-    console.log(simp);
-    var simplified = simp.simplify({childIndex: 0});
+    var toSimplify = Mutations.swapInExp(term, subtract);
+    var simplified = toSimplify.simplify({childIndex: 0});
 
     this.rerender(simplified);
   }, 
@@ -31,10 +29,7 @@ var Transforms = {
     }
     Mutations.swapInExp(numer, divide);
     var toSimplify = Mutations.swapInExp(denom, divide);
-    
-    //toSimplify.simplify();
     var simplified = toSimplify.simplify();
-    console.log(simplified.getTopMostParent());
 
     this.rerender(simplified.getTopMostParent()); 
   }, 

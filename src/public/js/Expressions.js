@@ -264,7 +264,7 @@ _.extend(Oper.prototype, Expression.prototype, {
       simpOp: function(exp, options) {
         if (!options || options.childIndex == null || !exp.children[options.childIndex]) 
           throw "Simplify function for add operator requires options object with a valid childIndex, the index of an operand with immediate sibling proceeding it, to be passed in" 
-        
+        console.log(exp);
         var child1 = exp.children[options.childIndex];
         var child2 = exp.children[options.childIndex + 1];
 
@@ -523,10 +523,11 @@ function splitExp(exp) {
   var num = 1;
   var notNum = null;
   if (exp.val === "neg") {
-    exp = exp.children[0];
-    num = -1;
+    var split = splitExp(exp.children[0]);
+    split.num *= -1;
+    return split;
   }
-  if (exp.val == "mult") {
+  if (exp.val === "mult") {
     var clone = exp.clone(false)
     
     for (var i = 0; i < clone.children.length; i++) {
@@ -550,8 +551,8 @@ function splitExp(exp) {
   } else {
     notNum = exp;
   }
-  var splitExp = {num: num, notNum: notNum};
-  return splitExp;
+  var splitObj = {num: num, notNum: notNum};
+  return splitObj;
 
 }
 
