@@ -33,7 +33,7 @@ $(document).ready(function(event) {
   var test6 = "(= (abs (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4))) 0)";
 
 
-  var parsed = Parser.StringToTree(test3);
+  var parsed = Parser.StringToTree(test);
 
 
 

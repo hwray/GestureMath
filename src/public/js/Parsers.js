@@ -181,8 +181,6 @@ Parser = {
   }, 
 
 
-// REmove parens around funcs with single children
-// Deal with log base subscripts
 // Deal with exponents of functions (secX ^ 4)
 // Absolute value? 
 // Coloring parens? 
