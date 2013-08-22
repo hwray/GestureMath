@@ -20,6 +20,11 @@ var Transforms = {
     console.log(simp);
     var simplified = simp.simplify({childIndex: 0});
 
+    while (simplified.parent != null) {
+      simplified = simplified.parent; 
+    }
+    flattenTree(simplified); 
+
     this.rerender(simplified);
   }, 
 
@@ -35,6 +40,8 @@ var Transforms = {
     //toSimplify.simplify();
     var simplified = toSimplify.simplify();
     console.log(simplified.getTopMostParent());
+
+    flattenTree(simplified); 
 
     this.rerender(simplified.getTopMostParent()); 
   }, 
@@ -63,6 +70,7 @@ var Transforms = {
       select = select.parent; 
     }
     flattenTree(select); 
+    console.log(Parser.TreeToString(select)); 
 
     this.rerender(select); 
   }, 
@@ -240,7 +248,7 @@ function flattenTree(tree) {
     }
   }
 
-  // Eliminate double-nested "neg" ops
+  // Eliminate double-nested "neg" ops, 
   if (tree.val == "neg" &&
       tree.children[0].val == "neg") {
     var parent = tree.parent; 
@@ -249,6 +257,25 @@ function flattenTree(tree) {
     var index = parent.children.indexOf(tree);
     parent.children[index] = grandChild; 
     grandChild.parent = parent; 
+  }
+
+  // Distribute "neg" ops over "add" ops
+  if (tree.val == "neg" && 
+      tree.children[0].val == "add") {
+    
+    var add = tree.children[0]; 
+    for (var i = 0; i < add.children.length; i++) {
+      var child = add.children[i]; 
+      var neg = new Oper("neg", [child]); 
+      add.children[i] = neg; 
+      child.parent = neg; 
+      neg.parent = add; 
+    }
+
+    var parent = tree.parent; 
+    var index = parent.children.indexOf(tree); 
+    parent.children[index] = add; 
+    add.parent = parent; 
   }
 
   if (tree.children) {
@@ -332,14 +359,13 @@ function greatestCommonFactorVars(vars) {
         (maxExp[varArr[i][0]] &&
          maxExp[varArr[i][0]] < varArr[i][1])) {
       maxExp[varArr[i]] = varArr[i][1]; 
+    }
   }
   
   return maxExp; 
 }
 
 function greatestCommonFactor(exp) {
-  var nums = 
-  var vars = []; 
 
 
 }
