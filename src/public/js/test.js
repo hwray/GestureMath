@@ -22,17 +22,18 @@ $(document).ready(function(event) {
 
   var test = "( = y ( / ( exp ( / ( - ( pow ( + x ( - \\mu ) ) 2 ) ) ( * 2 ( pow \\sigma 2 ) ) ) ) ( * \\sigma ( pow ( * 2 \\pi ) ( / 1 2 ) ) ) ) )"; 
   var poly = "( = y ( + (* 4 (pow x 2) ) (* 9 (pow x 3) ) 14 ) )"; 
+
   var distribute = "( = y ( + (- 50) ( * 10 ( + (* 9 (pow x 2) ) (* 7 x) 4))))"; 
   var distribute2 = "( = y  ( * (+ 10 x) ( + (* 9 (pow x 2) ) (* 7 x) 4)))";
   var test1 = "(= (/ (+ 100 (- (* 4 x))) 3) (+ (/ (+ (* 5 x) 6) 4) 6))";
   var test2 = "(= (+ (/ 6 x) (- (/ 2 (+ x 3)))) (/ (* 3 (+ x 5)) (+ (pow x 2) (* 3 x))))";
   var test3 = "(= (log 3 4) (/ 2 5))";
-  var test4 = "(= (+ (* 2 (cos x)) (- 1)) 0)";
+  var test4 = "(= (+ (* 2 (tan x)) (- 1)) 0)";
   var test5 = "(= (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4)) 0)";
+  var test6 = "(= (abs (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4))) 0)";
 
 
-
-  var parsed = Parser.StringToTree(test5);
+  var parsed = Parser.StringToTree(test6);
 
 
 
@@ -49,15 +50,12 @@ $(document).ready(function(event) {
   var sharedParent = null; 
 
 
-  // Add selected field to expression tree nodes upon being clicked? 
   mathDiv.ontouch = mathDiv.onclick = function (event) {
     if (!event) { event = window.event }
     var selected = event.toElement || event.target;
     while (selected && !selected.id) { selected = selected.parentNode }
 
-    if (selections[selected.id]) {
-      delete selections[selected.id]; 
-    } else {
+    if (texMap[selected.id]) {
       selections[selected.id] = texMap[selected.id]; 
       selections[selected.id].selected = true; 
       if (sharedParent == null) {
@@ -65,16 +63,12 @@ $(document).ready(function(event) {
       } else {
         sharedParent = findSharedParent(sharedParent, selections[selected.id]); 
       }
+      colorTreeTex(sharedParent, "red"); 
+      clearTargets(); 
+      for (var func in testTransforms) {
+        testTransforms[func](sharedParent); 
+      }
     }
-
-    colorTreeTex(sharedParent, "red"); 
-
-    clearTargets(); 
-
-    for (var func in testTransforms) {
-      testTransforms[func](sharedParent); 
-    }
-
     console.log(sharedParent); 
   }; 
 

@@ -18,11 +18,8 @@ var Transforms = {
     var toSimplify = Mutations.swapInExp(term, subtract);
     var simplified = toSimplify.simplify({childIndex: 0});
 
-    while (simplified.parent != null) {
-      simplified = simplified.parent; 
-    }
+    simplified = simplified.getTopMostParent(); 
     flattenTree(simplified); 
-
     this.rerender(simplified);
   }, 
 
@@ -36,7 +33,10 @@ var Transforms = {
     var toSimplify = Mutations.swapInExp(denom, divide);
     var simplified = toSimplify.simplify();
 
+    simplified = simplified.getTopMostParent(); 
     flattenTree(simplified); 
+
+    console.log(Parser.TreeToString(simplified)); 
 
     this.rerender(simplified.getTopMostParent()); 
   }, 
@@ -61,11 +61,8 @@ var Transforms = {
       target.parent = grandParent; 
     }
 
-    while (select.parent != null) {
-      select = select.parent; 
-    }
+    select = select.getTopMostParent(); 
     flattenTree(select); 
-    console.log(Parser.TreeToString(select)); 
 
     this.rerender(select); 
   }, 
@@ -75,10 +72,6 @@ var Transforms = {
   }, 
 
   rerender: function(tree) {
-    while (tree.parent != null) {
-      tree = tree.parent; 
-    }
-
     var texObj = Parser.TreeToTex(tree); 
 
     var texStr = texObj.texString; 
@@ -158,6 +151,15 @@ var testTransforms = {
     }
   }, 
 
+  canMultiplyOverEquals: function(shared) {
+    if (shared.parent && shared.parent.val === "frac" && shared.parent.parent) {
+      if (shared.parent.val === "frac" && shared.parent.parent.type === "EQUAL") {
+
+      }
+
+    }
+  },
+
   canDistribute: function(shared) {
     // Distributing a single coefficient/var of a term? 
     // Distributing over multiple sums? x(1 + 2)(x + 4)??? 
@@ -210,18 +212,9 @@ var testTransforms = {
 
 // propagate 0s in mult ops? 
 function flattenTree(tree) {
-  // Eliminate double-nested "add" and "mult" ops
-  if (tree.val == "add" ||
-      tree.val == "mult") {
+  if (tree.children) {
     for (var i = 0; i < tree.children.length; i++) {
-      if (tree.val == tree.children[i].val) {
-        var grandChildren = tree.children[i].children; 
-        tree.children.splice(i, 1, grandChildren); 
-        tree.children = _.flatten(tree.children); 
-        for (var j = 0; j < grandChildren.length; j++) {
-          grandChildren[j].parent = tree; 
-        }
-      }
+      flattenTree(tree.children[i]); 
     }
   }
 
@@ -239,6 +232,33 @@ function flattenTree(tree) {
     for (var i = 0; i < tree.children.length; i++) {
       if (tree.children[i].val === 1) {
         tree.children.splice(i, 1); 
+      }
+    }
+  }
+
+  // Eliminate "add" or "mult" ops with a single child
+  if ((tree.val == "add" ||
+      tree.val == "mult") &&
+      tree.children.length == 1) {
+    var parent = tree.parent; 
+    var index = parent.children.indexOf(tree); 
+    var child = tree.children[0]; 
+
+    parent.children[index] = child; 
+    child.parent = parent; 
+  }
+
+  // Eliminate double-nested "add" and "mult" ops
+  if (tree.val == "add" ||
+      tree.val == "mult") {
+    for (var i = 0; i < tree.children.length; i++) {
+      if (tree.val == tree.children[i].val) {
+        var grandChildren = tree.children[i].children; 
+        tree.children.splice(i, 1, grandChildren); 
+        tree.children = _.flatten(tree.children); 
+        for (var j = 0; j < grandChildren.length; j++) {
+          grandChildren[j].parent = tree; 
+        }
       }
     }
   }
@@ -271,12 +291,6 @@ function flattenTree(tree) {
     var index = parent.children.indexOf(tree); 
     parent.children[index] = add; 
     add.parent = parent; 
-  }
-
-  if (tree.children) {
-    for (var i = 0; i < tree.children.length; i++) {
-      flattenTree(tree.children[i]); 
-    }
   }
 }
 
