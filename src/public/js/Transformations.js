@@ -319,7 +319,6 @@ function pairFactorPowVar(powVar) {
 
 
 function greatestCommonFactorNums(nums) {
-  debugger; 
   var factors = factorNum(nums[0]); 
   for (var i = factors.length - 1; i >= 0; i--) {
     var common = true; 

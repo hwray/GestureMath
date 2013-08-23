@@ -35,7 +35,7 @@ $(document).ready(function(event) {
   var test6 = "(= (abs (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4))) 0)";
 
 
-  var parsed = Parser.StringToTree(poly);
+  var parsed = Parser.StringToTree(factor);
 
   var mathDiv = document.getElementById("mathDisplay"); 
 
@@ -54,33 +54,22 @@ $(document).ready(function(event) {
     if (!event) { event = window.event }
     var selected = event.toElement || event.target;
     while (selected && !selected.id) { 
-      console.log("No id: "); 
-      console.log(selected); 
       selected = selected.parentNode;  
     }
 
     while (selected.id && !texMap[selected.id]) { 
-      console.log("No TeX map: "); 
-      console.log(selected); 
       selected = selected.parentNode; 
     }
 
-    console.log("Found TeX map: "); 
-    console.log(texMap[selected.id]); 
 
     if (texMap[selected.id]) {
       selections[selected.id] = texMap[selected.id]; 
       selections[selected.id].selected = true; 
       if (sharedParent == null) {
-        console.log("NULL PARENT RESET"); 
         sharedParent = selections[selected.id]; 
       } else {
-        console.log("NEW SHARED PARENT"); 
         sharedParent = findSharedParent(sharedParent, selections[selected.id]); 
       }
-
-      console.log("Shared parent:"); 
-      console.log(sharedParent); 
 
       // Pow selection
       if (sharedParent.parent.val == "pow") {
