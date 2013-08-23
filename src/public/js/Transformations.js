@@ -80,6 +80,8 @@ var Transforms = {
 
     document.getElementById("mathDisplay").innerHTML = texStr; 
 
+    // NEED TO RESET SHARED PARENT
+
     clearTargets(); 
 
     MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
@@ -183,6 +185,8 @@ var testTransforms = {
   }, 
 
   canFactor: function(shared) {
+    
+    
     // CHANGE FOR NEW STYLE OF FACTORING POLYNOMIALS
     if (shared.type == "NUM") {
       return false; 

@@ -21,7 +21,7 @@ $(document).ready(function(event) {
 
 
   var test = "( = y ( / ( exp ( / ( - ( pow ( + x ( - \\mu ) ) 2 ) ) ( * 2 ( pow \\sigma 2 ) ) ) ) ( * \\sigma ( pow ( * 2 \\pi ) ( / 1 2 ) ) ) ) )"; 
-  var poly = "( = y ( + (* 4 (pow x 2) ) (* 9 (pow x 3) ) 14 ) )"; 
+  var poly = "( = y ( + (* 4 (pow x 2) ) ( - (* 9 (pow x 3) ) ) 14 ) )"; 
 
   var distribute = "( = y ( + (- 50) ( * 10 ( + (* 9 (pow x 2) ) (* 7 x) 4))))"; 
   var distribute2 = "( = y  ( * (+ 10 x) ( + (* 9 (pow x 2) ) (* 7 x) 4)))";
@@ -33,9 +33,7 @@ $(document).ready(function(event) {
   var test6 = "(= (abs (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4))) 0)";
 
 
-  var parsed = Parser.StringToTree(test5);
-
-
+  var parsed = Parser.StringToTree(poly);
 
   var mathDiv = document.getElementById("mathDisplay"); 
 
@@ -53,21 +51,42 @@ $(document).ready(function(event) {
   mathDiv.ontouch = mathDiv.onclick = function (event) {
     if (!event) { event = window.event }
     var selected = event.toElement || event.target;
-    while (selected && !selected.id) { selected = selected.parentNode }
+    while (selected && !selected.id) { 
+      console.log("No id: "); 
+      console.log(selected); 
+      selected = selected.parentNode;  
+    }
 
-    while (selected.id && !texMap[selected.id]) { console.log(selected); selected = selected.parentNode; }
+    while (selected.id && !texMap[selected.id]) { 
+      console.log("No TeX map: "); 
+      console.log(selected); 
+      selected = selected.parentNode; 
+    }
+
+    console.log("Found TeX map: "); 
+    console.log(texMap[selected.id]); 
 
     if (texMap[selected.id]) {
       selections[selected.id] = texMap[selected.id]; 
       selections[selected.id].selected = true; 
       if (sharedParent == null) {
+        console.log("NULL PARENT RESET"); 
         sharedParent = selections[selected.id]; 
       } else {
+        console.log("NEW SHARED PARENT"); 
         sharedParent = findSharedParent(sharedParent, selections[selected.id]); 
       }
 
+      console.log("Shared parent:"); 
+      console.log(sharedParent); 
+
       // Pow selection
       if (sharedParent.parent.val == "pow") {
+        sharedParent = sharedParent.parent; 
+      }
+
+      // Neg selection
+      if (sharedParent.parent.val == "neg") {
         sharedParent = sharedParent.parent; 
       }
 
@@ -77,8 +96,6 @@ $(document).ready(function(event) {
         testTransforms[func](sharedParent); 
       }
     }
-
-    console.log(sharedParent); 
   }; 
 
 
