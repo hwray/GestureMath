@@ -36,8 +36,6 @@ var Transforms = {
     simplified = simplified.getTopMostParent(); 
     flattenTree(simplified); 
 
-    console.log(Parser.TreeToString(simplified)); 
-
     this.rerender(simplified.getTopMostParent()); 
   }, 
 
@@ -185,33 +183,14 @@ var testTransforms = {
   }, 
 
   canFactor: function(shared) {
-    
-    
-    // CHANGE FOR NEW STYLE OF FACTORING POLYNOMIALS
     if (shared.type == "NUM") {
-      return false; 
-      // return true; 
-    } else if (shared.val == "pow") {
-      return false; 
-      // return true; 
+      return true; 
+    } else if (shared.val == "add") {
+      var terms = shared.children; 
+      var gcf = greatestCommonFactor(terms); 
     }
-    var coefficients = false; 
-    var variables = false; 
-    var constants = false; 
-    for (var node in selections) {
-      if (selections[node].type == "NUM") {
-        coefficients = true; 
-      } else if (selections[node].type == "VAR") {
-        variables = true; 
-      } else if (selections[node].type == "CONST") {
-        constants = true; 
-      }
-    }
-    // TODO: FINISH
-    // CHECK FACTORS, etc. 
-    return false; 
+    // check children
   }
-
 };
 
 // propagate 0s in mult ops? 
@@ -314,8 +293,7 @@ function pairFactorNum(exp) {
   return factors; 
 }
 
-function factorNum(exp) {
-  var num = exp.val; 
+function factorNum(num) {
   var factors = []; 
   for (var i = 1; i <= Math.floor(Math.sqrt(num)); i++) {
     if (num % i === 0) {
@@ -330,22 +308,6 @@ function factorNum(exp) {
   return factors; 
 }
 
-function greatestCommonFactorNums(nums) {
-  var factors = factorNum(nums[0]); 
-  for (var i = factors.length - 1; i >= 0; i--) {
-    var common = true; 
-    for (var j = 1; j < nums.length; j++) {
-      if (nums[j].val < factors[i] ||
-          nums[j].val % factors[i] != 0) {
-        common = false; 
-      }
-    }
-    if (common == true) 
-      return factors[i]; 
-  }
-  return 1; 
-}
-
 function pairFactorPowVar(powVar) {
   var exponent = powVar.children[1]; 
   var factors = []; 
@@ -355,30 +317,166 @@ function pairFactorPowVar(powVar) {
   return factors; 
 }
 
-function greatestCommonFactorVars(vars) {
-  var varArr = []; 
-  for (var i = 0; i < vars.length; i++) {
-    if (vars[i].type == "VAR" && 
-        varArr.indexOf(vars[i].val) == -1) {
-      varArr.push([vars[i], 1]); 
-    } else if (vars[i].val == "pow") {
-      varArr.push([vars[i].children[0], vars[i].children[1]]); 
-    }
-  }
 
-  var maxExp = {}; 
-  for (var i = 0; i < varArr.length; i++) {
-    if ((!maxExp[varArr[i][0]]) ||
-        (maxExp[varArr[i][0]] &&
-         maxExp[varArr[i][0]] < varArr[i][1])) {
-      maxExp[varArr[i]] = varArr[i][1]; 
+function greatestCommonFactorNums(nums) {
+  debugger; 
+  var factors = factorNum(nums[0]); 
+  for (var i = factors.length - 1; i >= 0; i--) {
+    var common = true; 
+    for (var j = 1; j < nums.length; j++) {
+      if (nums[j] < factors[i] ||
+          nums[j] % factors[i] != 0) {
+        common = false; 
+      }
     }
+    if (common == true) 
+      return factors[i]; 
   }
-  
-  return maxExp; 
+  return 1; 
 }
 
-function greatestCommonFactor(exp) {
+function greatestCommonFactorConsts(consts) {
+
+}
+
+function greatestCommonFactorVars(vars) {
+  var varArr = { };  
+  if (vars[0] == null) {
+    return null; 
+  }
+  for (var i = 0; i < vars[0].length; i++) {
+    var base = vars[0][i].base; 
+    varArr[base] = vars[0][i].exp; 
+  }
+  for (var i = 1; i < vars.length; i++) {
+    if (vars[i] == null) {
+      return null; 
+    }
+    var checkArr = {}; 
+    for (var key in varArr) {
+      checkArr[key] = false; 
+    }
+
+    for (var j = 0; j < vars[i].length; j++) {
+      var base = vars[i][j].base; 
+      var exp = vars[i][j].exp; 
+      if (varArr[base]) {
+        checkArr[base] = true; 
+        if (varArr[base] > exp) {
+          varArr[base] = exp; 
+        }
+      }
+    }
+    for (var key in checkArr) {
+      if (checkArr[key] == false) {
+        delete varArr[key]; 
+      }
+    }
+  }
+
+  console.log(varArr); 
+  return varArr; 
+}
+
+// CONSTS??? 
+function greatestCommonFactor(expArr) {  
+
+  function Term(neg, coefficient, consts, vars) {
+    this.coefficient = coefficient; 
+    this.consts = consts; 
+    this.vars = vars; 
+    return this; 
+  }
+
+  function Variable(base, exp) {
+    this.base = base; 
+    this.exp = exp; 
+  }
+
+  var terms = new Array(); 
+  for (var i = 0; i < expArr.length; i++) {
+    var neg = false; 
+    if (expArr[i].val == "neg") {
+      neg = true; 
+      expArr[i] = expArr[i].children[0]; 
+    }
+    if (expArr[i].type == "NUM") {
+      var term = new Term(neg, expArr[i].val, null, null); 
+      terms.push(term); 
+    } else if (expArr[i].type == "VAR") {
+      var variable = new Variable(expArr[i].val, 1); 
+      var term = new Term(neg, 1, null, [variable]); 
+      terms.push(term); 
+    } else if (expArr[i].type == "CONST") {
+      var term = new Term(neg, 1, [expArr[i].val], null); 
+      terms.push(term); 
+    } else if (expArr[i].val == "pow") {
+
+      // NUM POWS?? 
+      // POWS WITH COMPLICATED EXPONENTS? 
+      // CONST POWS? 
+      if (expArr[i].children[0].type == "VAR" &&
+          expArr[i].children[1].type == "NUM") {
+        var variable = new Variable(expArr[i].children[0].val, expArr[i].children[1].val); 
+        var term = new Term(neg, 1, null, [variable]); 
+        terms.push(term); 
+      }
+    } else if (expArr[i].val == "mult") {
+      var children = expArr[i].children; 
+      var nums = new Array();  
+      var consts = new Array(); 
+      var vars = new Array(); 
+      for (var j = 0; j < children.length; j++) {
+        if (children[j].type == "NUM") {
+          nums.push(children[j].val); 
+        } else if (children[j].type == "VAR") {
+          var variable = new Variable(children[j].val, 1); 
+          vars.push(variable); 
+        } else if (children[j].type == "CONST") {
+          consts.push(children[j].val); 
+        } else if (children[j].val == "pow") {
+          if (children[j].children[0].type == "VAR" &&
+              children[j].children[1].type == "NUM") {
+            var variable = new Variable(children[j].children[0].val, children[j].children[1].val); 
+
+            vars.push(variable); 
+          }
+        }
+      }
+      var coefficient = 1; 
+      for (var j = 0; j < nums.length; j++) {
+        coefficient *= nums[j]; 
+      }
+
+      if (consts.length == 0) 
+        consts = null; 
+
+      if (vars.length == 0)
+        vars = null; 
+
+      var term = new Term(neg, coefficient, consts, vars); 
+      terms.push(term); 
+    }
+  }
+
+  var nums = []; 
+  var consts = []; 
+  var vars = []; 
+  for (var i = 0; i < terms.length; i++) {
+    nums.push(terms[i].coefficient); 
+    consts.push(terms[i].consts); 
+    vars.push(terms[i].vars); 
+  }
+
+  console.log(nums); 
+  var gcfNums = greatestCommonFactorNums(nums); 
+  // var gcfConsts = greatestCommonFactorConsts(consts); 
+  var gcfVars = greatestCommonFactorVars(vars); 
 
 
+
+  var numDiv = document.getElementById("numFactors"); 
+  var varDiv = document.getElementById("varFactors"); 
+  numDiv.innerHTML = gcfNums; 
+  varDiv.innerHTML = JSON.stringify(gcfVars); 
 }

@@ -21,7 +21,9 @@ $(document).ready(function(event) {
 
 
   var test = "( = y ( / ( exp ( / ( - ( pow ( + x ( - \\mu ) ) 2 ) ) ( * 2 ( pow \\sigma 2 ) ) ) ) ( * \\sigma ( pow ( * 2 \\pi ) ( / 1 2 ) ) ) ) )"; 
-  var poly = "( = y ( + (* 4 (pow x 2) ) ( - (* 9 (pow x 3) ) ) 14 ) )"; 
+  var poly = "( = y ( + (* 40 (pow x 2) ) ( - (* 12 (pow x 3) ) ) 20 ) )"; 
+
+  var factor = "( = y ( + (* 40 (pow x 2) (pow y 3) (pow n 6)) ( - (* 12 (pow x 3) (pow y 2) (pow n 5)) ) (* 20 x (pow y 2) (pow n 5)) ) )"; 
 
   var distribute = "( = y ( + (- 50) ( * 10 ( + (* 9 (pow x 2) ) (* 7 x) 4))))"; 
   var distribute2 = "( = y  ( * (+ 10 x) ( + (* 9 (pow x 2) ) (* 7 x) 4)))";
