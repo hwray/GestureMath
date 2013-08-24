@@ -33,7 +33,10 @@ $(document).ready(function(event) {
   var test6 = "(= (abs (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4))) 0)";
 
 
-  var parsed = Parser.StringToTree(test6);
+  var parsed = Parser.StringToTree(test1);
+  var parsed2 = Parser.StringToTree(test2);
+  var parsed3 = Parser.StringToTree(test3);
+
 
 
 
@@ -41,9 +44,12 @@ $(document).ready(function(event) {
 
   var test1Parsed = Parser.StringToTree(test);
 
-  var texObj = Parser.TreeToTex(parsed, true); 
+  var texObj = Parser.TreeToTex(parsed, true);
 
-  mathDiv.innerHTML = texObj.texString; 
+  
+
+
+  mathDiv.innerHTML += texObj.texString; 
 
   var texMap = texObj.texMap; 
 

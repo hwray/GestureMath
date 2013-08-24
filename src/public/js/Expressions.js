@@ -250,6 +250,47 @@ _.extend(Oper.prototype, Expression.prototype, {
           return accum * val; 
         });
       },
+      simpOp: function(exp, options) {
+        if (!options || options.childIndex == null || !exp.children[options.childIndex]) 
+          throw "Simplify function for mult operator requires options object with a valid childIndex, the index of an operand with immediate sibling proceeding it, to be passed in";
+        var child1 = exp.children[options.childIndex];
+        var child2 = exp.children[options.childIndex + 1];
+        if (child2) {
+          var children = new Array();
+          fillMultArray(children, child1);
+          console.log("child2");
+          console.log(child2);
+          //debugger;
+          fillMultArray(children, child2);
+          var newChild = null;
+          exp.children.splice(options.childIndex, 2);
+          if (children.length > 1) {
+            exp.children.concat(children);
+            console.log("returns from here");
+            return exp;
+          } else {
+            newChild = children[0];
+            console.log(newChild);
+            exp.children.push(newChild);
+            if (exp.validOpers[exp.val].validate(exp.children)) {
+              newChild.parent = exp;
+              return exp;
+            } else {
+              var grandParent = exp.parent;
+              if (grandParent) {
+                var parentIndex = grandParent.children.indexOf(exp);
+                grandParent.children[parentIndex] = newChild;
+              }
+              newChild.parent = grandParent;
+              exp.parent = null;
+            }
+            return newChild;
+          }
+
+        } else 
+          throw "no proceeding child";
+
+      }
     },
 
     "add": {
@@ -264,7 +305,6 @@ _.extend(Oper.prototype, Expression.prototype, {
       simpOp: function(exp, options) {
         if (!options || options.childIndex == null || !exp.children[options.childIndex]) 
           throw "Simplify function for add operator requires options object with a valid childIndex, the index of an operand with immediate sibling proceeding it, to be passed in" 
-        console.log(exp);
         var child1 = exp.children[options.childIndex];
         var child2 = exp.children[options.childIndex + 1];
 
@@ -278,7 +318,9 @@ _.extend(Oper.prototype, Expression.prototype, {
           if (splitChild1.notNum === splitChild2.notNum || (splitChild1.notNum && splitChild1.notNum.equals(splitChild2.notNum))) {
 
             var numVal = splitChild1.num + splitChild2.num;
-            numVal < 0 ? numChild = new Oper("neg", numVal * -1) : numChild = new Num(numVal);
+            numChild = new Num(Math.abs(numVal));
+            if (numVal < 0)
+              numChild = new Oper("neg", [numChild]);
 
             if (numVal === 0 || !splitChild1.notNum) {
               newChild = numChild;
@@ -331,6 +373,22 @@ _.extend(Oper.prototype, Expression.prototype, {
           parent.children[thisIndex] = identity;
           exp.parent = null;
           return identity;
+        }
+
+        if (exp.children[0].val === "mult" || exp.children[1].val === "mult") {
+          var numerator = exp.children[0];
+          var denominator = exp.children[1];
+          for (var i = 0; i < numerator.children.length; i++) {
+            if (numerator.children[i].equals(denominator)) {
+              numerator.children.splice(i, 1);
+              var grandParent = exp.parent;
+              numerator.parent = grandParent;
+              var expIndex = grandParent.children.indexOf(exp);
+              grandParent.children[expIndex] = numerator;
+
+              return numerator;
+            }
+          }
         }
       }
     }, 
@@ -555,6 +613,139 @@ function splitExp(exp) {
   return splitObj;
 
 }
+
+function joinByMult(base, multBy) {
+  if(multBy.val !== 1) {
+    if (base.val === "mult") {
+      base.children.push(multBy);
+      multBy.parent = base;
+    } else {
+      var multiply = function(exp) {
+        return new Oper("mult", [exp, multBy]);
+      };
+      Mutations.swapInExp(base, multiply);
+    }
+  }
+}
+
+function collapseMultIntoFrac(fracExp, multChildren) {
+  var numerator = fracExp.children[0];
+  var denominator = fracExp.children[1];
+  console.log(multChildren.length)
+  while (multChildren.length > 0) {
+    var currChild = multChildren[0];
+    if (currChild.val === "frac") {
+      childNumer = currChild.children[0];
+      console.log("frac exp child, multChildren child")
+      console.log(childNumer);
+      console.log(numerator);
+      childDenom = currChild.children[1];
+      joinByMult(numerator, childNumer);
+      joinByMult(denominator, childDenom);
+    } else {
+      joinByMult(numerator, currChild);
+    }
+    multChildren.shift();
+  }
+  multChildren.push(fracExp);
+  return multChildren;
+}
+
+function fillMultArray(children, exp) {
+  var splitObj = splitExp(exp);
+  if (splitObj.notNum && splitObj.notNum.val === "mult") {
+    fillMultArray(children, splitObj.notNum);
+  }
+  var numObj = new Num(Math.abs(splitObj.num));
+  if (splitObj.num < 0)
+    numObj = new Oper("neg", [numObj]);
+
+  if (splitObj.notNum && splitObj.notNum.val === "frac") {
+    console.log(splitObj.notNum);
+    console.log(children.length);
+    joinByMult(splitObj.notNum.children[0], numObj); //joins the number and the fraction into just the fraction
+    children = collapseMultIntoFrac(splitObj.notNum, children); //joins the rest of the array into the fraction
+    console.log(children.length);
+  } else {
+    if (children.length > 0) {
+      insertIntoMultChildren(numObj, children);
+      insertIntoMultChildren(splitObj.notNum, children);
+    } else {
+      children.push(numObj);
+      children.push(splitObj.notNum);
+    }
+
+  }
+}
+
+function multiplyPow(commonExp, pow1, pow2) {
+  var powerChild = null;
+  if ((pow1.isNum() || (pow1.val === "neg" && pow1.children[0].isNum() ))
+    && (pow2.isNum() || (pow2.val === "neg" && pow2.children[0].isNum() ))) {
+    var sum = 0;
+    pow1.val === "neg" ? sum += (-1 * pow1.children[0].val) : sum += pow1.val;
+    pow2.val === "neg" ? sum += (-1 * pow2.children[0].val) : sum += pow2.val;
+    var numChild = new Num(Math.abs(sum));
+    sum < 0 ? powerChild = new Oper("neg", numChild) : powerChild = numChild;
+  } else {
+    powerChild = new Oper("add", [pow1, pow2])
+  }
+
+  return new Func("pow", [commonExp, powerChild]);
+}
+
+function insertIntoMultChildren(exp, multChildren) {
+  for (var i = 0; i < multChildren.length; i++) {
+    var currChild = multChildren[i];
+
+    //test fractions first, then numbers
+    if (currChild.val === "frac") {
+      joinByMult(currChild.children[0], exp);
+      break;
+    }
+    if ((currChild.isNum() || (currChild.val === "neg" &&  currChild.children[0].isNum())) 
+      && (exp.isNum() || (exp.val === "neg" && exp.children[0].isNum()))) {
+      var product = 1;
+      currChild.val === "neg" ? product *= (-1 * currChild.children[0].val) : product *= currChild.val;
+      exp.val === "neg" ? product *= (-1 * exp.children[0].val) : product *= exp.val;
+      var numChild = new Num(Math.abs(product));
+      product < 0 ? multChildren[i] = new Oper("neg", numChild) : multChildren[i] = numChild;
+      break;
+    }
+    //if the exp already exists in the array once
+    if (currChild.equals(exp)) {
+      var power = new Num(2);
+      multChildren[i] = new Func("pow", [currChild, power]);
+      break;
+    }
+
+    //if this exp is a power and 
+    if (currChild.val === "pow" && exp.val === "pow" && currChild.children[0].equals(exp.children[0])) {
+      var commonExp = exp.children[0];
+      var currChildPow = currChild.children[1];
+      var expPow = exp.children[1];
+
+      multChildren[i] = multiplyPow(commonExp, currChildPow, expPow);
+      break;
+    }
+
+    if (currChild.val === "pow" && currChild.children[0].equals(exp)) {
+      var currChildPow = currChild.children[1];
+      var expPow = new Num(1);
+      multChildren[i] = multiplyPow(exp, currChildPow, exp);
+      break;
+    }
+
+    if (exp.val === "pow" && exp.children[0].equals(currChild)) {
+      var currChildPow = new Num(1);
+      var expPow = exp.children[1];
+      multChildren[i] = multiplyPow(currChild, currChildPow, expPow);
+      break;
+    }
+  }
+}
+
+
 
 //})();
 

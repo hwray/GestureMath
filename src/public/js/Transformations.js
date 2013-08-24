@@ -39,10 +39,32 @@ var Transforms = {
     console.log(Parser.TreeToString(simplified)); 
 
     this.rerender(simplified.getTopMostParent()); 
-  }, 
+  },
+
+  multiplyOverEquals: function(selected, target) {
+    var multBy = selected.clone(false);
+    var muliply = function(exp) {
+      var children = new Array(exp, multBy);
+      return new Oper("mult", children);
+    }
+    var toSimplify = Mutations.swapInExp(selected.parent, muliply);
+    var toDistribute = Mutations.swapInExp(target, muliply);
+
+    
+    var simplified = toSimplify.simplify({childIndex: 0});
+    var toSimp = simplified.simplify();
+    flattenTree(toSimp);
+    //console.log(toSimp);
+
+    //Transforms.distribute()
+    this.rerender(toSimp.getTopMostParent());
+
+  },
 
   // CALL toSimplify in here? 
   distribute: function(select, target) {
+    //the problem is that the select parent isn't a mult with the target
+    //one thing is to edit the select appropriately 
     for (var i = 0; i < target.children.length; i++) {
       var mult = new Oper("mult", [select.clone(), target.children[i].clone()]); 
       mult.parent = target; 
@@ -152,10 +174,18 @@ var testTransforms = {
   }, 
 
   canMultiplyOverEquals: function(shared) {
-    if (shared.parent && shared.parent.val === "frac" && shared.parent.parent) {
-      if (shared.parent.val === "frac" && shared.parent.parent.type === "EQUAL") {
-
-      }
+    if (shared.parent && 
+        shared.parent.val === "frac" && 
+        shared.parent.parent &&
+        shared.parent.parent.type === "EQUAL"
+        ) {
+      var parent = shared.parent;
+      var grandParent = shared.parent.parent;
+      grandParent.children[0] === shared.parent ? sibling = grandParent.children[1] : sibling = grandParent.children[0];
+      var multTarget = drawDisOrFacTarget(sibling);
+      multTarget.addEventListener("click", function(e) {
+        Transforms.multiplyOverEquals(shared, sibling);
+      });
 
     }
   },
