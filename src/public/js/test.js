@@ -49,6 +49,8 @@ $(document).ready(function(event) {
 
   var sharedParent = null; 
 
+  history = [];
+
 
   mathDiv.ontouch = mathDiv.onclick = function (event) {
     if (!event) { event = window.event }
@@ -88,6 +90,49 @@ $(document).ready(function(event) {
       }
     }
   }; 
+
+  var hammertime = Hammer(mathDiv).on("pinchin", function(event) {
+    if (!event) { event = window.event }
+    var selected = event.toElement || event.target;
+    while (selected && !selected.id) { 
+      selected = selected.parentNode;  
+    }
+
+    while (selected.id && !texMap[selected.id]) { 
+      selected = selected.parentNode; 
+    }
+
+
+    if (texMap[selected.id]) {
+      selections[selected.id] = texMap[selected.id]; 
+      selections[selected.id].selected = true; 
+      if (sharedParent == null) {
+        sharedParent = selections[selected.id]; 
+      } else {
+        sharedParent = findSharedParent(sharedParent, selections[selected.id]); 
+      }
+
+      // Pow selection
+      if (sharedParent.parent.val == "pow") {
+        sharedParent = sharedParent.parent; 
+      }
+
+      // Neg selection
+      if (sharedParent.parent.val == "neg") {
+        sharedParent = sharedParent.parent; 
+      }
+
+      colorTreeTex(sharedParent, "red"); 
+      clearTargets(); 
+      for (var func in testTransforms) {
+        testTransforms[func](sharedParent); 
+      }
+    }
+
+    var pinchDiv = document.getElementById("pinched"); 
+    pinchDiv.innerHTML = sharedParent.val; 
+  }); 
+
 
 
     var clearButton = document.getElementById("clear"); 
