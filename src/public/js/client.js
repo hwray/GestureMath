@@ -83,6 +83,10 @@ requireScript('/public/jslibs/async.js',              false);
 //Base64 provides methods useful for doing data-uri encoding.
 requireScript('/public/jslibs/Base64.js',             false);
 
+//HammerJS provides multi-touch gesture recognition functionality. 
+requireScript('/public/jslibs/hammer-min.js',         false);
+
+
 //requireScript('http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML',       false);
 
 // ### App modules

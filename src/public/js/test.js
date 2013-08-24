@@ -21,7 +21,9 @@ $(document).ready(function(event) {
 
 
   var test = "( = y ( / ( exp ( / ( - ( pow ( + x ( - \\mu ) ) 2 ) ) ( * 2 ( pow \\sigma 2 ) ) ) ) ( * \\sigma ( pow ( * 2 \\pi ) ( / 1 2 ) ) ) ) )"; 
-  var poly = "( = y ( + (* 4 (pow x 2) ) (* 9 (pow x 3) ) 14 ) )"; 
+  var poly = "( = y ( + (* 40 (pow x 2) ) ( - (* 12 (pow x 3) ) ) 20 ) )"; 
+
+  var factor = "( = y ( + (* 40 (pow x 2) (pow y 3) (pow n 6)) ( - (* 12 (pow x 3) (pow y 2) (pow n 5)) ) (* 20 x (pow y 2) (pow n 5)) ) )"; 
 
   var distribute = "( = y ( + (- 50) ( * 10 ( + (* 9 (pow x 2) ) (* 7 x) 4))))"; 
   var distribute2 = "( = y  ( * (+ 10 x) ( + (* 9 (pow x 2) ) (* 7 x) 4)))";
@@ -33,12 +35,13 @@ $(document).ready(function(event) {
   var test6 = "(= (abs (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4))) 0)";
 
 
-  var parsed = Parser.StringToTree(test1);
+  var parsed1 = Parser.StringToTree(test1);
   var parsed2 = Parser.StringToTree(test2);
   var parsed3 = Parser.StringToTree(test3);
 
 
 
+  var parsed = Parser.StringToTree(factor);
 
   var mathDiv = document.getElementById("mathDisplay"); 
 
@@ -55,11 +58,20 @@ $(document).ready(function(event) {
 
   var sharedParent = null; 
 
+  history = [];
+
 
   mathDiv.ontouch = mathDiv.onclick = function (event) {
     if (!event) { event = window.event }
     var selected = event.toElement || event.target;
-    while (selected && !selected.id) { selected = selected.parentNode }
+    while (selected && !selected.id) { 
+      selected = selected.parentNode;  
+    }
+
+    while (selected.id && !texMap[selected.id]) { 
+      selected = selected.parentNode; 
+    }
+
 
     if (texMap[selected.id]) {
       selections[selected.id] = texMap[selected.id]; 
@@ -69,14 +81,67 @@ $(document).ready(function(event) {
       } else {
         sharedParent = findSharedParent(sharedParent, selections[selected.id]); 
       }
+
+      // Pow selection
+      if (sharedParent.parent.val == "pow") {
+        sharedParent = sharedParent.parent; 
+      }
+
+      // Neg selection
+      if (sharedParent.parent.val == "neg") {
+        sharedParent = sharedParent.parent; 
+      }
+
       colorTreeTex(sharedParent, "red"); 
       clearTargets(); 
       for (var func in testTransforms) {
         testTransforms[func](sharedParent); 
       }
     }
-    console.log(sharedParent); 
   }; 
+
+  var hammertime = Hammer(mathDiv).on("pinchin", function(event) {
+    if (!event) { event = window.event }
+    var selected = event.toElement || event.target;
+    while (selected && !selected.id) { 
+      selected = selected.parentNode;  
+    }
+
+    while (selected.id && !texMap[selected.id]) { 
+      selected = selected.parentNode; 
+    }
+
+
+    if (texMap[selected.id]) {
+      selections[selected.id] = texMap[selected.id]; 
+      selections[selected.id].selected = true; 
+      if (sharedParent == null) {
+        sharedParent = selections[selected.id]; 
+      } else {
+        sharedParent = findSharedParent(sharedParent, selections[selected.id]); 
+      }
+
+      // Pow selection
+      if (sharedParent.parent.val == "pow") {
+        sharedParent = sharedParent.parent; 
+      }
+
+      // Neg selection
+      if (sharedParent.parent.val == "neg") {
+        sharedParent = sharedParent.parent; 
+      }
+
+      colorTreeTex(sharedParent, "red"); 
+      clearTargets(); 
+      for (var func in testTransforms) {
+        testTransforms[func](sharedParent); 
+      }
+    }
+
+    var pinchDiv = document.getElementById("pinched"); 
+    pinchDiv.innerHTML = sharedParent.val; 
+  }); 
+
 
 
     var clearButton = document.getElementById("clear"); 
