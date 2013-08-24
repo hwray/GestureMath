@@ -14,6 +14,8 @@ function render(tree) {
   flattenTree(tree);
   currentExp = tree; 
 
+  texMap = { }; 
+
   var texObj = Parser.TreeToTex(tree); 
 
   texStr = texObj.texString; 
