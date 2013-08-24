@@ -1,10 +1,13 @@
 var targets = []; 
 
+var targetFuncs = []; 
+
 function clearTargets() {
   for (var i = 0; i < targets.length; i++) {
     targets[i].parentNode.removeChild(targets[i]); 
   }
   targets = []; 
+  targetFuncs = []; 
 }
 
 function drawTarget(top, left) {

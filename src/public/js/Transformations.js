@@ -154,12 +154,15 @@ var testTransforms = {
       var sibling = null; 
       shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
 
-      var subTarget = drawSubtractTarget(sibling); 
-      subTarget.addEventListener("click", function(event) {
+      var transform = function(event) {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
-        Transforms.subtractOverEquals(sibling, shared); 
-      }); 
+        Transforms.subtractOverEquals(sibling, shared);        
+      };
+      targetFuncs.push(transform); 
+
+      var subTarget = drawSubtractTarget(sibling); 
+      subTarget.addEventListener("click", transform); 
     }
 
     if (shared.parent &&
@@ -170,12 +173,15 @@ var testTransforms = {
       var sibling = null; 
       shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
 
-      var subTarget = drawSubtractTarget(sibling); 
-      subTarget.addEventListener("click", function(event) {
+      var transform = function(event) {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
         Transforms.subtractOverEquals(sibling, shared); 
-      }); 
+      };
+      targetFuncs.push(transform); 
+
+      var subTarget = drawSubtractTarget(sibling); 
+      subTarget.addEventListener("click", transform); 
     }
   }, 
 
@@ -185,12 +191,15 @@ var testTransforms = {
       var sibling = null; 
       shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
 
-      var divTarget = drawDivideTarget(sibling);
-      divTarget.addEventListener("click", function(event) {
+      var transform = function(event) {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
-        Transforms.divideOverEquals(sibling, shared);
-      });      
+        Transforms.divideOverEquals(sibling, shared);  
+      }; 
+      targetFuncs.push(transform); 
+
+      var divTarget = drawDivideTarget(sibling);
+      divTarget.addEventListener("click", transform);      
     }
     if (shared.parent &&
         shared.parent.val == "mult" && 
@@ -199,12 +208,16 @@ var testTransforms = {
 
       var sibling = null; 
       shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
-      var divTarget = drawDivideTarget(sibling);
-      divTarget.addEventListener("click", function(event) {
+      
+      var transform = function(event) {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
         Transforms.divideOverEquals(sibling, shared);
-      });  
+      }; 
+      targetFuncs.push(transform); 
+
+      var divTarget = drawDivideTarget(sibling);
+      divTarget.addEventListener("click", transform);  
     }
   }, 
 
@@ -217,12 +230,16 @@ var testTransforms = {
       var parent = shared.parent;
       var grandParent = shared.parent.parent;
       grandParent.children[0] === shared.parent ? sibling = grandParent.children[1] : sibling = grandParent.children[0];
-      var multTarget = drawDisOrFacTarget(sibling);
-      multTarget.addEventListener("click", function(e) {
+      
+      var transform = function(event) {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
         Transforms.multiplyOverEquals(shared, sibling);
-      });
+      }; 
+      targetFuncs.push(transform); 
+
+      var multTarget = drawDisOrFacTarget(sibling);
+      multTarget.addEventListener("click", transform);
 
     }
   },
@@ -239,13 +256,16 @@ var testTransforms = {
 
           var distributeOver = parent.children[i]; 
 
-          var disTarget = drawDisOrFacTarget(distributeOver);
-
-          disTarget.addEventListener("click", function(event) {
+          var transform = function(event) {
             var toStore = currentExp.clone(false); 
             history.push(toStore); 
             Transforms.distribute(shared, distributeOver); 
-          }); 
+          }; 
+          targetFuncs.push(transform); 
+
+          var disTarget = drawDisOrFacTarget(distributeOver);
+
+          disTarget.addEventListener("click", transform); 
         }
       }
     }
@@ -542,9 +562,10 @@ function greatestCommonFactor(expArr) {
   var gcfVars = greatestCommonFactorVars(vars); 
 
 
-
+/*
   var numDiv = document.getElementById("numFactors"); 
   var varDiv = document.getElementById("varFactors"); 
   numDiv.innerHTML = gcfNums; 
   varDiv.innerHTML = JSON.stringify(gcfVars); 
+  */
 }

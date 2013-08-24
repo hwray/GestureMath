@@ -104,6 +104,7 @@ $(document).ready(function(event) {
     }
   }; 
 
+/*
   var hammertime = Hammer(mathDiv).on("pinchin", function(event) {
     if (!event) { event = window.event }
     var selected = event.toElement || event.target;
@@ -145,22 +146,122 @@ $(document).ready(function(event) {
     var pinchDiv = document.getElementById("pinched"); 
     pinchDiv.innerHTML = sharedParent.val; 
   }); 
+*/
+
+  var dragDiv = null; 
+
+  var hammertime = Hammer(mathDiv).on("dragstart", function(event) {
+
+    event.gesture.preventDefault(); 
+
+    colorTreeTex(sharedParent, "white"); 
+
+    dragDiv = document.createElement("div");
+    dragDiv.id = "dragDiv"; 
+    dragDiv.innerHTML = Parser.TreeToTex(sharedParent).texString;  
+    dragDiv.style.position = "absolute"; 
+    dragDiv.style.top = event.gesture.center.pageY - (dragDiv.offsetHeight / 2); 
+    dragDiv.style.left = event.gesture.center.pageX - (dragDiv.offsetWidth / 2); 
+    dragDiv.style.color = "red"; 
+
+    var body = document.getElementsByTagName("body")[0]; 
+    body.appendChild(dragDiv); 
+
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+  }); 
+
+  hammertime.on("drag", function(event) {
+    dragDiv.style.top = event.gesture.center.pageY - (dragDiv.offsetHeight / 2);  
+    dragDiv.style.left = event.gesture.center.pageX - (dragDiv.offsetWidth / 2); 
+  }); 
 
 
+  hammertime.on("dragend", function(event) {
+    dragDiv.parentNode.removeChild(dragDiv); 
 
-    var clearButton = document.getElementById("clear"); 
-    clearButton.onclick = 
-    clearButton.ontouch = function(event) {
-      colorTreeTex(sharedParent, "black"); 
-      for (var id in selections) {
-        selections[id].selected = false; 
+    var container = document.getElementById("container"); 
+
+    var eventX = event.gesture.center.pageX - container.offsetLeft; 
+    var eventY = event.gesture.center.pageY - container.offsetTop; 
+
+    var minDist = null; 
+    var closestTarget = null; 
+    
+    for (var i = 0; i < targets.length; i++) {
+
+      var diffX = 0; 
+      var diffY = 0; 
+
+      if (eventX > targets[i].offsetLeft) {
+        diffX = eventX - targets[i].offsetLeft;
+      } else {
+        diffX = targets[i].offsetLeft - eventX;
       }
-      selections = {}; 
+      if (eventY > targets[i].offsetTop) {
+        diffY = eventY - targets[i].offsetTop; 
+      } else {
+        diffY = targets[i].offsetTop - eventY; 
+      }
 
-      clearTargets(); 
+      var dist = Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2)); 
+      console.log(dist); 
+      if (minDist == null ||
+          dist < minDist) {
+        minDist = dist; 
+        closestTarget = targets[i]; 
+      }
+    }
 
-      sharedParent = null; 
-    }; 
+    var index = targets.indexOf(closestTarget); 
+    var func = targetFuncs[index]; 
+    func(event); 
+  });
+
+
+  var clearButton = document.getElementById("clear"); 
+  clearButton.onclick = 
+  clearButton.ontouch = function(event) {
+    colorTreeTex(sharedParent, "black"); 
+    for (var id in selections) {
+      selections[id].selected = false; 
+    }
+    selections = {}; 
+
+    clearTargets(); 
+
+    sharedParent = null; 
+  }; 
+
+
+
+  var historyDiv1 = document.getElementById("history1"); 
+  historyDiv1.ontouch = 
+  historyDiv1.onclick = function(event) {
+    var toStore = currentExp.clone(false); 
+    history.push(toStore); 
+    var histIndex = Math.max(0, history.length - 4); 
+    render(history[histIndex]); 
+  }
+
+  var historyDiv2 = document.getElementById("history2"); 
+  historyDiv2.ontouch = 
+  historyDiv2.onclick = function(event) {
+    var toStore = currentExp.clone(false); 
+    history.push(toStore); 
+    var histIndex = Math.max(0, history.length - 3); 
+    render(history[histIndex]); 
+  }
+
+  var historyDiv3 = document.getElementById("history3"); 
+  historyDiv3.ontouch = 
+  historyDiv3.onclick = function(event) {
+    var toStore = currentExp.clone(false); 
+    history.push(toStore); 
+    var histIndex = Math.max(0, history.length - 2); 
+    render(history[histIndex]); 
+  }
+
 
 
     var x = new Var("x");
