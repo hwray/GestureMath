@@ -19,7 +19,11 @@ function drawTarget(top, left) {
 
 // Use TexMap for this, instead of document.getElementById? 
 function getX(tree, pos) {
-  var mathJax_xOffset = document.getElementById("mathDisplay").firstChild.nextSibling.firstChild.offsetLeft;
+
+  // THIS WAS OFF FOR SOME REASON EVEN THO THERE WERE NO ELEMENTS IN THE DOM
+  // SO I CHANGED IT
+  // MAY NEED TO BE CHANGED BACK
+  var mathJax_xOffset = document.getElementById("mathDisplay").firstChild.nextSibling.nextSibling.firstChild.offsetLeft;
 
   if (tree.children) {
     var startNode = tree;

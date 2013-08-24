@@ -1,3 +1,46 @@
+var currentExp = null; 
+
+var texStr = ""; 
+
+var texMap = { }; 
+
+var historyCounter = 0; 
+var history = []; 
+
+var sharedParent = null;  
+
+function render(tree) {
+
+  flattenTree(tree);
+  currentExp = tree; 
+
+  var texObj = Parser.TreeToTex(tree); 
+
+  texStr = texObj.texString; 
+
+  texMap = texObj.texMap; 
+
+  document.getElementById("mathDisplay").innerHTML = texStr; 
+
+  sharedParent = null; 
+
+  clearTargets(); 
+
+  historyCounter++; 
+
+  var initCount = Math.max(0, historyCounter - 3); 
+  var divCount = 1; 
+
+  for (var i = initCount; i < historyCounter; i++) {
+    var divStr = "history" + divCount; 
+    var historyDiv = document.getElementById(divStr); 
+    historyDiv.innerHTML = Parser.TreeToTex(history[i]).texString;
+    divCount++; 
+  }
+
+  MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+}
+
 var Transforms = {
   commute: function() {
 
@@ -19,8 +62,7 @@ var Transforms = {
     var simplified = toSimplify.simplify({childIndex: 0});
 
     simplified = simplified.getTopMostParent(); 
-    flattenTree(simplified); 
-    this.rerender(simplified);
+    render(simplified);
   }, 
 
   divideOverEquals: function(numer, denom) {
@@ -34,9 +76,8 @@ var Transforms = {
     var simplified = toSimplify.simplify();
 
     simplified = simplified.getTopMostParent(); 
-    flattenTree(simplified); 
 
-    this.rerender(simplified.getTopMostParent()); 
+    render(simplified.getTopMostParent()); 
   },
 
   multiplyOverEquals: function(selected, target) {
@@ -51,11 +92,11 @@ var Transforms = {
     
     var simplified = toSimplify.simplify({childIndex: 0});
     var toSimp = simplified.simplify();
-    flattenTree(toSimp);
+    toSimp = toSimp.getTopMostParent(); 
     //console.log(toSimp);
 
     //Transforms.distribute()
-    this.rerender(toSimp.getTopMostParent());
+    render(toSimp);
 
   },
 
@@ -84,27 +125,11 @@ var Transforms = {
     select = select.getTopMostParent(); 
     flattenTree(select); 
 
-    this.rerender(select); 
+    render(select); 
   }, 
 
   factor: function() {
 
-  }, 
-
-  rerender: function(tree) {
-    var texObj = Parser.TreeToTex(tree); 
-
-    var texStr = texObj.texString; 
-
-    texMap = texObj.texMap; 
-
-    document.getElementById("mathDisplay").innerHTML = texStr; 
-
-    // NEED TO RESET SHARED PARENT
-
-    clearTargets(); 
-
-    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
   }
 };
 
@@ -129,6 +154,8 @@ var testTransforms = {
 
       var subTarget = drawSubtractTarget(sibling); 
       subTarget.addEventListener("click", function(event) {
+        var toStore = currentExp.clone(false); 
+        history.push(toStore); 
         Transforms.subtractOverEquals(sibling, shared); 
       }); 
     }
@@ -143,6 +170,8 @@ var testTransforms = {
 
       var subTarget = drawSubtractTarget(sibling); 
       subTarget.addEventListener("click", function(event) {
+        var toStore = currentExp.clone(false); 
+        history.push(toStore); 
         Transforms.subtractOverEquals(sibling, shared); 
       }); 
     }
@@ -156,6 +185,8 @@ var testTransforms = {
 
       var divTarget = drawDivideTarget(sibling);
       divTarget.addEventListener("click", function(event) {
+        var toStore = currentExp.clone(false); 
+        history.push(toStore); 
         Transforms.divideOverEquals(sibling, shared);
       });      
     }
@@ -168,6 +199,8 @@ var testTransforms = {
       shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
       var divTarget = drawDivideTarget(sibling);
       divTarget.addEventListener("click", function(event) {
+        var toStore = currentExp.clone(false); 
+        history.push(toStore); 
         Transforms.divideOverEquals(sibling, shared);
       });  
     }
@@ -184,6 +217,8 @@ var testTransforms = {
       grandParent.children[0] === shared.parent ? sibling = grandParent.children[1] : sibling = grandParent.children[0];
       var multTarget = drawDisOrFacTarget(sibling);
       multTarget.addEventListener("click", function(e) {
+        var toStore = currentExp.clone(false); 
+        history.push(toStore); 
         Transforms.multiplyOverEquals(shared, sibling);
       });
 
@@ -205,6 +240,8 @@ var testTransforms = {
           var disTarget = drawDisOrFacTarget(distributeOver);
 
           disTarget.addEventListener("click", function(event) {
+            var toStore = currentExp.clone(false); 
+            history.push(toStore); 
             Transforms.distribute(shared, distributeOver); 
           }); 
         }

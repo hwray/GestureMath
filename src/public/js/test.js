@@ -39,27 +39,21 @@ $(document).ready(function(event) {
   var parsed2 = Parser.StringToTree(test2);
   var parsed3 = Parser.StringToTree(test3);
 
+  var test1Parsed = Parser.StringToTree(test);
 
 
-  var parsed = Parser.StringToTree(factor);
 
   var mathDiv = document.getElementById("mathDisplay"); 
 
-  var test1Parsed = Parser.StringToTree(test);
+  currentExp = Parser.StringToTree(factor);
 
-  var texObj = Parser.TreeToTex(parsed, true);
+  var texObj = Parser.TreeToTex(currentExp, true);
 
-  
+  texStr = texObj.texString; 
 
+  texMap = texObj.texMap; 
 
-  mathDiv.innerHTML += texObj.texString; 
-
-  var texMap = texObj.texMap; 
-
-  var sharedParent = null; 
-
-  history = [];
-
+  mathDiv.innerHTML += texStr; 
 
   mathDiv.ontouch = mathDiv.onclick = function (event) {
     if (!event) { event = window.event }
@@ -68,27 +62,37 @@ $(document).ready(function(event) {
       selected = selected.parentNode;  
     }
 
+    console.log("Found CSS ID: ");
+    console.log(selected);  
+
     while (selected.id && !texMap[selected.id]) { 
       selected = selected.parentNode; 
     }
 
+    console.log("Found texMap: "); 
+    console.log(texMap[selected.id]); 
 
+    console.log("Before shared parent: ")
+    console.log(sharedParent); 
     if (texMap[selected.id]) {
-      selections[selected.id] = texMap[selected.id]; 
-      selections[selected.id].selected = true; 
       if (sharedParent == null) {
-        sharedParent = selections[selected.id]; 
+        sharedParent = texMap[selected.id]; 
       } else {
-        sharedParent = findSharedParent(sharedParent, selections[selected.id]); 
+        sharedParent = findSharedParent(sharedParent, texMap[selected.id]); 
       }
 
+      console.log("After shared parent: "); 
+      console.log(sharedParent); 
+
       // Pow selection
-      if (sharedParent.parent.val == "pow") {
+      if (sharedParent.parent &&
+          sharedParent.parent.val == "pow") {
         sharedParent = sharedParent.parent; 
       }
 
       // Neg selection
-      if (sharedParent.parent.val == "neg") {
+      if (sharedParent.parent &&
+          sharedParent.parent.val == "neg") {
         sharedParent = sharedParent.parent; 
       }
 
