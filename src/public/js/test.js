@@ -179,6 +179,12 @@ $(document).ready(function(event) {
 
   hammertime.on("dragend", function(event) {
     dragDiv.parentNode.removeChild(dragDiv); 
+    
+    if (targets.length == 0) {
+      colorTreeTex(sharedParent, "red"); 
+      // MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+      return; 
+    }
 
     var container = document.getElementById("container"); 
 
@@ -187,7 +193,7 @@ $(document).ready(function(event) {
 
     var minDist = null; 
     var closestTarget = null; 
-    
+
     for (var i = 0; i < targets.length; i++) {
 
       var diffX = 0; 

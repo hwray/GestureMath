@@ -30,10 +30,10 @@ function render(tree) {
 
   historyCounter++; 
 
-  var initCount = Math.max(0, historyCounter - 3); 
+  var lastCount = Math.max(0, historyCounter - 3); 
   var divCount = 1; 
 
-  for (var i = initCount; i < historyCounter; i++) {
+  for (var i = historyCounter - 1; i >= lastCount; i--) {
     var divStr = "history" + divCount; 
     var historyDiv = document.getElementById(divStr); 
     historyDiv.innerHTML = Parser.TreeToTex(history[i]).texString;
