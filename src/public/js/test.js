@@ -33,19 +33,20 @@ $(document).ready(function(event) {
   var test4 = "(= (+ (* 2 (tan x)) (- 1)) 0)";
   var test5 = "(= (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4)) 0)";
   var test6 = "(= (abs (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4))) 0)";
+  var test7 = "(= y (* x (+ x 3))";
 
 
   var parsed1 = Parser.StringToTree(test1);
   var parsed2 = Parser.StringToTree(test2);
   var parsed3 = Parser.StringToTree(test3);
 
-  var test1Parsed = Parser.StringToTree(test);
+  var test1Parsed = Parser.StringToTree(test7);
 
 
 
   var mathDiv = document.getElementById("mathDisplay"); 
 
-  currentExp = Parser.StringToTree(factor);
+  currentExp = Parser.StringToTree(test7);
 
   var texObj = Parser.TreeToTex(currentExp, true);
 
