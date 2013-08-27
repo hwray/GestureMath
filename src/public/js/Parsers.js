@@ -312,8 +312,8 @@ Parser = {
         } else if (expTree.val == "log") {
           var id = computeID(expTree); 
           expTree.id = id; 
-          texString += "\\cssId{" + id + "}log_{"; 
-          texString += printTreeToTex(expTree.children[0]) + "}{"; 
+          texString += "\\cssId{" + id + "}{log_{"; 
+          texString += printTreeToTex(expTree.children[0]) + "}}{"; 
           if (expTree.children[1].type == "NUM" ||
               expTree.children[1].type == "CONST" ||
               expTree.children[1].type == "VAR") {

@@ -128,7 +128,7 @@ hammertime.on("tap", function(event) {
       sharedParent = sharedParent.parent; 
     }
 
-    colorTreeTex(sharedParent, "red"); 
+    colorTreeTex(sharedParent, "#06c4f9"); 
     clearTargets(); 
     for (var func in testTransforms) {
       testTransforms[func](sharedParent); 
@@ -143,7 +143,7 @@ hammertime.on("dragstart", function(event) {
 
   event.gesture.preventDefault(); 
 
-  colorTreeTex(sharedParent, "white"); 
+  colorTreeTex(sharedParent, "black"); 
 
   dragDiv = document.createElement("div");
   dragDiv.id = "dragDiv"; 
