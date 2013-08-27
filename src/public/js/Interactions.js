@@ -85,7 +85,6 @@ hammertime.on("tap", function(event) {
 
     if (texMap[selected.id].type == "OPER") {
 
-      // TO-DO: CHECK IDENTITIES
 
       var node = texMap[selected.id]; 
       var idArr = node.idArr; 
@@ -93,6 +92,15 @@ hammertime.on("tap", function(event) {
 
       var toStore = currentExp.clone(false); 
       history.push(toStore); 
+
+      for (var id in Identities) {
+        var rewrites = Identities[id].getPossibleRewrites(node);
+        if (rewrites) {
+          if (rewrites.length === 1) {
+            Mutations.replaceExp(node, rewrites[0]);
+          }
+        }
+      }
 
       node = node.validOpers[node.val].simpOp(node, { childIndex: index }); 
       node = node.getTopMostParent(); 

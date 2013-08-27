@@ -31,5 +31,14 @@ Mutations = {
       subs.push(sub); 
     }
     return subs; 
+  },
+
+  replaceExp: function(tree, replacement) {
+    if (tree.parent) {
+      var treeIndex = tree.parent.children.indexOf(tree);
+      tree.parent.children[treeIndex] = replacement;
+    }
+    replacement.parent = tree.parent;
+    return replacement;
   }
 }
