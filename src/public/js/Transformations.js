@@ -119,17 +119,24 @@ var Transforms = {
       target.children[i] = mult; 
     }
 
+    if (select.val == "add") {
+      var newChildren = []; 
+      for (var i = 0; i < target.children.length; i++) {
+        var children = target.children[i].children[0].children; 
+        for (var j = 0; j < children.length; j++) {
+          var first = children[j]; 
+          var second = target.children[i].children[1]; 
+          var mult = new Oper("mult", [first.clone(), second.clone()]); 
+          mult.parent = target; 
+          newChildren.push(mult);  
+        }
+      }
+      target.children = newChildren; 
+    }
+
     var parent = select.parent; 
     var parentChildren = parent.children; 
     parentChildren.splice(parentChildren.indexOf(select), 1); 
-
-    if (parentChildren.length < 2) {
-      var grandParent = parent.parent; 
-      var grandParentChildren = grandParent.children; 
-      var swapIndex = grandParentChildren.indexOf(parent);  
-      grandParentChildren[swapIndex] = target; 
-      target.parent = grandParent; 
-    }
 
     select = select.getTopMostParent(); 
     flattenTree(select); 
@@ -426,9 +433,11 @@ function canFactor(shared) {
   // validate children/parents?? 
 }
 
+
 // This is pretty janky right now
 // Flattens children both before and after
 // propagate 0s in mult ops? 
+// rearrange mult children? (num-const-var order?)
 function flattenTree(tree) {
   if (tree.children) {
     for (var i = 0; i < tree.children.length; i++) {
