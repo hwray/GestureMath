@@ -34,7 +34,7 @@ var addTemplates = {
       children[1] = new Oper("mult", [new Meta("b"), new Meta("x")]);
       return new Oper("add", children);
     },
-    rewrite(symbolTable) {
+    rewrite: function(symbolTable) {
 
     }
   },

@@ -326,6 +326,7 @@ _.extend(Oper.prototype, Expression.prototype, {
 
       //adapt for negative numbers
       simpOp: function(exp, options) {
+
         if (!options || options.childIndex == null || !exp.children[options.childIndex]) 
           throw "Simplify function for add operator requires options object with a valid childIndex, the index of an operand with immediate sibling proceeding it, to be passed in" 
         var child1 = exp.children[options.childIndex];

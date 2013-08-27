@@ -9,6 +9,7 @@
 #container {
   position: relative; 
   top: 10%; 
+  color: black;
 }
 
 #factors {
@@ -20,3 +21,21 @@
   width: 40%;
   margin: 0px auto;
 }
+
+/*
+* {
+  background-color: black;
+}
+
+#history1 {
+  color: white;
+}
+
+#history2 {
+  color: white;
+}
+
+#history3 {
+  color: white;
+}
+*/

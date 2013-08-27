@@ -82,6 +82,26 @@ hammertime.on("tap", function(event) {
   }
 
   if (texMap[selected.id]) {
+
+    if (texMap[selected.id].type == "OPER") {
+
+      // TO-DO: CHECK IDENTITIES
+
+      var node = texMap[selected.id]; 
+      var idArr = node.idArr; 
+      var index = idArr.indexOf(selected.id) * 2; 
+
+      var toStore = currentExp.clone(false); 
+      history.push(toStore); 
+
+      node = node.validOpers[node.val].simpOp(node, { childIndex: index }); 
+      node = node.getTopMostParent(); 
+
+      render(node); 
+
+      return; 
+    }
+
     if (sharedParent == null) {
       sharedParent = texMap[selected.id]; 
     } else {
