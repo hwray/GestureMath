@@ -25,7 +25,7 @@ Mutations = {
     for (var i = 0; i < matches.length; i++) {
       var parent = matches[i].match.parent; 
       var index = matches[i].childArrIndex; 
-      var sub = Parser.CloneTree(subTree); 
+      var sub = subTree.clone(); 
       parent.children[index] = sub;  
       sub.parent = parent; 
       subs.push(sub); 
