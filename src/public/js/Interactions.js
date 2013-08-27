@@ -85,25 +85,38 @@ hammertime.on("tap", function(event) {
 
     if (texMap[selected.id].type == "OPER") {
 
-
       var node = texMap[selected.id]; 
       var idArr = node.idArr; 
-      var index = idArr.indexOf(selected.id) * 2; 
+      var index = idArr.indexOf(selected.id) * 2;
 
-      var toStore = currentExp.clone(false); 
+      var toStore = currentExp.clone(true); 
       history.push(toStore); 
 
-      for (var id in Identities) {
-        var rewrites = Identities[id].getPossibleRewrites(node);
-        if (rewrites) {
-          if (rewrites.length === 1) {
-            Mutations.replaceExp(node, rewrites[0]);
-          }
-        }
+      var selection = node;
+      if (node.val === "add" || node.val === "mult") {
+        var cloneChildren = new Array(2);
+        cloneChildren[0] = node.children[index].clone(false);
+        cloneChildren[1] = node.children[index + 1].clone(false);
+        selection = new Oper(node.val, cloneChildren);
       }
 
-      node = node.validOpers[node.val].simpOp(node, { childIndex: index }); 
-      node = node.getTopMostParent(); 
+      for (var id in Identities) {
+        var rewrites = Identities[id].getPossibleRewrites(selection);
+        if (rewrites) {
+          console.log("enters");
+          if (rewrites.length === 1) {
+            selection = Mutations.replaceExp(selection, rewrites[0]);
+          }
+          break;
+        }
+      }
+      node.children.splice(index + 1, 1);
+
+      selection = Mutations.replaceExp(node.children[index], selection);
+
+      //selection = selection.simplify();
+      
+      node = selection.getTopMostParent(); 
 
       render(node); 
 
