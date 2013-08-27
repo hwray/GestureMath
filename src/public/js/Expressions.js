@@ -66,7 +66,17 @@ _.extend(Expression.prototype, {
   },
 
 
-  equals: function(otherTree) {
+  equals: function(otherTree, symbolTable) {
+    if (otherTree.type === "META") {
+      if (symbolTable) {
+        if (symbolTable[otherTree.val])
+          return this.equals(symbolTable[otherTree.val], symbolTable);
+        else {
+          symbolTable[otherTree.val] = this;
+          return true;
+        }
+      }
+    }
     if (this.type == otherTree.type && this.val == otherTree.val) {
       if (this.children == null && otherTree.children == null) 
         return true; 
@@ -84,7 +94,7 @@ _.extend(Expression.prototype, {
             var match = false; 
 
             for (var j = 0; j < otherChildren.length; j++) {
-              if (this.children[i].equals(otherChildren[j])) {
+              if (this.children[i].equals(otherChildren[j], symbolTable)) {
                 match = true; 
                 otherChildren.splice(j, 1);
                 break; 
@@ -100,7 +110,7 @@ _.extend(Expression.prototype, {
         // Non-commutative equals
         } else {
           for (var i = 0; i < this.children.length; i++) {
-            if (!this.children[i].equals(otherTree.children[i]))
+            if (!this.children[i].equals(otherTree.children[i], symbolTable))
               return false;
           }
           return true; 
@@ -116,7 +126,21 @@ _.extend(Expression.prototype, {
 
 });
 
+//**********************************************
+// META
+//**********************************************
+function Meta(val) {
+  //think about what checks I want to put on this
+  this.initExpression("META", val, null)
+}
 
+_.extend(Expression.prototype, {
+  isMeta: function() {
+    return this.type === "META";
+  }
+})
+
+_.extend(Meta.prototype, Expression.prototype);
 
 //**********************************************
 // NUM
@@ -141,7 +165,6 @@ _.extend(Num.prototype, Expression.prototype, {
     return this.val;
   }
 });
-
 
 
 //**********************************************
@@ -365,6 +388,22 @@ _.extend(Oper.prototype, Expression.prototype, {
       },
       simpOp: function(exp) {
         //very simple simplify
+        //var numTemp = new Oper("mult", [new Meta("a"), new Meta("b")]);
+        var template = new Oper("frac", [new Meta("a"), new Meta("a")]);
+        console.log(exp);
+        console.log(template);
+        template.symbolTable = {"a":null};
+        if (exp.equals(template, template.symbolTable)) {
+          var grandParent = exp.parent;
+          var expIndex = grandParent.children.indexOf(exp);
+          var newChild = new Num(1);
+          newChild.parent = grandParent;
+          grandParent.children[expIndex] = newChild;
+          return newChild;
+        } 
+        return exp;
+
+        /*
         if (exp.children[0].equals(exp.children[1])) {
           var identity = new Num("1");
           var parent = exp.parent;
@@ -389,7 +428,8 @@ _.extend(Oper.prototype, Expression.prototype, {
               return numerator;
             }
           }
-        }
+        } 
+        //*/
       }
     }, 
 
