@@ -9,22 +9,30 @@ var history = [];
 
 var sharedParent = null;  
 
+var currentFactor = null;
+
 function render(tree) {
 
-  flattenTree(tree);
+  flattenTree(tree); 
+
   currentExp = tree; 
 
   texMap = { }; 
-
   var texObj = Parser.TreeToTex(tree); 
-
-  texStr = texObj.texString; 
-
   texMap = texObj.texMap; 
 
+  texStr = texObj.texString; 
   document.getElementById("mathDisplay").innerHTML = texStr; 
 
   sharedParent = null; 
+
+  if (currentFactor) {
+    currentFactor = null; 
+    // document.getElementById("factorDisplay").innerHTML = ""; 
+    // document.getElementById("factorSlider").innerHTML = ""; 
+    document.getElementById("factors").innerHTML = ""; 
+    $( "#factorSlider" ).slider("destroy"); 
+  }
 
   clearTargets(); 
 
@@ -78,7 +86,6 @@ var Transforms = {
     var simplified = toSimplify.simplify();
 
     simplified = simplified.getTopMostParent(); 
-
     render(simplified.getTopMostParent()); 
   },
 
@@ -112,17 +119,24 @@ var Transforms = {
       target.children[i] = mult; 
     }
 
+    if (select.val == "add") {
+      var newChildren = []; 
+      for (var i = 0; i < target.children.length; i++) {
+        var children = target.children[i].children[0].children; 
+        for (var j = 0; j < children.length; j++) {
+          var first = children[j]; 
+          var second = target.children[i].children[1]; 
+          var mult = new Oper("mult", [first.clone(), second.clone()]); 
+          mult.parent = target; 
+          newChildren.push(mult);  
+        }
+      }
+      target.children = newChildren; 
+    }
+
     var parent = select.parent; 
     var parentChildren = parent.children; 
     parentChildren.splice(parentChildren.indexOf(select), 1); 
-
-    if (parentChildren.length < 2) {
-      var grandParent = parent.parent; 
-      var grandParentChildren = grandParent.children; 
-      var swapIndex = grandParentChildren.indexOf(parent);  
-      grandParentChildren[swapIndex] = target; 
-      target.parent = grandParent; 
-    }
 
     select = select.getTopMostParent(); 
     flattenTree(select); 
@@ -130,10 +144,89 @@ var Transforms = {
     render(select); 
   }, 
 
-  factor: function() {
+  // NEED TO CALL SIMPLIY IN HERE? 
+  factorNum: function(select, factor) {
+    var parent = select.parent; 
+    var index = parent.children.indexOf(select); 
+    parent.children[index] = factor; 
+    factor.parent = parent; 
 
+    parent = parent.getTopMostParent(); 
+    flattenTree(parent); 
+    render(parent); 
+  }, 
+
+  // NEED TO CALL SIMPLIFY IN HERE? 
+  factorPoly: function(poly, factor) {
+
+    var coefficient = 1; 
+    var variables = {}; 
+
+    if (factor.type == "NUM") {
+      coefficient = factor.val; 
+      variables = null; 
+    } else {
+      for (var i = 0; i < factor.children.length; i++) {
+        if (factor.children[i].type == "NUM") {
+          coefficient = factor.children[i].val; 
+        } else if (factor.children[i].type == "VAR") {
+          var variable = factor.children[i].val; 
+          variables[variable] = 1; 
+        } else if (factor.children[i].val == "pow") {
+          var base = factor.children[i].children[0].val; 
+          var exp = factor.children[i].children[1].val; 
+          variables[base] = exp; 
+        }
+      }
+    }
+
+    for (var i = 0; i < poly.children.length; i++) {
+      if (poly.children[i].type == "NUM") {
+        poly.children[i].val = (poly.children[i].val / coefficient); 
+      } else if (poly.children[i].type == "VAR") {
+        var variable = poly.children[i].val; 
+        if (variables[variable]) {
+          poly.children.splice(i, 1); 
+          i--; 
+        }
+      } else if (poly.children[i].val == "pow") {
+        var base = poly.children[i].children[0]; 
+        if (variables[base] &&
+            poly.children[i].children[1].type == "NUM") {
+          poly.children[i].children[1].val -= variables[base]; 
+        }
+      } else if (poly.children[i].val == "mult") {
+        var children = poly.children[i].children; 
+        for (var j = 0; j < children.length; j++) {
+          if (children[j].type == "NUM") {
+            children[j].val = (children[j].val / coefficient); 
+          } else if (children[j].type == "VAR") {
+            var variable = children[j].val; 
+            if (variables[variable]) {
+              children.splice(j, 1); 
+              j--; 
+            }
+          } else if (children[j].val == "pow") {
+            var base = children[j].children[0].val; 
+            if (variables[base] &&
+              children[j].children[1].type == "NUM") {
+              children[j].children[1].val -= variables[base]; 
+            }
+          }
+        }
+      }
+    }
+
+    var mult = new Oper("mult", [factor.clone(false), poly.clone(false)]); 
+    var index = poly.parent.children.indexOf(poly); 
+
+    poly.parent.children[index] = mult; 
+    mult.parent = poly.parent; 
+
+    mult = mult.getTopMostParent(); 
+    render(mult); 
   }
-};
+}
 
 var testTransforms = {
 
@@ -269,20 +362,82 @@ var testTransforms = {
         }
       }
     }
-  }, 
-
-  canFactor: function(shared) {
-    if (shared.type == "NUM") {
-      return true; 
-    } else if (shared.val == "add") {
-      var terms = shared.children; 
-      var gcf = greatestCommonFactor(terms); 
-    }
-    // check children
   }
 };
 
+function canFactor(shared) {
+  if (shared.type == "NUM") {
+    var factors = pairFactorNum(shared); 
+    var treePairs = []; 
+    for (var i = 0; i < factors.length; i++) {
+      var num1 = new Num(factors[i][0]); 
+      var num2 = new Num(factors[i][1]); 
+      var factorPair = new Oper("mult", [num1, num2]); 
+      treePairs.push(factorPair); 
+    }
+
+    var initValue = treePairs.length / 2; 
+
+    currentFactor = treePairs[initValue]; 
+
+    var factorDiv = document.getElementById("factorDisplay"); 
+    factorDiv.innerHTML = Parser.TreeToTex(currentFactor).texString; 
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+    $(function() {
+      $( "#factorSlider" ).slider({
+        animate: true,
+        min: 0, 
+        max: treePairs.length - 1, 
+        value: initValue, 
+        slide: function(event, ui) {
+          $( "factorSlider" ).val( "$" + ui.value ); 
+          currentFactor = treePairs[ui.value]; 
+          factorDiv.textContent = Parser.TreeToTex(currentFactor).texString;
+          MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+        }
+      });
+    });
+
+
+    var transform = function(event) {
+      var toStore = currentExp.clone(false); 
+      history.push(toStore); 
+      Transforms.factorNum(shared, currentFactor); 
+    }; 
+    targetFuncs.push(transform); 
+
+    var facTarget = drawDisOrFacTarget(shared); 
+    facTarget.addEventListener("click", transform); 
+
+  } else if (shared.val == "add") {
+    var terms = shared.children; 
+    var gcf = greatestCommonFactor(terms); 
+
+    currentFactor = gcf; 
+
+    var factorDiv = document.getElementById("factors"); 
+    factorDiv.innerHTML = Parser.TreeToTex(currentFactor).texString; 
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+    var transform = function(event) {
+      var toStore = currentExp.clone(false); 
+      history.push(toStore); 
+      Transforms.factorPoly(shared, currentFactor); 
+    }; 
+    targetFuncs.push(transform); 
+
+    var facTarget = drawDisOrFacTarget(shared); 
+    facTarget.addEventListener("click", transform); 
+  }
+  // validate children/parents?? 
+}
+
+
+// This is pretty janky right now
+// Flattens children both before and after
 // propagate 0s in mult ops? 
+// rearrange mult children? (num-const-var order?)
 function flattenTree(tree) {
   if (tree.children) {
     for (var i = 0; i < tree.children.length; i++) {
@@ -346,6 +501,23 @@ function flattenTree(tree) {
     grandChild.parent = parent; 
   }
 
+  // Eliminate "pow" funcs with an exponent of 0
+  if (tree.val == "pow" &&
+      tree.children[1].val == 0) {
+    var parent = tree.parent; 
+    var index = parent.children.indexOf(tree); 
+    parent.children.splice(index, 1); 
+  }
+
+  // Reduce "pow" funcs with an exponent of 1 to their base
+  if (tree.val == "pow" &&
+      tree.children[1].val == 1) {
+    var parent = tree.parent; 
+    var index = parent.children.indexOf(tree); 
+    parent.children[index] = tree.children[0]; 
+    tree.children[0].parent = parent; 
+  }
+
   // Distribute "neg" ops over "add" ops
   if (tree.val == "neg" && 
       tree.children[0].val == "add") {
@@ -364,13 +536,19 @@ function flattenTree(tree) {
     parent.children[index] = add; 
     add.parent = parent; 
   }
+
+  if (tree.children) {
+    for (var i = 0; i < tree.children.length; i++) {
+      flattenTree(tree.children[i]); 
+    }
+  }
 }
 
 
 function pairFactorNum(exp) {
   var num = exp.val; 
   var factors = []; 
-  for (var i = 1; i <= Math.floor(Math.sqrt(num)); i++) {
+  for (var i = 1; i <= num; i++) {
     if (num % i === 0) {
       var quotient = num / i; 
       if (quotient !== i) {
@@ -462,7 +640,6 @@ function greatestCommonFactorVars(vars) {
     }
   }
 
-  console.log(varArr); 
   return varArr; 
 }
 
@@ -556,16 +733,29 @@ function greatestCommonFactor(expArr) {
     vars.push(terms[i].vars); 
   }
 
-  console.log(nums); 
   var gcfNums = greatestCommonFactorNums(nums); 
   // var gcfConsts = greatestCommonFactorConsts(consts); 
   var gcfVars = greatestCommonFactorVars(vars); 
 
 
-/*
-  var numDiv = document.getElementById("numFactors"); 
-  var varDiv = document.getElementById("varFactors"); 
-  numDiv.innerHTML = gcfNums; 
-  varDiv.innerHTML = JSON.stringify(gcfVars); 
-  */
+  var termParts = []; 
+
+  termParts.push(new Num(gcfNums)); 
+
+  for (var key in gcfVars) {
+    if (gcfVars[key] == 1) {
+      termParts.push(new Var(key)); 
+    } else {
+      termParts.push(new Func("pow", [new Var(key), new Num(gcfVars[key])])); 
+    }
+  }
+  
+  var result = null; 
+  if (termParts.length >= 2) {
+    result = new Oper("mult", termParts);
+  } else {
+    result = termParts[0]; 
+  }
+
+  return result; 
 }
