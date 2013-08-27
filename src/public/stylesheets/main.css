@@ -10,3 +10,13 @@
   position: relative; 
   top: 10%; 
 }
+
+#factors {
+  position: relative;
+  top: 100px;
+}
+
+#factorSlider {
+  width: 40%;
+  margin: 0px auto;
+}

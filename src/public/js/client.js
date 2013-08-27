@@ -71,6 +71,9 @@ requireScript("/public/jslibs/jquery-2.0.2.min.js",   false);
 
 requireScript("/public/jslibs/jquery-ui.min.js",      false);
 
+requireScript("/public/jslibs/jquery.ui.touch-punch.min.js",      false);
+
+
 //Underscore provides functional programming for javascript
 requireScript('/public/jslibs/underscore-min.js',     false);
 

@@ -187,7 +187,6 @@ Parser = {
 // isLeaf method? 
   TreeToTex: function(expTree) {
 
-    // texMap = {}; 
 
     function computeID(exp) {
       var count = 1; 

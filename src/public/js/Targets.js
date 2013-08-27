@@ -23,10 +23,15 @@ function drawTarget(top, left) {
 // Use TexMap for this, instead of document.getElementById? 
 function getX(tree, pos) {
 
-  // THIS WAS OFF FOR SOME REASON EVEN THO THERE WERE NO ELEMENTS IN THE DOM
-  // SO I CHANGED IT
-  // MAY NEED TO BE CHANGED BACK
-  var mathJax_xOffset = document.getElementById("mathDisplay").firstChild.nextSibling.nextSibling.firstChild.offsetLeft;
+  var cumulativeXOffset = function(elem) {
+    var left = 0; 
+    while (elem && 
+           elem.id != "mathDisplay") {
+      left += elem.offsetLeft || 0;
+      elem = elem.offsetParent;
+    }
+    return left; 
+  };
 
   if (tree.children) {
     var startNode = tree;
@@ -40,10 +45,14 @@ function getX(tree, pos) {
     var firstElem = document.getElementById(startNode.id);
     var lastElem = document.getElementById(endNode.id);
 
+
     if (pos == "center") {
-      return firstElem.offsetLeft + (lastElem.offsetLeft + lastElem.offsetWidth - firstElem.offsetLeft)/2 + mathJax_xOffset - 5;
+      var firstOffset = cumulativeXOffset(firstElem); 
+      var lastOffset = cumulativeXOffset(lastElem); 
+      return (firstOffset + lastOffset + lastElem.offsetWidth) / 2;
     } else if (pos == "right") {
-      return lastElem.offsetLeft + lastElem.offsetWidth + mathJax_xOffset + 5; 
+      var lastOffset = cumulativeXOffset(lastElem); 
+      return lastOffset + lastElem.offsetWidth + 10; 
     }
 
 
@@ -51,9 +60,11 @@ function getX(tree, pos) {
     var selection = document.getElementById(tree.id);
 
     if (pos == "center") {
-      return selection.offsetLeft + selection.offsetWidth/2 + mathJax_xOffset - 5;
+      var offset = cumulativeXOffset(selection); 
+      return (offset + offset + selection.offsetWidth) / 2;
     } else if (pos == "right") {
-      return selection.offsetLeft + selection.offsetWidth + mathJax_xOffset + 5; 
+      var offset = cumulativeXOffset(selection); 
+      return offset + selection.offsetWidth + 10; 
     }
   }
 }
