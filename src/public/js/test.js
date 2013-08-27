@@ -35,7 +35,7 @@ $(document).ready(function(event) {
   var test5 = "(= (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4)) 0)";
   var test6 = "(= (abs (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4))) 0)";
   var test7 = "(= y (* x (+ x 3))";
-  var test8 = "(= y (+ (log 10 x) (log 10 y)))";
+  var test8 = "(= y (+ (log 10 x) (log 10 y) (log 10 z)))";
 
   var evalTest = "(= y (* (* 2 (pow x 2)) (* 5 (pow x 4))))";
 
