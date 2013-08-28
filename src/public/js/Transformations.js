@@ -71,10 +71,11 @@ var Transforms = {
     var toSimplify = Mutations.swapInExp(term, subtract);
     
     var simplified = toSimplify.simplify();
-    toSimplify.children.splice(0 + 1, 1);
+    toSimplify.children.splice(1, 1);
     simplified = Mutations.replaceExp(toSimplify.children[0], simplified);
 
     simplified = simplified.getTopMostParent(); 
+    Mutations.flattenTree(simplified);
     render(simplified);
   }, 
 

@@ -323,17 +323,42 @@ _.extend(Oper.prototype, Expression.prototype, {
           return accum + val; 
         });      
       },
+
+      //adapt for negative numbers
       simpOp: function(exp) {
-        //Mutations.flattenTree(exp);
-        var symbolTable = {}
-        for (var i in addTemplates) {
-          var template = addTemplates[i].template();
-          if (exp.equals(template, symbolTable)) {
-            return addTemplates[i].rewrite(symbolTable);
-          } else 
-            symbolTable = {}; 
+
+        var child1 = exp.children[0];
+        var child2 = exp.children[1];
+
+        var splitChild1 = splitExp(child1);
+        var splitChild2 = splitExp(child2);
+
+        var newChild = null;
+        var numChild = null;
+
+        if (splitChild1.notNum === splitChild2.notNum || (splitChild1.notNum && splitChild1.notNum.equals(splitChild2.notNum))) {
+
+          var numVal = splitChild1.num + splitChild2.num;
+          numChild = new Num(Math.abs(numVal));
+          if (numVal < 0)
+            numChild = new Oper("neg", [numChild]);
+
+          if (numVal === 0 || !splitChild1.notNum) {
+            newChild = numChild;
+          } else {
+            var children = new Array(2);
+            children[0] = numChild;
+            children[1] = splitChild1.notNum;
+            newChild = new Oper("mult", children);
+          }
         }
-        return exp;
+
+        if (newChild) {
+          exp.children.shift();
+          newChild = Mutations.replaceExp(exp.children[0], newChild);
+          return newChild;
+        } else
+          return exp;
       }
     },
 

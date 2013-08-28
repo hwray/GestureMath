@@ -244,7 +244,7 @@ Parser = {
           var idArr = new Array(); 
           var length = expTree.children.length; 
           for (var i = 0; i < length; i++) {
-            if (expTree.children[i].val == "add" || expTree.children[i].val === "neg") {
+            if (expTree.children[i].val == "add" || (i > 0 && expTree.children[i].val === "neg")) {
               texString += "(" + printTreeToTex(expTree.children[i]) + ")"; 
             } else {
               texString += printTreeToTex(expTree.children[i]); 

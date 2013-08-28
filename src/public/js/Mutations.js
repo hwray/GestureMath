@@ -106,6 +106,7 @@ Mutations = {
     // Eliminate double-nested "neg" ops, 
     if (tree.val == "neg" &&
         tree.children[0].val == "neg") {
+      console.log("enters neg elimination")
       var parent = tree.parent; 
       var grandChild = tree.children[0].children[0]; 
 

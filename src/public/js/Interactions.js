@@ -85,11 +85,17 @@ hammertime.on("tap", function(event) {
 
     if (texMap[selected.id].type == "OPER") {
 
-      var node = texMap[selected.id]; 
-      var idArr = node.idArr;
-      var index = idArr.indexOf(selected.id) * 2 - 1 || 0;
+      var node = texMap[selected.id];
+      var index = null;
+      if (node.val === "neg" && node.parent.val === "add" && node.parent.children.indexOf(node) > 0) {
+        var parent = node.parent;
+        index = parent.children.indexOf(node) - 1;
+        node = parent;
+      } else {
+        var idArr = node.idArr;
+        var index = idArr.indexOf(selected.id) * 2 - 1 || 0;
+      }
       if (index < 0) index = 0;
-      console.log(index);
 
       var toStore = currentExp.clone(true); 
       history.push(toStore); 
@@ -120,7 +126,8 @@ hammertime.on("tap", function(event) {
 
       node.children.splice(index + 1, 1);
       selection = Mutations.replaceExp(node.children[index], selection);
-      node = selection.getTopMostParent(); 
+      node = selection.getTopMostParent();
+      Mutations.flattenTree(node);
 
       render(node); 
 

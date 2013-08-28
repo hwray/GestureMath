@@ -16,7 +16,6 @@ function additionRewrite(a, b, x) {
   return new Oper("mult", [coef, x]);
 }
 
-//x + y
 
 var addTemplates = {
   "xPlusx": {

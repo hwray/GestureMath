@@ -40,7 +40,7 @@ $(document).ready(function(event) {
   var evalTest = "(= y (* (* 2 (pow x 2)) (* 5 (pow x 4))))";
   var addTest = "(= y (+ (* 4 x) 3 5 x ))";
 
-  var eval2 = "(= y (+ 3 4 2) )"; 
+  var eval2 = "(= y (+ 3 (- (* 4 x)) (- (* 2 x)) )"; 
 
 
   var parsed1 = Parser.StringToTree(test1);
@@ -53,7 +53,7 @@ $(document).ready(function(event) {
   var mathDiv = document.getElementById("mathDisplay"); 
 
 
-  currentExp = Parser.StringToTree(addTest);
+  currentExp = Parser.StringToTree(eval2);
 
   var texObj = Parser.TreeToTex(currentExp, true);
 
