@@ -274,17 +274,18 @@ _.extend(Oper.prototype, Expression.prototype, {
         });
       },
       simpOp: function(exp, options) {
+        console.log("enters");
         var child1 = exp.children[0];
         var child2 = exp.children[1];
         var children = new Array();
         fillMultArray(children, child1);
-        console.log("child2");
-        console.log(child2);
         fillMultArray(children, child2);
         var newChild = null;
         exp.children.splice(0, 2);
         if (children.length > 1) {
-          exp.children.concat(children);
+          exp.children = children;
+          console.log("returned Exp")
+          console.log(exp)
           return exp;
         } else {
           newChild = children[0];
@@ -363,7 +364,7 @@ _.extend(Oper.prototype, Expression.prototype, {
           newChild = Mutations.replaceExp(exp.children[0], newChild);
           return newChild;
         } else
-          return exp;
+          return null;
       }
     },
 
@@ -438,8 +439,8 @@ _.extend(Oper.prototype, Expression.prototype, {
     return this.validOpers[this.val].evalOp(values); 
   },
 
-  simplify: function(options) {
-    return this.validOpers[this.val].simpOp(this, options);
+  simplify: function() {
+    return this.validOpers[this.val].simpOp(this);
   }
 });
 
@@ -723,12 +724,14 @@ function multiplyPow(commonExp, pow1, pow2) {
 }
 
 function insertIntoMultChildren(exp, multChildren) {
+  var matchFound = false;
   for (var i = 0; i < multChildren.length; i++) {
     var currChild = multChildren[i];
 
     //test fractions first, then numbers
     if (currChild.val === "frac") {
       joinByMult(currChild.children[0], exp);
+      matchFound = true;
       break;
     }
     if ((currChild.isNum() || (currChild.val === "neg" &&  currChild.children[0].isNum())) 
@@ -737,13 +740,16 @@ function insertIntoMultChildren(exp, multChildren) {
       currChild.val === "neg" ? product *= (-1 * currChild.children[0].val) : product *= currChild.val;
       exp.val === "neg" ? product *= (-1 * exp.children[0].val) : product *= exp.val;
       var numChild = new Num(Math.abs(product));
-      product < 0 ? multChildren[i] = new Oper("neg", numChild) : multChildren[i] = numChild;
+      console.log(numChild)
+      product < 0 ? multChildren[i] = new Oper("neg", [numChild]) : multChildren[i] = numChild;
+      matchFound = true;
       break;
     }
     //if the exp already exists in the array once
     if (currChild.equals(exp)) {
       var power = new Num(2);
       multChildren[i] = new Func("pow", [currChild, power]);
+      matchFound = true;
       break;
     }
 
@@ -754,6 +760,7 @@ function insertIntoMultChildren(exp, multChildren) {
       var expPow = exp.children[1];
 
       multChildren[i] = multiplyPow(commonExp, currChildPow, expPow);
+      matchFound = true;
       break;
     }
 
@@ -761,6 +768,7 @@ function insertIntoMultChildren(exp, multChildren) {
       var currChildPow = currChild.children[1];
       var expPow = new Num(1);
       multChildren[i] = multiplyPow(exp, currChildPow, exp);
+      matchFound = true;
       break;
     }
 
@@ -768,9 +776,13 @@ function insertIntoMultChildren(exp, multChildren) {
       var currChildPow = new Num(1);
       var expPow = exp.children[1];
       multChildren[i] = multiplyPow(currChild, currChildPow, expPow);
+      matchFound = true;
       break;
     }
   }
+
+  if (!matchFound)
+    multChildren.push(exp);
 }
 
 

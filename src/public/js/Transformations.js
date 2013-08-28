@@ -119,8 +119,9 @@ var Transforms = {
     //one thing is to edit the select appropriately 
     for (var i = 0; i < target.children.length; i++) {
       var mult = new Oper("mult", [select.clone(), target.children[i].clone()]); 
+      mult = mult.simplify();
       mult.parent = target; 
-      target.children[i] = mult; 
+      target.children[i] = mult;
     }
 
     if (select.val == "add") {
@@ -131,7 +132,6 @@ var Transforms = {
           var first = children[j]; 
           var second = target.children[i].children[1]; 
           var mult = new Oper("mult", [first.clone(), second.clone()]); 
-          mult.parent = target; 
           newChildren.push(mult);  
         }
       }
@@ -320,7 +320,8 @@ var testTransforms = {
 
   canMultiplyOverEquals: function(shared) {
     if (shared.parent && 
-        shared.parent.val === "frac" && 
+        shared.parent.val === "frac" &&
+        shared.parent.children.indexOf(shared) === 1 && 
         shared.parent.parent &&
         shared.parent.parent.type === "EQUAL"
         ) {

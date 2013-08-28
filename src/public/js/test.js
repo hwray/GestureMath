@@ -47,6 +47,8 @@ $(document).ready(function(event) {
 
   var subTest = "(= y (+ (/ 7 x) (- (/  3 x)) ) )"; 
 
+  var goal = "(= (+ x (- (* 3 (+ (* 2 x) 3)))) (+ 8 (* (- 5) x)))";
+
 
   var parsed1 = Parser.StringToTree(test1);
   var parsed2 = Parser.StringToTree(test2);
@@ -58,7 +60,7 @@ $(document).ready(function(event) {
   var mathDiv = document.getElementById("mathDisplay"); 
 
 
-  currentExp = Parser.StringToTree(subTest);
+  currentExp = Parser.StringToTree(goal);
 
 
   var texObj = Parser.TreeToTex(currentExp, true);
