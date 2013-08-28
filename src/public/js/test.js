@@ -39,11 +39,13 @@ $(document).ready(function(event) {
 
   var evalTest = "(= y (* (* 2 (pow x 2)) (* 5 (pow x 4))))";
   var addTest = "(= y (+ (* 4 x) 3 5 x ))";
-  var addTest2 = "(= y (+ (* 4 x) x (pow x 2) (* 4 (pow x 2)) (pow x 3) 3 5 x ))"
+  var addTest2 = "(= y (+ (* 4 x) x (pow x 2) (- (* 4 (pow x 2))) (pow x 3) 3 5 x ))"
 
-  var eval2 = "(= y (+ 3 (- (* 4 x)) (- (* 2 x)) )"; 
+  var eval2 = "(= y (+ 3  (* 4 x) (- (* 2 x)) )"; 
 
-  var subTest = "(= (+ (* 7 x) (- 7) ) 63 )"; 
+  var multTest1 = "(= (+ x 2) (/ (- 1) (- 3)))"
+
+  var subTest = "(= y (+ (/ 7 x) (- (/  3 x)) ) )"; 
 
 
   var parsed1 = Parser.StringToTree(test1);

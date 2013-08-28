@@ -274,45 +274,36 @@ _.extend(Oper.prototype, Expression.prototype, {
         });
       },
       simpOp: function(exp, options) {
-        if (!options || options.childIndex == null || !exp.children[options.childIndex]) 
-          throw "Simplify function for mult operator requires options object with a valid childIndex, the index of an operand with immediate sibling proceeding it, to be passed in";
-        var child1 = exp.children[options.childIndex];
-        var child2 = exp.children[options.childIndex + 1];
-        if (child2) {
-          var children = new Array();
-          fillMultArray(children, child1);
-          console.log("child2");
-          console.log(child2);
-          //debugger;
-          fillMultArray(children, child2);
-          var newChild = null;
-          exp.children.splice(options.childIndex, 2);
-          if (children.length > 1) {
-            exp.children.concat(children);
-            console.log("returns from here");
+        var child1 = exp.children[0];
+        var child2 = exp.children[1];
+        var children = new Array();
+        fillMultArray(children, child1);
+        console.log("child2");
+        console.log(child2);
+        fillMultArray(children, child2);
+        var newChild = null;
+        exp.children.splice(0, 2);
+        if (children.length > 1) {
+          exp.children.concat(children);
+          return exp;
+        } else {
+          newChild = children[0];
+          console.log(newChild);
+          exp.children.push(newChild);
+          if (exp.validOpers[exp.val].validate(exp.children)) {
+            newChild.parent = exp;
             return exp;
           } else {
-            newChild = children[0];
-            console.log(newChild);
-            exp.children.push(newChild);
-            if (exp.validOpers[exp.val].validate(exp.children)) {
-              newChild.parent = exp;
-              return exp;
-            } else {
-              var grandParent = exp.parent;
-              if (grandParent) {
-                var parentIndex = grandParent.children.indexOf(exp);
-                grandParent.children[parentIndex] = newChild;
-              }
-              newChild.parent = grandParent;
-              exp.parent = null;
+            var grandParent = exp.parent;
+            if (grandParent) {
+              var parentIndex = grandParent.children.indexOf(exp);
+              grandParent.children[parentIndex] = newChild;
             }
-            return newChild;
+            newChild.parent = grandParent;
+            exp.parent = null;
           }
-
-        } else 
-          throw "no proceeding child";
-
+          return newChild;
+        }
       }
     },
 
@@ -335,6 +326,20 @@ _.extend(Oper.prototype, Expression.prototype, {
 
         var newChild = null;
         var numChild = null;
+
+        if (splitChild1.notNum && splitChild2.notNum && splitChild1.notNum.val === "frac" && splitChild2.notNum.val === "frac") {
+          if (splitChild1.notNum.children[1].equals(splitChild2.notNum.children[1])) {
+            var addChildren = new Array(2);
+            addChildren[0] = new Oper("mult", [new Num(Math.abs(splitChild1.num)), splitChild1.notNum.children[0]]);
+            if (splitChild1.num < 0) addChildren[0] = new Oper("neg", [addChildren[0]]);
+            addChildren[1] = new Oper("mult", [new Num(Math.abs(splitChild2.num)), splitChild2.notNum.children[0]]);
+            if (splitChild2.num < 0) addChildren[1] = new Oper("neg", [addChildren[1]]);
+
+            var fracNumer = new Oper("add", addChildren);
+            newChild = new Oper("frac", [fracNumer, splitChild1.notNum.children[1]]);
+            console.log("enters fraction addition")
+          }
+        }
 
         if (splitChild1.notNum === splitChild2.notNum || (splitChild1.notNum && splitChild1.notNum.equals(splitChild2.notNum))) {
 
@@ -692,10 +697,10 @@ function fillMultArray(children, exp) {
   } else {
     if (children.length > 0) {
       insertIntoMultChildren(numObj, children);
-      insertIntoMultChildren(splitObj.notNum, children);
+      if(splitObj.notNum) insertIntoMultChildren(splitObj.notNum, children);
     } else {
       children.push(numObj);
-      children.push(splitObj.notNum);
+      if (splitObj.notNum) children.push(splitObj.notNum);
     }
 
   }

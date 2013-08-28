@@ -103,7 +103,7 @@ var Transforms = {
     var toDistribute = Mutations.swapInExp(target, muliply);
 
     
-    var simplified = toSimplify.simplify({childIndex: 0});
+    var simplified = toSimplify.simplify();
     var toSimp = simplified.simplify();
     toSimp = toSimp.getTopMostParent(); 
     //console.log(toSimp);
