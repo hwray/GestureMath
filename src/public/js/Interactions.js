@@ -86,36 +86,40 @@ hammertime.on("tap", function(event) {
     if (texMap[selected.id].type == "OPER") {
 
       var node = texMap[selected.id]; 
-      var idArr = node.idArr; 
-      var index = idArr.indexOf(selected.id) * 2;
+      var idArr = node.idArr;
+      var index = idArr.indexOf(selected.id) * 2 - 1 || 0;
+      if (index < 0) index = 0;
+      console.log(index);
 
       var toStore = currentExp.clone(true); 
       history.push(toStore); 
 
       var selection = node;
-      if (node.val === "add" || node.val === "mult") {
+      if ((node.val === "add" || node.val === "mult") && node.children.length > 2) {
         var cloneChildren = new Array(2);
         cloneChildren[0] = node.children[index].clone(false);
         cloneChildren[1] = node.children[index + 1].clone(false);
         selection = new Oper(node.val, cloneChildren);
       }
 
+      var identity = false;
+
       for (var id in Identities) {
         var rewrites = Identities[id].getPossibleRewrites(selection);
         if (rewrites) {
-          console.log("enters");
           if (rewrites.length === 1) {
             selection = Mutations.replaceExp(selection, rewrites[0]);
           }
+          identity = true;
           break;
         }
       }
+      if (!identity) {
+        selection = selection.simplify();
+      }
+
       node.children.splice(index + 1, 1);
-
       selection = Mutations.replaceExp(node.children[index], selection);
-
-      //selection = selection.simplify();
-      
       node = selection.getTopMostParent(); 
 
       render(node); 
