@@ -26,15 +26,11 @@ function render(tree) {
 
   sharedParent = null; 
 
-  if (currentFactor) {
-    currentFactor = null; 
-    // document.getElementById("factorDisplay").innerHTML = ""; 
-    // document.getElementById("factorSlider").innerHTML = ""; 
-    document.getElementById("factors").innerHTML = ""; 
-    $( "#factorSlider" ).slider("destroy"); 
-  }
-
   clearTargets(); 
+
+  if (currentFactor) {
+    clearFactors(); 
+  }
 
   historyCounter++; 
 
