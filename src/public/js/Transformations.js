@@ -26,15 +26,11 @@ function render(tree) {
 
   sharedParent = null; 
 
-  if (currentFactor) {
-    currentFactor = null; 
-    // document.getElementById("factorDisplay").innerHTML = ""; 
-    // document.getElementById("factorSlider").innerHTML = ""; 
-    document.getElementById("factors").innerHTML = ""; 
-    $( "#factorSlider" ).slider("destroy"); 
-  }
-
   clearTargets(); 
+
+  if (currentFactor) {
+    clearFactors(); 
+  }
 
   historyCounter++; 
 
@@ -57,7 +53,11 @@ var Transforms = {
   }, 
 
   subtractOverEquals: function(toSide, term) {
+
     var toSubtract = term.clone(false); 
+
+    // toSide is 63
+    // toSubtract is the neg
     
     var subtract = function(exp) {
       var negChildren = new Array();

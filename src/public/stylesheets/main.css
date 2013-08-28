@@ -21,6 +21,11 @@
   margin: 0px auto;
 }
 
+#dragDiv {
+  position: absolute;
+  color: "#06c4f9";
+}
+
 * {
   background-color: black;
   color: white;

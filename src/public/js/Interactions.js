@@ -1,5 +1,8 @@
 var selections = {}; 
 
+var dragDiv = null; 
+
+
 function findSharedParent(exp1, exp2) {
   var exp1_depth = 0;
   var exp2_depth = 0;
@@ -63,138 +66,156 @@ function colorTreeTex(tree, color) {
 }
 
 
+var eventTargets = [
+  "mathDisplay", 
+  "factors", 
+  "history1", 
+  "history2", 
+  "history3"
+]; 
+
+function getEventTarget(elem) {
+  var target = {
+    elem: null, 
+    texTarget: null
+  }; 
+
+  while (elem) { 
+    if (elem.id &&
+        eventTargets.indexOf(elem.id) != -1) {
+      break; 
+    }
+    if (elem.id &&
+        target.texTarget == null &&
+        texMap[elem.id]) {
+      target.texTarget = elem.id; 
+    }
+    elem = elem.parentNode; 
+  }
+
+  target.elem = elem; 
+
+  return target; 
+}
 
 
-var mathDiv = document.getElementById("mathDisplay"); 
-
-var hammertime = Hammer(mathDiv); 
+var hammertime = Hammer(document.body); 
 
 hammertime.on("tap", function(event) {
 
   if (!event) { event = window.event }
-  var selected = event.toElement || event.target;
-  while (selected && !selected.id) { 
-    selected = selected.parentNode;  
-  }
 
-  while (selected.id && !texMap[selected.id]) { 
-    selected = selected.parentNode; 
-  }
+  var target = event.toElement || event.target;
 
-  if (texMap[selected.id]) {
+  var targetInfo = getEventTarget(target); 
 
-    if (texMap[selected.id].type == "OPER") {
+  target = targetInfo.elem; 
 
-      var node = texMap[selected.id];
-      var index = null;
-      if (node.val === "neg" && node.parent.val === "add" && node.parent.children.indexOf(node) > 0) {
-        var parent = node.parent;
-        index = parent.children.indexOf(node) - 1;
-        node = parent;
-      } else {
-        var idArr = node.idArr;
-        var index = idArr.indexOf(selected.id) * 2 - 1 || 0;
-      }
-      if (index < 0) index = 0;
 
-      var toStore = currentExp.clone(true); 
-      history.push(toStore); 
+  var texTarget = targetInfo.texTarget;  
 
-      var selection = node;
-      if ((node.val === "add" || node.val === "mult") && node.children.length > 2) {
-        var cloneChildren = new Array(2);
-        cloneChildren[0] = node.children[index].clone(false);
-        cloneChildren[1] = node.children[index + 1].clone(false);
-        selection = new Oper(node.val, cloneChildren);
-      }
-
-      var identity = false;
-
-      for (var id in Identities) {
-        var rewrites = Identities[id].getPossibleRewrites(selection);
-        if (rewrites) {
-          if (rewrites.length === 1) {
-            selection = Mutations.replaceExp(selection, rewrites[0]);
+  if (target &&
+      target.id) {
+    if (target.id == "mathDisplay") {
+      if (texTarget &&
+          texMap[texTarget]) {
+        var node = texMap[texTarget]; 
+        if (node.type == "OPER") {
+          var index = null;
+          if (node.val === "neg" && node.parent.val === "add" && node.parent.children.indexOf(node) > 0) {
+            var parent = node.parent;
+            index = parent.children.indexOf(node) - 1;
+            node = parent;
+          } else if (node.idArr) {
+            var idArr = node.idArr; 
+            var index = idArr.indexOf(texTarget) || 0;
           }
-          identity = true;
-          break;
+
+          if (index < 0) index = 0;
+            
+          if (node.children[index])
+            tapEvalOp(node, index); 
+        } else {
+          tapMakeSelection(node); 
         }
+      } else {
+        clearSelections(); 
       }
-      if (!identity) {
-        selection = selection.simplify();
+    } else if (target.id == "factors") {
+      clearSelections(); 
+    } else if (target.id == "history1") {
+      restoreHistory(1); 
+    } else if (target.id == "history2") {
+      restoreHistory(2); 
+    } else if (target.id == "history3") {
+      restoreHistory(3); 
+    }
+  } else {
+    clearSelections(); 
+  }
+}); 
+
+
+
+hammertime.on("dragstart", function(event) {
+  event.gesture.preventDefault(); 
+
+  if (sharedParent || 
+      currentFactor) {
+    var target = event.toElement || event.target;
+
+    var targetInfo = getEventTarget(target); 
+
+    target = targetInfo.elem; 
+
+    var texTarget = targetInfo.texTarget; 
+
+    if (target &&
+        target.id) {
+      if (target.id == "mathDisplay") {
+        dragStart(sharedParent); 
+      } else if (target.id == "factors") {
+        dragStart(currentFactor); 
       }
-
-      node.children.splice(index + 1, 1);
-      selection = Mutations.replaceExp(node.children[index], selection);
-      node = selection.getTopMostParent();
-      Mutations.flattenTree(node);
-
-      render(node); 
-
-      return; 
-    }
-
-    if (sharedParent == null) {
-      sharedParent = texMap[selected.id]; 
-    } else {
-      sharedParent = findSharedParent(sharedParent, texMap[selected.id]); 
-    }
-
-    // Pow selection
-    if (sharedParent.parent &&
-        sharedParent.parent.val == "pow") {
-      sharedParent = sharedParent.parent; 
-    }
-
-    // Neg selection
-    if (sharedParent.parent &&
-        sharedParent.parent.val == "neg") {
-      sharedParent = sharedParent.parent; 
-    }
-
-    colorTreeTex(sharedParent, "#06c4f9"); 
-    clearTargets(); 
-    for (var func in testTransforms) {
-      testTransforms[func](sharedParent); 
     }
   }
 }); 
 
 
-var dragDiv = null; 
-
-hammertime.on("dragstart", function(event) {
-
-  event.gesture.preventDefault(); 
-
-  colorTreeTex(sharedParent, "black"); 
+function dragStart(exp) {
+  colorTreeTex(exp, "black"); 
 
   dragDiv = document.createElement("div");
   dragDiv.id = "dragDiv"; 
-  dragDiv.innerHTML = Parser.TreeToTex(sharedParent.clone(false)).texString;  
-  dragDiv.style.position = "absolute"; 
+  dragDiv.innerHTML = Parser.TreeToTex(exp.clone(false)).texString;  
   dragDiv.style.top = event.gesture.center.pageY - (dragDiv.offsetHeight / 2); 
   dragDiv.style.left = event.gesture.center.pageX - (dragDiv.offsetWidth / 2); 
-  dragDiv.style.color = "red"; 
+
+  dragDiv.style.color = "#06c4f9";
 
   var body = document.getElementsByTagName("body")[0]; 
   body.appendChild(dragDiv); 
 
   MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-}); 
+}
 
 
 hammertime.on("drag", function(event) {
-  dragDiv.style.top = event.gesture.center.pageY - (dragDiv.offsetHeight / 2);  
-  dragDiv.style.left = event.gesture.center.pageX - (dragDiv.offsetWidth / 2); 
+  if (dragDiv) {
+    dragDiv.style.top = event.gesture.center.pageY - (dragDiv.offsetHeight / 2);  
+    dragDiv.style.left = event.gesture.center.pageX - (dragDiv.offsetWidth / 2); 
+  }
 }); 
 
 
 hammertime.on("dragend", function(event) {
-  dragDiv.parentNode.removeChild(dragDiv); 
+  if (dragDiv) {
+    dragDiv.parentNode.removeChild(dragDiv); 
+    dragDiv = null; 
+  }
   
   if (targets.length == 0) {
-    colorTreeTex(sharedParent, "red"); 
+    colorTreeTex(sharedParent, "#06c4f9"); 
     return; 
   }
 
@@ -235,7 +256,7 @@ hammertime.on("dragend", function(event) {
     var func = targetFuncs[index]; 
     func(event); 
   } else {
-    colorTreeTex(sharedParent, "red"); 
+    colorTreeTex(sharedParent, "#06c4f9"); 
   }
 });
 
@@ -251,64 +272,93 @@ hammertime.on("doubletap", function(event) {
 }); 
 
 
-var clearButton = document.getElementById("clear"); 
-clearButton.onclick = 
-clearButton.ontouch = function(event) {
-  colorTreeTex(sharedParent, "black"); 
-  for (var id in selections) {
-    selections[id].selected = false; 
-  }
-  selections = {}; 
 
+function tapEvalOp(node, index) {
+
+  var toStore = currentExp.clone(true); 
+  history.push(toStore); 
+
+  var selection = node;
+  if ((node.val === "add" || node.val === "mult") && node.children.length > 2) {
+    var cloneChildren = new Array(2);
+    cloneChildren[0] = node.children[index].clone(false);
+    cloneChildren[1] = node.children[index + 1].clone(false);
+    selection = new Oper(node.val, cloneChildren);
+  }
+
+  var identity = false;
+
+  for (var id in Identities) {
+    var rewrites = Identities[id].getPossibleRewrites(selection);
+    if (rewrites) {
+      if (rewrites.length === 1) {
+        selection = Mutations.replaceExp(selection, rewrites[0]);
+      }
+      identity = true;
+      break;
+    }
+  }
+  if (!identity) {
+    selection = selection.simplify();
+  }
+
+  node.children.splice(index + 1, 1);
+  selection = Mutations.replaceExp(node.children[index], selection);
+  node = selection.getTopMostParent(); 
+
+  render(node); 
+}
+
+function tapMakeSelection(node) {
+  if (sharedParent == null) {
+    sharedParent = node;  
+  } else {
+    sharedParent = findSharedParent(sharedParent, node); 
+  }
+
+    // Pow selection
+  if (sharedParent.parent &&
+    sharedParent.parent.val == "pow") {
+    sharedParent = sharedParent.parent; 
+  }
+
+    // Neg selection
+  if (sharedParent.parent &&
+    sharedParent.parent.val == "neg") {
+    sharedParent = sharedParent.parent; 
+  }
+
+  colorTreeTex(sharedParent, "#06c4f9"); 
   clearTargets(); 
-
-  sharedParent = null; 
-}; 
-
-
-
-var historyDiv1 = document.getElementById("history1"); 
-historyDiv1.ontouch = 
-historyDiv1.onclick = function(event) {
-  if (history.length < 1) {
-    clearSelections(); 
-    return; 
+  for (var func in testTransforms) {
+    testTransforms[func](sharedParent); 
   }
-  var toStore = currentExp.clone(false); 
-  history.push(toStore); 
-  var histIndex = Math.max(0, history.length - 4); 
-  render(history[histIndex]); 
 }
 
-var historyDiv2 = document.getElementById("history2"); 
-historyDiv2.ontouch = 
-historyDiv2.onclick = function(event) {
-  if (history.length < 2) {
-    clearSelections(); 
-    return; 
-  }
-  var toStore = currentExp.clone(false); 
-  history.push(toStore); 
-  var histIndex = Math.max(0, history.length - 3); 
-  render(history[histIndex]); 
-}
 
-var historyDiv3 = document.getElementById("history3"); 
-historyDiv3.ontouch = 
-historyDiv3.onclick = function(event) {
-  if (history.length < 3) {
+function restoreHistory(index) {
+  if (history.length < index) {
     clearSelections(); 
     return; 
   }
   var toStore = currentExp.clone(false); 
   history.push(toStore); 
-  var histIndex = Math.max(0, history.length - 2); 
+  var histIndex = Math.max(0, history.length - (5 - index)); 
   render(history[histIndex]); 
 }
 
 
 function clearSelections() {
   clearTargets(); 
-  colorTreeTex(sharedParent, "black"); 
+  if (currentFactor) {
+    clearFactors(); 
+  }
+  colorTreeTex(sharedParent, "white"); 
   sharedParent = null; 
+}
+
+function clearFactors() {
+  currentFactor = null; 
+  document.getElementById("factors").innerHTML = ""; 
+  $( "#factorSlider" ).slider("destroy"); 
 }
