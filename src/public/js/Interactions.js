@@ -151,6 +151,7 @@ hammertime.on("tap", function(event) {
 
 
 hammertime.on("dragstart", function(event) {
+/*
 //=======
       if (!identity) {
         selection = selection.simplify();
@@ -160,23 +161,27 @@ hammertime.on("dragstart", function(event) {
       selection = Mutations.replaceExp(node.children[index], selection);
       node = selection.getTopMostParent(); 
 //>>>>>>> f15ffdd500ddc0591263add5886b60c9a152e650
+*/
 
   event.gesture.preventDefault(); 
 
-  var target = event.toElement || event.target;
+  if (sharedParent || 
+      currentFactor) {
+    var target = event.toElement || event.target;
 
-  var targetInfo = getEventTarget(target); 
+    var targetInfo = getEventTarget(target); 
 
-  target = targetInfo.elem; 
+    target = targetInfo.elem; 
 
-  var texTarget = targetInfo.texTarget; 
+    var texTarget = targetInfo.texTarget; 
 
-  if (target &&
-      target.id) {
-    if (target.id == "mathDisplay") {
-      dragStart(sharedParent); 
-    } else if (target.id == "factors") {
-      dragStart(currentFactor); 
+    if (target &&
+        target.id) {
+      if (target.id == "mathDisplay") {
+        dragStart(sharedParent); 
+      } else if (target.id == "factors") {
+        dragStart(currentFactor); 
+      }
     }
   }
 }); 
@@ -209,8 +214,10 @@ hammertime.on("drag", function(event) {
 
 
 hammertime.on("dragend", function(event) {
-  dragDiv.parentNode.removeChild(dragDiv); 
-  dragDiv = null; 
+  if (dragDiv) {
+    dragDiv.parentNode.removeChild(dragDiv); 
+    dragDiv = null; 
+  }
   
   if (targets.length == 0) {
     colorTreeTex(sharedParent, "#06c4f9"); 
