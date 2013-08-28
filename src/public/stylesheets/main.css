@@ -1,6 +1,6 @@
 .target {
   position: absolute;
-  background-color: red;
+  background-color: #06c4f9;
   width: 10px;
   height: 10px;
   z-index: 10;
@@ -9,7 +9,6 @@
 #container {
   position: relative; 
   top: 10%; 
-  color: black;
 }
 
 #factors {
@@ -22,20 +21,7 @@
   margin: 0px auto;
 }
 
-/*
 * {
   background-color: black;
-}
-
-#history1 {
   color: white;
 }
-
-#history2 {
-  color: white;
-}
-
-#history3 {
-  color: white;
-}
-*/
