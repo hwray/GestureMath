@@ -111,7 +111,7 @@ hammertime.on("tap", function(event) {
 
   target = targetInfo.elem; 
 
-  var texTarget = targetInfo.texTarget; 
+  var texTarget = targetInfo.texTarget;  
 
   if (target &&
       target.id) {

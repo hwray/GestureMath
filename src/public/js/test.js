@@ -43,6 +43,8 @@ $(document).ready(function(event) {
 
   var eval2 = "(= y (+ 3 4 2) )"; 
 
+  var subTest = "(= (+ (* 7 x) (- 7) ) 63 )"; 
+
 
   var parsed1 = Parser.StringToTree(test1);
   var parsed2 = Parser.StringToTree(test2);
@@ -54,7 +56,7 @@ $(document).ready(function(event) {
   var mathDiv = document.getElementById("mathDisplay"); 
 
 
-  currentExp = Parser.StringToTree(addTest2);
+  currentExp = Parser.StringToTree(subTest);
 
   var texObj = Parser.TreeToTex(currentExp, true);
 

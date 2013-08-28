@@ -53,7 +53,11 @@ var Transforms = {
   }, 
 
   subtractOverEquals: function(toSide, term) {
+
     var toSubtract = term.clone(false); 
+
+    // toSide is 63
+    // toSubtract is the neg
     
     var subtract = function(exp) {
       var negChildren = new Array();
@@ -70,8 +74,11 @@ var Transforms = {
     toSimplify.children.splice(0 + 1, 1);
     simplified = Mutations.replaceExp(toSimplify.children[0], simplified);
 
-    simplified = simplified.getTopMostParent(); 
-    render(simplified);
+    console.log("CHECKPOINT"); 
+    console.log(simplified); 
+
+    // simplified = simplified.getTopMostParent(); 
+    //render(simplified);
   }, 
 
   divideOverEquals: function(numer, denom) {
