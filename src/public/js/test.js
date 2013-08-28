@@ -47,7 +47,7 @@ $(document).ready(function(event) {
 
   var subTest = "(= y (+ (/ 7 x) (- (/  3 x)) ) )"; 
 
-  var goal = "(= (+ x (- (* 3 (+ (* 2 x) 3)))) (+ 8 (* (- 5) x)))";
+  var goal = "(= (+ (* 2 (+ x 5)) (- 7)) (* 3 (+ x (- 2))) )";
 
 
   var parsed1 = Parser.StringToTree(test1);
