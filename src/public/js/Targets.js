@@ -88,3 +88,9 @@ function drawSubtractTarget(tree) {
   var top = container.offsetTop + (container.offsetHeight / 2); 
   return drawTarget(top, left); 
 }
+
+function drawCommuteTarget(tree) {
+  var left = getX(tree, "center"); 
+  var top = document.getElementById("mathDisplay").offsetTop; 
+  return drawTarget(top, left); 
+}

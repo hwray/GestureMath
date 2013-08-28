@@ -61,9 +61,7 @@ $(document).ready(function(event) {
 
 
   //currentExp = Parser.StringToTree(goal);
-  currentExp = Parser.StringToTree(goal);
-
-
+  currentExp = Parser.StringToTree(addTest2);
 
   var texObj = Parser.TreeToTex(currentExp, true);
 
