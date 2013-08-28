@@ -38,6 +38,7 @@ $(document).ready(function(event) {
   var test8 = "(= y (+ (log 10 x) (log 10 y) (log 10 z)))";
 
   var evalTest = "(= y (* (* 2 (pow x 2)) (* 5 (pow x 4))))";
+  var addTest = "(= y (+ (* 4 x) 3 5 x ))";
 
   var eval2 = "(= y (+ 3 4 2) )"; 
 
@@ -51,7 +52,8 @@ $(document).ready(function(event) {
 
   var mathDiv = document.getElementById("mathDisplay"); 
 
-  currentExp = Parser.StringToTree(factor);
+
+  currentExp = Parser.StringToTree(addTest);
 
   var texObj = Parser.TreeToTex(currentExp, true);
 
