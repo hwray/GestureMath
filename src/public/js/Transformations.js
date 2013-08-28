@@ -48,16 +48,19 @@ function render(tree) {
 }
 
 var Transforms = {
-  commute: function() {
+  commute: function(oper, index, toIndex) {
+    var node = oper.children[index]; 
 
+    oper.children.splice(index, 1); 
+    oper.children.splice(toIndex, 0, node); 
+
+    oper = oper.getTopMostParent(); 
+    render(oper); 
   }, 
 
   subtractOverEquals: function(toSide, term) {
 
     var toSubtract = term.clone(false); 
-
-    // toSide is 63
-    // toSubtract is the neg
     
     var subtract = function(exp) {
       var negChildren = new Array();
@@ -241,7 +244,33 @@ var testTransforms = {
   // Functions? 
 
   canCommute: function(shared) {
+    if (shared.parent &&
+        shared.parent.val == "add") {
 
+      var oper = shared.parent; 
+      var children = oper.children; 
+      var index = children.indexOf(shared);
+
+      for (var i = 0; i < children.length; i++) {
+        if (i == index) 
+          continue; 
+      
+        var toIndex = i; 
+
+        var transform = (function(toIndex) { 
+          return function(event) {
+            var toStore = currentExp.clone(false); 
+            history.push(toStore); 
+            Transforms.commute(oper, index, toIndex); 
+          }
+        })(toIndex);
+
+        targetFuncs.push(transform); 
+
+        var comTarget = drawCommuteTarget(children[i]); 
+        comTarget.addEventListener("click", transform); 
+      }
+    }
   }, 
 
   canSubtractOverEquals: function(shared) {
