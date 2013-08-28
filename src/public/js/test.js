@@ -50,7 +50,7 @@ $(document).ready(function(event) {
   var parsed2 = Parser.StringToTree(test2);
   var parsed3 = Parser.StringToTree(test3);
 
-  var test1Parsed = Parser.StringToTree(test7);
+  var test1Parsed = Parser.StringToTree(subTest);
 
 
   var mathDiv = document.getElementById("mathDisplay"); 
