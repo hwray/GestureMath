@@ -130,10 +130,8 @@ hammertime.on("tap", function(event) {
             var idArr = node.idArr; 
             var index = idArr.indexOf(texTarget) || 0;
           }
-
           if (index < 0) index = 0;
-            
-          if (node.children[index])
+          if (index >= 0 && node.children[index])
             tapEvalOp(node, index); 
         } else {
           tapMakeSelection(node); 

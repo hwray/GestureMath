@@ -284,8 +284,6 @@ _.extend(Oper.prototype, Expression.prototype, {
         exp.children.splice(0, 2);
         if (children.length > 1) {
           exp.children = children;
-          console.log("returned Exp")
-          console.log(exp)
           return exp;
         } else {
           newChild = children[0];

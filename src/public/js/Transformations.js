@@ -119,7 +119,7 @@ var Transforms = {
     //one thing is to edit the select appropriately 
     for (var i = 0; i < target.children.length; i++) {
       var mult = new Oper("mult", [select.clone(), target.children[i].clone()]); 
-      mult = mult.simplify();
+      //mult = mult.simplify();
       mult.parent = target; 
       target.children[i] = mult;
     }
