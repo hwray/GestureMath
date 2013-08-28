@@ -118,16 +118,18 @@ hammertime.on("tap", function(event) {
     if (target.id == "mathDisplay") {
       if (texTarget &&
           texMap[texTarget]) {
-        var targetNode = texMap[texTarget]; 
-        if (targetNode.type == "OPER") {
-          if (targetNode.idArr) {
-            var idArr = targetNode.idArr; 
-            var index = idArr.indexOf(texTarget) * 2;
-            if (targetNode.children[index])
-              tapEvalOp(targetNode, index); 
+        var node = texMap[texTarget]; 
+        if (node.type == "OPER") {
+          if (node.idArr) {
+            var idArr = node.idArr; 
+            var index = idArr.indexOf(texTarget) || 0;
+            if (index < 0) index = 0;
+            console.log(index);
+            if (node.children[index])
+              tapEvalOp(node, index); 
           }
         } else {
-          tapMakeSelection(targetNode); 
+          tapMakeSelection(node); 
         }
       } else {
         clearSelections(); 
@@ -149,6 +151,15 @@ hammertime.on("tap", function(event) {
 
 
 hammertime.on("dragstart", function(event) {
+//=======
+      if (!identity) {
+        selection = selection.simplify();
+      }
+
+      node.children.splice(index + 1, 1);
+      selection = Mutations.replaceExp(node.children[index], selection);
+      node = selection.getTopMostParent(); 
+//>>>>>>> f15ffdd500ddc0591263add5886b60c9a152e650
 
   event.gesture.preventDefault(); 
 
@@ -260,18 +271,20 @@ hammertime.on("doubletap", function(event) {
 
 
 
-function tapEvalOp(oper, index) {
+function tapEvalOp(node, index) {
 
   var toStore = currentExp.clone(true); 
   history.push(toStore); 
 
-  var selection = oper;
-  if (oper.val === "add" || oper.val === "mult") {
+  var selection = node;
+  if ((node.val === "add" || node.val === "mult") && node.children.length > 2) {
     var cloneChildren = new Array(2);
-    cloneChildren[0] = oper.children[index].clone(false);
-    cloneChildren[1] = oper.children[index + 1].clone(false);
-    selection = new Oper(oper.val, cloneChildren);
+    cloneChildren[0] = node.children[index].clone(false);
+    cloneChildren[1] = node.children[index + 1].clone(false);
+    selection = new Oper(node.val, cloneChildren);
   }
+
+  var identity = false;
 
   for (var id in Identities) {
     var rewrites = Identities[id].getPossibleRewrites(selection);
@@ -279,18 +292,19 @@ function tapEvalOp(oper, index) {
       if (rewrites.length === 1) {
         selection = Mutations.replaceExp(selection, rewrites[0]);
       }
+      identity = true;
       break;
     }
   }
-  oper.children.splice(index + 1, 1);
+  if (!identity) {
+    selection = selection.simplify();
+  }
 
-  selection = Mutations.replaceExp(oper.children[index], selection);
+  node.children.splice(index + 1, 1);
+  selection = Mutations.replaceExp(node.children[index], selection);
+  node = selection.getTopMostParent(); 
 
-  //selection = selection.simplify();
-  
-  oper = selection.getTopMostParent(); 
-
-  render(oper); 
+  render(node); 
 }
 
 function tapMakeSelection(node) {
