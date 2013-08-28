@@ -56,7 +56,7 @@ $(document).ready(function(event) {
   var mathDiv = document.getElementById("mathDisplay"); 
 
 
-  currentExp = Parser.StringToTree(subTest);
+  currentExp = Parser.StringToTree(addTest2);
 
 
   var texObj = Parser.TreeToTex(currentExp, true);

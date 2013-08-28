@@ -122,10 +122,16 @@ hammertime.on("tap", function(event) {
         var node = texMap[texTarget]; 
         if (node.type == "OPER") {
           var index = null;
-          if (node.idArr) {
-            index = node.idArr.indexOf(texTarget); 
+          if (node.val === "neg" && node.parent.val === "add" && node.parent.children.indexOf(node) > 0) {
+            var parent = node.parent;
+            index = parent.children.indexOf(node) - 1;
+            node = parent;
+          } else if (node.idArr) {
+            var idArr = node.idArr; 
+            var index = idArr.indexOf(texTarget) || 0;
           }
-          if (index && node.children[index])
+          if (index < 0) index = 0;
+          if (index >= 0 && node.children[index])
             tapEvalOp(node, index); 
         } else {
           tapMakeSelection(node); 
@@ -270,13 +276,6 @@ function tapEvalOp(node, index) {
   var toStore = currentExp.clone(true); 
   history.push(toStore); 
 
-
-  if (node.val === "neg" && node.parent.val === "add") {
-    index = node.parent.children.indexOf(node) - 1;
-    node = node.parent;
-  }
-
-
   var selection = node;
   if ((node.val === "add" || node.val === "mult") && node.children.length > 2) {
     var cloneChildren = new Array(2);
@@ -284,8 +283,6 @@ function tapEvalOp(node, index) {
     cloneChildren[1] = node.children[index + 1].clone(false);
     selection = new Oper(node.val, cloneChildren);
   }
-
-
 
   var identity = false;
 
