@@ -274,7 +274,6 @@ _.extend(Oper.prototype, Expression.prototype, {
         });
       },
       simpOp: function(exp, options) {
-        console.log("enters");
         var child1 = exp.children[0];
         var child2 = exp.children[1];
         var children = new Array();
@@ -284,10 +283,11 @@ _.extend(Oper.prototype, Expression.prototype, {
         exp.children.splice(0, 2);
         if (children.length > 1) {
           exp.children = children;
+          for (var i = 0; i < children.length; i++)
+            children[i].parent = exp;
           return exp;
         } else {
           newChild = children[0];
-          console.log(newChild);
           exp.children.push(newChild);
           if (exp.validOpers[exp.val].validate(exp.children)) {
             newChild.parent = exp;
@@ -362,7 +362,7 @@ _.extend(Oper.prototype, Expression.prototype, {
           newChild = Mutations.replaceExp(exp.children[0], newChild);
           return newChild;
         } else
-          return null;
+          return exp.clone();
       }
     },
 
