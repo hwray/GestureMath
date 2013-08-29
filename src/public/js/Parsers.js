@@ -259,21 +259,19 @@ Parser = {
           var length = expTree.children.length; 
           var lastTermIndex = null; 
           for (var i = 0; i < length; i++) {
-            if (lastTermIndex &&
-                termOrder.indexOf(expTree.children[i].type) <= lastTermIndex) {
-              var id = computeID(expTree); 
-              texString += "\\cssId{" + id + "}{*}"; 
-              idArr.push(id); 
-            }
-
             if (expTree.children[i].val == "add" || (i > 0 && expTree.children[i].val === "neg")) {
               texString += "(" + printTreeToTex(expTree.children[i]) + ")"; 
             } else {
+              if (lastTermIndex != null &&
+                  termOrder.indexOf(expTree.children[i].type) <= lastTermIndex) {
+                var id = computeID(expTree); 
+                texString += "\\cssId{" + id + "}{*}"; 
+                idArr.push(id); 
+              }
               texString += printTreeToTex(expTree.children[i]); 
             }
 
             lastTermIndex = termOrder.indexOf(expTree.children[i].type); 
-
 /*
             // This should no longer be relevant (flattenTree removes nested mults)
             if (expTree.children[i].type == "NUM" &&
