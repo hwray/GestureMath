@@ -58,11 +58,8 @@ $(document).ready(function(event) {
 
 
 
-<<<<<<< HEAD
   currentExp = Parser.StringToTree(factor);
-=======
-  currentExp = Parser.StringToTree(divTest);
->>>>>>> 3fdcc2c4993b8be0df6d9a63dc68152c6914caaf
+
 
   var mathDiv = document.getElementById("mathDisplay"); 
 
