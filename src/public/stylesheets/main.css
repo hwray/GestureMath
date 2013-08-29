@@ -1,15 +1,14 @@
 .target {
   position: absolute;
-  background-color: #06c4f9;
-  width: 10px;
-  height: 10px;
+  left-margin: -50px;
+  top-margin: -50px;
   z-index: 10;
 }
 
 #container {
   position: relative; 
   top: 20%; 
-  font-size: 150%;
+  font-size: 130%;
 }
 
 #factors {

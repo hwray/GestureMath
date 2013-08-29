@@ -262,13 +262,6 @@ var testTransforms = {
           return function(event) {
             var toStore = currentExp.clone(false); 
             history.push(toStore); 
-
-            var feedbackDiv = document.getElementById("feedback"); 
-            feedbackDiv.innerHTML = "Commuted!" 
-            window.setTimeout(function() {
-              feedbackDiv.innerHTML = ""; 
-            }, 3000);
-
             Transforms.commute(oper, index, toIndex); 
           }; 
         })(toIndex);
