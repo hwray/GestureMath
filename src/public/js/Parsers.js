@@ -230,12 +230,20 @@ Parser = {
           var idArr = new Array(); 
           var length = expTree.children.length; 
           for (var i = 0; i < length; i++) {
-            texString += printTreeToTex(expTree.children[i]); 
-            if (i < length - 1 && 
-                expTree.children[i + 1].val != "neg") {
-              var id = computeID(expTree); 
-              idArr.push(id); 
-              texString += "\\cssId{" + id + "}{+}"; 
+            if (i > 0) {
+              if (expTree.children[i].val == "neg") {
+                var id = computeID(expTree.children[i]); 
+                idArr.push(id); 
+                texString += "\\cssId{" + id + "}{-}"; 
+                texString += printTreeToTex(expTree.children[i].children[0]); 
+              } else {
+                var id = computeID(expTree); 
+                idArr.push(id); 
+                texString += "\\cssId{" + id + "}{+}"; 
+                texString += printTreeToTex(expTree.children[i]);
+              }
+            } else {
+              texString += printTreeToTex(expTree.children[i]);
             }
           }
           expTree.idArr = idArr;  
