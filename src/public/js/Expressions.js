@@ -738,7 +738,6 @@ function insertIntoMultChildren(exp, multChildren) {
       currChild.val === "neg" ? product *= (-1 * currChild.children[0].val) : product *= currChild.val;
       exp.val === "neg" ? product *= (-1 * exp.children[0].val) : product *= exp.val;
       var numChild = new Num(Math.abs(product));
-      console.log(numChild)
       product < 0 ? multChildren[i] = new Oper("neg", [numChild]) : multChildren[i] = numChild;
       matchFound = true;
       break;

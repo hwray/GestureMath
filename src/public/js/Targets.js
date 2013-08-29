@@ -59,6 +59,8 @@ function getX(tree, pos) {
   } else {
     var selection = document.getElementById(tree.id);
 
+    console.log(tree); 
+
     if (pos == "center") {
       var offset = cumulativeXOffset(selection); 
       return (offset + offset + selection.offsetWidth) / 2;

@@ -336,6 +336,7 @@ function tapMakeSelection(node) {
 
   colorTreeTex(sharedParent, "#06c4f9"); 
   clearTargets(); 
+
   for (var func in testTransforms) {
     testTransforms[func](sharedParent); 
   }

@@ -59,10 +59,9 @@ var Transforms = {
   }, 
 
   subtractOverEquals: function(toSide, term) {
-
-    var toSubtract = term.clone(false); 
     
     var subtract = function(exp) {
+      var toSubtract = term.clone(false); 
       var negChildren = new Array();
       negChildren.push(toSubtract);
       var neg = new Oper("neg", negChildren); 
