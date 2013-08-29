@@ -70,7 +70,7 @@ var Transforms = {
       return new Oper("add", children); 
     }
 
-    Mutations.swapInExp(toSide, subtract); 
+    var movedTo = Mutations.swapInExp(toSide, subtract); 
     var toSimplify = Mutations.swapInExp(term, subtract);
     
     var simplified = toSimplify.simplify();
@@ -122,7 +122,7 @@ var Transforms = {
     //one thing is to edit the select appropriately 
     for (var i = 0; i < target.children.length; i++) {
       var mult = new Oper("mult", [select.clone(), target.children[i].clone()]); 
-      //mult = mult.simplify();
+      mult = mult.simplify();
       mult.parent = target; 
       target.children[i] = mult;
     }
@@ -146,7 +146,7 @@ var Transforms = {
     parentChildren.splice(parentChildren.indexOf(select), 1); 
 
     select = select.getTopMostParent(); 
-    Mutations.flattenTree(select); 
+    //Mutations.flattenTree(select); 
 
     render(select); 
   }, 
