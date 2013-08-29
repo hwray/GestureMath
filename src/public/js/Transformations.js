@@ -46,9 +46,11 @@ function render(tree) {
 
   MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 
+/*
   window.setTimeout(function() {
     fadeContainers(1); 
   }, 30); 
+*/
 
 }
 
@@ -268,11 +270,11 @@ var testTransforms = {
             var toStore = currentExp.clone(false); 
             history.push(toStore); 
 
-            fadeContainers(0); 
+            //fadeContainers(0); 
 
-            window.setTimeout(function() {
+            //window.setTimeout(function() {
               Transforms.commute(oper, index, toIndex); 
-            }, 300); 
+            //}, 300); 
           }; 
         })(toIndex);
 
@@ -295,11 +297,11 @@ var testTransforms = {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
 
-        fadeContainers(0); 
+        //fadeContainers(0); 
 
-        window.setTimeout(function() {
+        //window.setTimeout(function() {
           Transforms.subtractOverEquals(sibling, shared);   
-        }, 300);      
+        //}, 300);      
       };
       targetFuncs.push(transform); 
 
@@ -319,11 +321,11 @@ var testTransforms = {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
 
-        fadeContainers(0); 
+        //fadeContainers(0); 
 
-        window.setTimeout(function() {
+        //window.setTimeout(function() {
           Transforms.subtractOverEquals(sibling, shared); 
-        }, 300); 
+        //}, 300); 
       };
       targetFuncs.push(transform); 
 
@@ -342,11 +344,11 @@ var testTransforms = {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
 
-        fadeContainers(0); 
+        //fadeContainers(0); 
 
-        window.setTimeout(function() {
+        //window.setTimeout(function() {
           Transforms.divideOverEquals(sibling, shared);  
-        }, 300); 
+        //}, 300); 
       }; 
       targetFuncs.push(transform); 
 
@@ -365,11 +367,11 @@ var testTransforms = {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
 
-        fadeContainers(0); 
+        //fadeContainers(0); 
 
-        window.setTimeout(function() {
+        //window.setTimeout(function() {
           Transforms.divideOverEquals(sibling, shared);
-        }, 300); 
+        //}, 300); 
       }; 
       targetFuncs.push(transform); 
 
@@ -393,11 +395,11 @@ var testTransforms = {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
 
-        fadeContainers(0); 
+        //fadeContainers(0); 
 
-        window.setTimeout(function() {
+        //window.setTimeout(function() {
           Transforms.multiplyOverEquals(shared, sibling);
-        }, 300); 
+        //}, 300); 
       }; 
       targetFuncs.push(transform); 
 
@@ -423,11 +425,11 @@ var testTransforms = {
             var toStore = currentExp.clone(false); 
             history.push(toStore); 
 
-            fadeContainers(0); 
+            //fadeContainers(0); 
 
-            window.setTimeout(function() {
+            //window.setTimeout(function() {
               Transforms.distribute(shared, distributeOver); 
-            }, 300); 
+            //}, 300); 
           }; 
           targetFuncs.push(transform); 
 
@@ -479,11 +481,11 @@ function canFactor(shared) {
       var toStore = currentExp.clone(false); 
       history.push(toStore); 
 
-      fadeContainers(0); 
+      //fadeContainers(0); 
 
-      window.setTimeout(function() {
+      //window.setTimeout(function() {
         Transforms.factorNum(shared, currentFactor); 
-      }, 300); 
+      //}, 300); 
     }; 
     targetFuncs.push(transform); 
 
@@ -503,11 +505,11 @@ function canFactor(shared) {
     var transform = function(event) {
       var toStore = currentExp.clone(false); 
       history.push(toStore); 
-      fadeContainers(0); 
+      //fadeContainers(0); 
 
-      window.setTimeout(function() {
+      //window.setTimeout(function() {
         Transforms.factorPoly(shared, currentFactor);
-      }, 300);  
+      //}, 300);  
     }; 
     targetFuncs.push(transform); 
 
