@@ -187,6 +187,12 @@ Parser = {
 // isLeaf method? 
   TreeToTex: function(expTree) {
 
+    var termOrder = [
+      "NUM", 
+      "CONST", 
+      "VAR", 
+      "FUNC"
+    ]; 
 
     function computeID(exp) {
       var count = 1; 
@@ -230,12 +236,20 @@ Parser = {
           var idArr = new Array(); 
           var length = expTree.children.length; 
           for (var i = 0; i < length; i++) {
-            texString += printTreeToTex(expTree.children[i]); 
-            if (i < length - 1 && 
-                expTree.children[i + 1].val != "neg") {
-              var id = computeID(expTree); 
-              idArr.push(id); 
-              texString += "\\cssId{" + id + "}{+}"; 
+            if (i > 0) {
+              if (expTree.children[i].val == "neg") {
+                var id = computeID(expTree.children[i]); 
+                idArr.push(id); 
+                texString += "\\cssId{" + id + "}{-}"; 
+                texString += printTreeToTex(expTree.children[i].children[0]); 
+              } else {
+                var id = computeID(expTree); 
+                idArr.push(id); 
+                texString += "\\cssId{" + id + "}{+}"; 
+                texString += printTreeToTex(expTree.children[i]);
+              }
+            } else {
+              texString += printTreeToTex(expTree.children[i]);
             }
           }
           expTree.idArr = idArr;  
@@ -243,31 +257,20 @@ Parser = {
         } else if (expTree.val == "mult") {
           var idArr = new Array(); 
           var length = expTree.children.length; 
+          var lastTermIndex = null; 
           for (var i = 0; i < length; i++) {
             if (expTree.children[i].val == "add" || (i > 0 && expTree.children[i].val === "neg")) {
               texString += "(" + printTreeToTex(expTree.children[i]) + ")"; 
             } else {
+              if (lastTermIndex != null &&
+                  termOrder.indexOf(expTree.children[i].type) <= lastTermIndex) {
+                var id = computeID(expTree); 
+                texString += "\\cssId{" + id + "}{*}"; 
+                idArr.push(id); 
+              }
               texString += printTreeToTex(expTree.children[i]); 
             }
-            if (expTree.children[i].type == "NUM" &&
-                expTree.children[i + 1] &&
-                expTree.children[i + 1].type == "NUM") {
-              var id = computeID(expTree); 
-              texString += "\\cssId{" + id + "}{*}"; 
-              idArr.push(id); 
-            }
-
-            // THIS IS SUPER JANK
-            // ADDING ONLY FOR DISTRIBUTION TESTING
-            // FIND A BETTER WAY TO DO!!
-            if (expTree.children[i].type == "NUM" &&
-                expTree.children[i + 1] &&
-                expTree.children[i + 1].val == "mult") {
-              var id = computeID(expTree); 
-              texString += "\\cssId{" + id + "}{*}"; 
-              idArr.push(id); 
-            }
-
+            lastTermIndex = termOrder.indexOf(expTree.children[i].type); 
           }
           expTree.idArr = idArr; 
 
