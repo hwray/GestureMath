@@ -266,6 +266,7 @@ hammertime.on("doubletap", function(event) {
   clearTargets(); 
   if (sharedParent.val === "frac") {
     history.push(sharedParent.getTopMostParent().clone(true));
+    console.log("finds Fraction")
     sharedParent = sharedParent.simplify();
     var node = sharedParent.getTopMostParent();
     render(node);

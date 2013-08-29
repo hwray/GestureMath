@@ -51,6 +51,7 @@ $(document).ready(function(event) {
 
   var goal = "(= (+ (* 2 (+ x 5)) (- 7)) (* 3 (+ x (- 2))) )";
   var divTest = "(= y (/ c (/ a b)))"
+  var divTest2 = "(= y (/ (* a b) (* b a)))"
 
 
   var test1Parsed = Parser.StringToTree(multTest2);

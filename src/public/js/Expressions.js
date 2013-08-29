@@ -677,7 +677,7 @@ function collapseMultIntoFrac(fracExp, multChildren) {
 
 function fillMultArray(children, exp) {
   var splitObj = splitExp(exp);
-  
+
   var numObj = new Num(Math.abs(splitObj.num));
   if (splitObj.num < 0)
     numObj = new Oper("neg", [numObj]);
@@ -796,18 +796,23 @@ function compChildrenArrays(exp) {
 
   exp.children[0].val === "mult" ? numerArr = exp.children[0].children : numerArr = [exp.children[0]];
   exp.children[1].val === "mult" ? denomArr = exp.children[1].children : denomArr = [exp.children[1]];
-  console.log(numerArr);
   var resultChildren = new Array();
-  for (var i = 0; i < numerArr.length; i ++) {
+  var i = 0;
+  while (i < numerArr.length) {
     var currNumer = numerArr[i];
-    for (var j = 0; j < denomArr.length; j ++) {
+    var j = 0;
+    i++;
+    while (j < denomArr.length) {
       var currDenom = denomArr[j];
+      j++;
       var currFrac = new Oper("frac", [currNumer, currDenom]);
       var simplified = divide(currFrac);
       if (simplified) {
-        numerArr.splice(i, 1);
-        denomArr.splice(j, 1);
+        numerArr.splice(i-1, 1);
+        denomArr.splice(j-1, 1);
         resultChildren.push(simplified);
+        i--;
+        j--;
         break;
       }
     }
