@@ -159,19 +159,105 @@ var addTemplates = {
 }
 
 var multTemplates = {
-  /*
-  pow x * pow x
-  pow x * x
-  x * x
-  frac(a/b) * c
-  frac(a/b) * frac(c/d)
-  negx * x
+  "fracTimesfrac":{
+    template: function() {
+      var children = new Array(2);
+      children[0] = new Oper("frac", [new Meta("a"), new Meta("b")]);
+      children[1] = new Oper("frac", [new Meta("c"), new Meta("d")]);
+      return new Oper("mult", children);
+    },
+    rewrite: function(symbolTable) {
+      var children = new Array(2);
+      children[0] = new Oper("mult", [symbolTable["a"], symbolTable["c"]]);
+      children[1] = new Oper("mult", [symbolTable["b"], symbolTable["d"]]);
+      return new Oper("frac", children);
+    }
+  },
+  "fracTimesVar":{
+    template: function() {
+      var children = new Array(2);
+      children[0] = new Oper("frac", [new Meta("a"), new Meta("b")]);
+      children[1] = new Meta("c");
+      return new Oper("mult", children);
+    },
+    rewrite: function(symbolTable) {
+      var children = new Array(2);
+      children[0] = new Oper("mult", [symbolTable["a"], symbolTable["c"]]);
+      children[1] = symbolTable["b"];
+      return new Oper("frac", children);
+    }
 
-
-  //*/
+  },
+  "powTimesPow":{
+    template: function() {
+      var children = new Array(2);
+      children[0] = new Func("pow", [new Meta("x"), new Meta("a")]);
+      children[1] = new Func("pow", [new Meta("x"), new Meta("b")]);
+      return new Oper("mult", children);
+    },
+    rewrite: function(symbolTable) {
+      var power = numericalAddition(symbolTable["a"], symbolTable["b"]);
+      if (power.val === "neg") {
+        var denom = new Func("pow", [symbolTable["x"], power.children[0]]);
+        return new Oper("frac", [new Num(1), denom]);
+      };
+      if (power.val === 0) return new Num(1);
+      return new Func("pow", [symbolTable["x"], power]);
+    }
+  },
+  "powTimesVar":{
+    template: function() {
+      var children = new Array(2);
+      children[0] = new Func("pow", [new Meta("x"), new Meta("a")]);
+      children[1] = new Meta("x");
+      return new Oper("mult", children);
+    },
+    rewrite: function(symbolTable) {
+      var power = numericalAddition(symbolTable["a"], new Num(1));
+      if (power.val === "neg") {
+        var denom = new Func("pow", [symbolTable["x"], power.children[0]]);
+        return new Oper("frac", [new Num(1), denom]);
+      };
+      if (power.val === 0) return new Num(1);
+      return new Func("pow", [symbolTable["x"], power]);
+    }
+  },
+  "xTimesX":{
+    template: function() { return new Oper("mult", [new Meta("x"), new Meta("x")]);},
+    rewrite: function(symbolTable) { 
+      if (symbolTable["x"] === 1 || symbolTable["x"] === -1) return new Num(1);
+      return new Func("pow", [symbolTable["x"], new Num(2)]);
+    }
+  },
+  "xTimesY":{
+    template: function() { return new Oper("mult", [new Meta("x"), new Meta("y")])},
+    rewrite: function(symbolTable) {
+      if ((symbolTable["x"].isNum() || (symbolTable["x"].val === "neg" &&  symbolTable["x"].children[0].isNum())) 
+      && (symbolTable["y"].isNum() || (symbolTable["y"].val === "neg" &&  symbolTable["y"].children[0].isNum()))) {
+        var product = 1;
+        symbolTable["x"].val === "neg" ? product *= (-1 * symbolTable["x"].children[0].val) : product *= symbolTable["x"].val;
+        symbolTable["y"].val === "neg" ? product *= (-1 * symbolTable["y"].children[0].val) : product *= symbolTable["y"].val;
+        var numChild = new Num(Math.abs(product));
+        if (product < 0)
+          return new Oper("neg", [numChild]);
+        else
+          return numChild;
+      }
+      else return new Oper("mult", [symbolTable["x"], symbolTable["y"]]);
+    }
+  }
 }
 
 var fracTemplate = {
+  "identity": {
+    template: function(){
+      return new Oper("frac", [new Meta("a"), new Meta("a")]);
+    },
+    rewrite: function(symbolTable) {
+      console.log(symbolTable["a"]);
+      return new Num(1);
+    }
+  },
   "fracOverFrac": {
     template: function() {
       var children = new Array(2);
@@ -264,14 +350,6 @@ var fracTemplate = {
       };
       if (power.val === 0) return new Num(1);
       return new Func("pow", [symbolTable["x"], power]);
-    }
-  },
-  "identity": {
-    template: function(){
-      return new Oper("frac", [new Meta("a"), new Meta("a")]);
-    },
-    rewrite: function(symbolTable) {
-      return new Num(1);
     }
   }
 }

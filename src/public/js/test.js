@@ -54,12 +54,15 @@ $(document).ready(function(event) {
   var divTest = "(= y (/ c (/ a b)))"
   var divTest2 = "(= y (/ (* a b) (* b a)))"
 
+  var multTest3 = "(= y (* b (/ 1 b)))";
+  var multTest4 = "(= y (* (- 10) (- (pow x 3)) x))"
 
-  var test1Parsed = Parser.StringToTree(multTest2);
+
+  var test1Parsed = Parser.StringToTree(multTest3);
 
 
 
-  currentExp = Parser.StringToTree(factor);
+  currentExp = Parser.StringToTree(test2);
 
 
   var mathDiv = document.getElementById("mathDisplay"); 
