@@ -280,7 +280,6 @@ _.extend(Oper.prototype, Expression.prototype, {
         fillMultArray(children, child1);
         fillMultArray(children, child2);
         var newChild = null;
-        exp.children.splice(0, 2);
         if (children.length > 1) {
           exp.children = children;
           for (var i = 0; i < children.length; i++)
@@ -288,19 +287,7 @@ _.extend(Oper.prototype, Expression.prototype, {
           return exp;
         } else {
           newChild = children[0];
-          exp.children.push(newChild);
-          if (exp.validOpers[exp.val].validate(exp.children)) {
-            newChild.parent = exp;
-            return exp;
-          } else {
-            var grandParent = exp.parent;
-            if (grandParent) {
-              var parentIndex = grandParent.children.indexOf(exp);
-              grandParent.children[parentIndex] = newChild;
-            }
-            newChild.parent = grandParent;
-            exp.parent = null;
-          }
+          newChild = Mutations.replaceExp(exp, newChild);
           return newChild;
         }
       }
@@ -336,7 +323,6 @@ _.extend(Oper.prototype, Expression.prototype, {
 
             var fracNumer = new Oper("add", addChildren);
             newChild = new Oper("frac", [fracNumer, splitChild1.notNum.children[1]]);
-            console.log("enters fraction addition")
           }
         }
 
@@ -358,8 +344,7 @@ _.extend(Oper.prototype, Expression.prototype, {
         }
 
         if (newChild) {
-          exp.children.shift();
-          newChild = Mutations.replaceExp(exp.children[0], newChild);
+          newChild = Mutations.replaceExp(exp, newChild);
           return newChild;
         } else
           return exp.clone();
@@ -368,55 +353,51 @@ _.extend(Oper.prototype, Expression.prototype, {
 
     "frac": {
       validate: function(children) { return children.length == 2; }, 
-      evalOp: function(accum, val) { 
+      evalOp: function(accum, val) {
         // Eval to decimal? 
         // Simplify numbers? 
         // Cancel vars/constants/numbers? 
       },
       simpOp: function(exp) {
-        //very simple simplify
-        //var numTemp = new Oper("mult", [new Meta("a"), new Meta("b")]);
-        var template = new Oper("frac", [new Meta("a"), new Meta("a")]);
-        console.log(exp);
-        console.log(template);
-        template.symbolTable = {"a":null};
-        if (exp.equals(template, template.symbolTable)) {
-          var grandParent = exp.parent;
-          var expIndex = grandParent.children.indexOf(exp);
-          var newChild = new Num(1);
-          newChild.parent = grandParent;
-          grandParent.children[expIndex] = newChild;
-          return newChild;
-        } 
-        return exp;
+        var splitNumer = splitExp(exp.children[0]);
+        var splitDenom = splitExp(exp.children[1]);
+        var numericNumerator = splitNumer.num;
+        var numericDenominator = splitDenom.num;
+        var symbolicNumerator = splitNumer.notNum;
+        var symbolicDenominator = splitDenom.notNum;
 
-        /*
-        if (exp.children[0].equals(exp.children[1])) {
-          var identity = new Num("1");
-          var parent = exp.parent;
-          identity.parent = parent;
-          var thisIndex = parent.children.indexOf(exp);
-          parent.children[thisIndex] = identity;
-          exp.parent = null;
-          return identity;
+        var simplifiedNumeric = new Oper("frac", [new Num(numericNumerator), new Num(numericDenominator)]);
+        for (var op in fracTemplate) {
+          var symbolTable = {};
+          if (simplifiedNumeric.equals(fracTemplate[op].template(), symbolTable)) {
+            simplifiedNumeric = fracTemplate[op].rewrite(symbolTable);
+            break;
+          } else 
+            symbolTable = {};
         }
-
-        if (exp.children[0].val === "mult" || exp.children[1].val === "mult") {
-          var numerator = exp.children[0];
-          var denominator = exp.children[1];
-          for (var i = 0; i < numerator.children.length; i++) {
-            if (numerator.children[i].equals(denominator)) {
-              numerator.children.splice(i, 1);
-              var grandParent = exp.parent;
-              numerator.parent = grandParent;
-              var expIndex = grandParent.children.indexOf(exp);
-              grandParent.children[expIndex] = numerator;
-
-              return numerator;
+        var simplifiedSymbolic = new Oper("frac", [symbolicNumerator, symbolicDenominator]);
+        //figure out how to do these numbers
+        
+        if(symbolicNumerator && symbolicDenominator) {
+            for (var ops in fracTemplate) {
+              var symTable = {};
+              if (simplifiedSymbolic.equals(fracTemplate[ops].template(), symTable)) {
+                simplifiedSymbolic = fracTemplate[ops].rewrite(symTable);
+                break;
+              } else 
+                symTable = {};
             }
-          }
-        } 
-        //*/
+
+          var mult = new Oper("mult", [simplifiedNumeric, simplifiedSymbolic]);
+          console.log(mult);
+          mult.simplify();
+          mult = Mutations.replaceExp(exp, mult);
+          console.log(mult);
+          
+          return mult;
+        }
+        exp = Mutations.replaceExp(exp, simplifiedNumeric);
+        return exp;
       }
     }, 
 
@@ -634,7 +615,7 @@ function splitExp(exp) {
   } else if (exp.type == "NUM") {
     num *= exp.val;
   } else {
-    notNum = exp;
+    notNum = exp.clone(false);
   }
   var splitObj = {num: num, notNum: notNum};
   return splitObj;

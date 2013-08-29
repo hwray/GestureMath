@@ -74,6 +74,7 @@ var Transforms = {
     var toSimplify = Mutations.swapInExp(term, subtract);
     
     var simplified = toSimplify.simplify();
+    //if (simplified != toSimplify)
     toSimplify.children.splice(1, 1);
     simplified = Mutations.replaceExp(toSimplify.children[0], simplified);
 
@@ -83,8 +84,8 @@ var Transforms = {
   }, 
 
   divideOverEquals: function(numer, denom) {
-    var dividedBy = denom.clone(false);
     var divide = function (exp) {
+      var dividedBy = denom.clone(false);
       var children = new Array(exp, dividedBy);
       return new Oper("frac", children);
     }

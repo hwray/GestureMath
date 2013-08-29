@@ -40,9 +40,10 @@ Mutations = {
       var treeIndex = parent.children.indexOf(tree);
       parent.children[treeIndex] = replacement;
       if (parent.type === "OPER" && !parent.validOpers[parent.val].validate(parent.children)) {
-        this.replaceExp(parent, replacement);
+        replacement = this.replaceExp(parent, replacement);
       }
     }
+    console.log(replacement)
 
     return replacement;
   },
