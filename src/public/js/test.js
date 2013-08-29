@@ -60,8 +60,6 @@ $(document).ready(function(event) {
 
   var test1Parsed = Parser.StringToTree(multTest3);
 
-
-
   currentExp = Parser.StringToTree(test2);
 
 

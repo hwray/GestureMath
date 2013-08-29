@@ -2,6 +2,8 @@ var selections = {};
 
 var dragDiv = null; 
 
+var closestTarget = null; 
+
 
 function findSharedParent(exp1, exp2) {
   var exp1_depth = 0;
@@ -68,7 +70,8 @@ function colorTreeTex(tree, color) {
 
 var eventTargets = [
   "mathDisplay", 
-  "factors", 
+  "factorDisplay", 
+  "factorSlider",
   "history1", 
   "history2", 
   "history3"
@@ -81,15 +84,22 @@ function getEventTarget(elem) {
   }; 
 
   while (elem) { 
+    // Event occured inside one of the known targets
     if (elem.id &&
         eventTargets.indexOf(elem.id) != -1) {
       break; 
     }
+
+    // Capture the closest TeX target that has an ID in the texMap
     if (elem.id &&
         target.texTarget == null &&
         texMap[elem.id]) {
       target.texTarget = elem.id; 
     }
+
+    if (elem.className == "target") 
+      break; 
+    
     elem = elem.parentNode; 
   }
 
@@ -110,7 +120,6 @@ hammertime.on("tap", function(event) {
   var targetInfo = getEventTarget(target); 
 
   target = targetInfo.elem; 
-
 
   var texTarget = targetInfo.texTarget;  
 
@@ -140,7 +149,7 @@ hammertime.on("tap", function(event) {
       } else {
         clearSelections(); 
       }
-    } else if (target.id == "factors") {
+    } else if (target.id == "factorDisplay") {
       clearSelections(); 
     } else if (target.id == "history1") {
       restoreHistory(1); 
@@ -148,6 +157,11 @@ hammertime.on("tap", function(event) {
       restoreHistory(2); 
     } else if (target.id == "history3") {
       restoreHistory(3); 
+    } else if (target.class == "target") {
+      console.log("TARGET TAPPED"); 
+      var func = targetFuncs[target.id]; 
+      closestTarget = null; 
+      func(event);  
     }
   } else {
     clearSelections(); 
@@ -190,7 +204,7 @@ hammertime.on("dragstart", function(event) {
 
       dragStart(sharedParent); 
 
-    } else if (target.id == "factors") {
+    } else if (target.id == "factorDisplay") {
       dragStart(currentFactor); 
     }
   }
@@ -202,6 +216,56 @@ hammertime.on("drag", function(event) {
   if (dragDiv) {
     dragDiv.style.top = event.gesture.center.pageY - (dragDiv.offsetHeight / 2);  
     dragDiv.style.left = event.gesture.center.pageX - (dragDiv.offsetWidth / 2); 
+  }
+
+  if (targets.length > 0) {
+    var container = document.getElementById("container"); 
+
+    var eventX = event.gesture.center.pageX - container.offsetLeft; 
+    var eventY = event.gesture.center.pageY - container.offsetTop; 
+
+    var minDist = null; 
+    var closest = null; 
+
+    for (var i = 0; i < targets.length; i++) {
+
+      var diffX = 0; 
+      var diffY = 0; 
+
+      if (eventX > targets[i].offsetLeft) {
+        diffX = eventX - targets[i].offsetLeft;
+      } else {
+        diffX = targets[i].offsetLeft - eventX;
+      }
+      if (eventY > targets[i].offsetTop) {
+        diffY = eventY - targets[i].offsetTop; 
+      } else {
+        diffY = targets[i].offsetTop - eventY; 
+      }
+
+      var dist = Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2)); 
+      if (minDist == null ||
+          dist < minDist) {
+        minDist = dist; 
+        closest = targets[i]; 
+      }
+    }
+
+    if (minDist > 150) {
+      if (closestTarget) {
+        recolorTarget(closestTarget.id, "#06c4f9"); 
+      } 
+      closestTarget = null; 
+
+    } else if (closest != closestTarget) {
+      if (closestTarget) {
+        recolorTarget(closestTarget.id, "#06c4f9"); 
+      } 
+
+      closestTarget = closest; 
+
+      recolorTarget(closestTarget.id, "red"); 
+    }
   }
 }); 
 
@@ -219,42 +283,11 @@ hammertime.on("dragend", function(event) {
     return; 
   }
 
-  var container = document.getElementById("container"); 
-
-  var eventX = event.gesture.center.pageX - container.offsetLeft; 
-  var eventY = event.gesture.center.pageY - container.offsetTop; 
-
-  var minDist = null; 
-  var closestTarget = null; 
-
-  for (var i = 0; i < targets.length; i++) {
-
-    var diffX = 0; 
-    var diffY = 0; 
-
-    if (eventX > targets[i].offsetLeft) {
-      diffX = eventX - targets[i].offsetLeft;
-    } else {
-      diffX = targets[i].offsetLeft - eventX;
-    }
-    if (eventY > targets[i].offsetTop) {
-      diffY = eventY - targets[i].offsetTop; 
-    } else {
-      diffY = targets[i].offsetTop - eventY; 
-    }
-
-    var dist = Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2)); 
-    if (minDist == null ||
-        dist < minDist) {
-      minDist = dist; 
-      closestTarget = targets[i]; 
-    }
-  }
-
-  if (minDist < 200) {
+  if (closestTarget) {
     var index = targets.indexOf(closestTarget); 
     var func = targetFuncs[index]; 
-    func(event); 
+    closestTarget = null; 
+    func(event);  
   } else {
     colorTreeTex(sharedParent, "#06c4f9"); 
   }
