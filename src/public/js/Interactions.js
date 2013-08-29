@@ -170,38 +170,23 @@ hammertime.on("dragstart", function(event) {
   if (target &&
       target.id) {
     if (target.id == "mathDisplay") {
-      if (sharedParent) {
-        dragStart(sharedParent); 
-      } else {
-        sharedParent = texMap[texTarget]; 
-        if (sharedParent.parent.val == "mult") {
-          sharedParent = sharedParent.parent; 
-        }
-        dragStart(sharedParent); 
+
+      tapMakeSelection(texMap[texTarget]);
+
+      // Default scope for drag-selection is term-level
+      if (sharedParent.parent &&
+          sharedParent.parent.val == "mult") {
+        sharedParent = sharedParent.parent; 
       }
+
+      dragStart(sharedParent); 
+      
     } else if (target.id == "factors") {
       dragStart(currentFactor); 
     }
   }
 }); 
 
-
-function dragStart(exp) {
-  colorTreeTex(exp, "black"); 
-
-  dragDiv = document.createElement("div");
-  dragDiv.id = "dragDiv"; 
-  dragDiv.innerHTML = Parser.TreeToTex(exp.clone(false)).texString;  
-  dragDiv.style.top = event.gesture.center.pageY - (dragDiv.offsetHeight / 2); 
-  dragDiv.style.left = event.gesture.center.pageX - (dragDiv.offsetWidth / 2); 
-
-  dragDiv.style.color = "#06c4f9";
-
-  var body = document.getElementsByTagName("body")[0]; 
-  body.appendChild(dragDiv); 
-
-  MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-}
 
 
 hammertime.on("drag", function(event) {
@@ -315,6 +300,7 @@ function tapEvalOp(node, index) {
   render(node); 
 }
 
+
 function tapMakeSelection(node) {
   if (sharedParent == null) {
     sharedParent = node;  
@@ -340,6 +326,23 @@ function tapMakeSelection(node) {
   for (var func in testTransforms) {
     testTransforms[func](sharedParent); 
   }
+}
+
+function dragStart(exp) {
+  colorTreeTex(exp, "black"); 
+
+  dragDiv = document.createElement("div");
+  dragDiv.id = "dragDiv"; 
+  dragDiv.innerHTML = Parser.TreeToTex(exp.clone(false)).texString;  
+  dragDiv.style.top = event.gesture.center.pageY - (dragDiv.offsetHeight / 2); 
+  dragDiv.style.left = event.gesture.center.pageX - (dragDiv.offsetWidth / 2); 
+
+  dragDiv.style.color = "#06c4f9";
+
+  var body = document.getElementsByTagName("body")[0]; 
+  body.appendChild(dragDiv); 
+
+  MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 }
 
 

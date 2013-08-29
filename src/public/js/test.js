@@ -49,8 +49,6 @@ $(document).ready(function(event) {
 
   var subTest = "(= y (+ (/ 7 x) (- (/  3 x)) ) )"; 
 
-  var goal2 = "(= (+ (* 2 (+ x 5)) (- 7)) (* 3 x )";
-
   var goal = "(= (+ (* 2 (+ x 5)) (- 7)) (* 3 (+ x (- 2))) )";
 
 
@@ -58,7 +56,7 @@ $(document).ready(function(event) {
 
 
 
-  currentExp = Parser.StringToTree(goal2);
+  currentExp = Parser.StringToTree(poly);
 
   var mathDiv = document.getElementById("mathDisplay"); 
 

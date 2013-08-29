@@ -270,19 +270,7 @@ Parser = {
               }
               texString += printTreeToTex(expTree.children[i]); 
             }
-
             lastTermIndex = termOrder.indexOf(expTree.children[i].type); 
-/*
-            // This should no longer be relevant (flattenTree removes nested mults)
-            if (expTree.children[i].type == "NUM" &&
-                expTree.children[i + 1] &&
-                expTree.children[i + 1].val == "mult") {
-              var id = computeID(expTree); 
-              texString += "\\cssId{" + id + "}{*}"; 
-              idArr.push(id); 
-            }
-*/
-
           }
           expTree.idArr = idArr; 
 
