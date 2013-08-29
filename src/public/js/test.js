@@ -29,7 +29,7 @@ $(document).ready(function(event) {
   var distribute = "( = y ( + (- 50) ( * 10 ( + (* 9 (pow x 2) ) (* 7 x) 4))))"; 
   var distribute2 = "( = y  ( * (+ 10 x) ( + (* 9 (pow x 2) ) (* 7 x) 4)))";
   var test1 = "(= (/ (+ 100 (- (* 4 x))) 3) (+ (/ (+ (* 5 x) 6) 4) 6))";
-  var test2 = "(= (+ (/ 6 x) (- (/ 2 (+ x 3)))) (/ (* 3 (+ x 5)) (+ (pow x 2) (* 3 x))))";
+  var test2 = "(= (+ (/ 6 x) (- (/ 2 (+ x 3)))) (/ (* (- 3) (+ x 5)) (- (+ (pow x 2) (* 3 x)))))";
   var test3 = "(= (log 3 4) (/ 2 5))";
   var test4 = "(= (+ (* 2 (tan x)) (- 1)) 0)";
   var test5 = "(= (+ (pow (sec x) 4) (- (* 3 (pow (sec x) 2))) (- 4)) 0)";
@@ -45,18 +45,18 @@ $(document).ready(function(event) {
 
   var multTest1 = "(= (+ x 2) (/ (- 1) (- 3)))"
 
-  var multTest2 = "(= y (* x x))"; 
+  var multTest2 = "(= y (* (pow x 2) x ))"; 
 
   var subTest = "(= y (+ (/ 7 x) (- (/  3 x)) ) )"; 
 
   var goal = "(= (+ (* 2 (+ x 5)) (- 7)) (* 3 (+ x (- 2))) )";
 
 
-  var test1Parsed = Parser.StringToTree(subTest);
+  var test1Parsed = Parser.StringToTree(multTest2);
 
 
 
-  currentExp = Parser.StringToTree(test8);
+  currentExp = Parser.StringToTree(test2);
 
   var mathDiv = document.getElementById("mathDisplay"); 
 

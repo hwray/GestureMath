@@ -366,38 +366,54 @@ _.extend(Oper.prototype, Expression.prototype, {
         var symbolicNumerator = splitNumer.notNum;
         var symbolicDenominator = splitDenom.notNum;
 
-        var simplifiedNumeric = new Oper("frac", [new Num(numericNumerator), new Num(numericDenominator)]);
-        for (var op in fracTemplate) {
-          var symbolTable = {};
-          if (simplifiedNumeric.equals(fracTemplate[op].template(), symbolTable)) {
-            simplifiedNumeric = fracTemplate[op].rewrite(symbolTable);
-            break;
-          } else 
-            symbolTable = {};
-        }
-        var simplifiedSymbolic = new Oper("frac", [symbolicNumerator, symbolicDenominator]);
-        //figure out how to do these numbers
-        
-        if(symbolicNumerator && symbolicDenominator) {
-            for (var ops in fracTemplate) {
-              var symTable = {};
-              if (simplifiedSymbolic.equals(fracTemplate[ops].template(), symTable)) {
-                simplifiedSymbolic = fracTemplate[ops].rewrite(symTable);
-                break;
-              } else 
-                symTable = {};
-            }
+        var simplifiedNumeric = null;
 
-          var mult = new Oper("mult", [simplifiedNumeric, simplifiedSymbolic]);
-          console.log(mult);
-          mult.simplify();
-          mult = Mutations.replaceExp(exp, mult);
-          console.log(mult);
-          
-          return mult;
+        var numerQuotient = numericNumerator/numericDenominator;
+        if (numerQuotient===+numerQuotient && numerQuotient===(numerQuotient|0)) {
+          console.log("numerQuotient");
+          console.log(numerQuotient)
+          simplifiedNumeric = new Num(Math.abs(numerQuotient));
+        }  else {
+          simplifiedNumeric = new Oper("frac", [new Num(Math.abs(numericNumerator)), new Num(Math.abs(numericDenominator))]);
         }
-        exp = Mutations.replaceExp(exp, simplifiedNumeric);
-        return exp;
+
+        if (numerQuotient < 0) {
+          simplifiedNumeric = new Oper("neg", [simplifiedNumeric]);
+        }
+
+        if (!symbolicNumerator && !symbolicDenominator) {
+          exp = Mutations.replaceExp(exp, simplifiedNumeric);
+          return exp;
+        }
+        
+        if (symbolicNumerator && symbolicDenominator) {
+          var simplifiedSymbolic = new Oper("frac", [symbolicNumerator, symbolicDenominator]);
+          if (symbolicNumerator.val === "mult" || symbolicDenominator.val === "mult") {
+            var simplifiedChildren = compChildrenArrays(simplifiedSymbolic);
+            if (simplifiedChildren.length > 1) {
+              console.log("simplifiedChildren");
+              console.log(simplifiedChildren);
+              simplifiedSymbolic = new Oper("mult", simplifiedChildren);
+              //simplifiedSymbolic = simplifiedSymbolic.simplify();
+            } else {
+              simplifiedSymbolic = simplifiedChildren[0];
+            }            
+          } else {
+            var canDivide = divide(simplifiedSymbolic);
+            if (canDivide)
+              simplifiedSymbolic = canDivide;
+          }
+        }
+
+        if (!symbolicNumerator)
+          simplifiedSymbolic = new Oper("frac", [new Num(1), symbolicDenominator]);
+        if (!symbolicDenominator)
+          simplifiedSymbolic = symbolicNumerator;
+
+        var mult = new Oper("mult", [simplifiedNumeric, simplifiedSymbolic]);
+        mult.simplify();
+        mult = Mutations.replaceExp(exp, mult);          
+        return mult;      
       }
     }, 
 
@@ -763,7 +779,50 @@ function insertIntoMultChildren(exp, multChildren) {
     multChildren.push(exp);
 }
 
+function divide(exp) {
+  for (var pattern in fracTemplate) {
+    var symTable = {};
+    if (exp.equals(fracTemplate[pattern].template(), symTable)) {
+      return fracTemplate[pattern].rewrite(symTable);
+    } else 
+      symTable = {};
+  }
+  return null;
+}
 
+//requires a clone
+function compChildrenArrays(exp) {
+
+  var numerArr = null;
+  var denomArr = null;
+
+  exp.children[0].val === "mult" ? numerArr = exp.children[0].children : numerArr = [exp.children[0]];
+  exp.children[1].val === "mult" ? denomArr = exp.children[1].children : denomArr = [exp.children[1]];
+  console.log(numerArr);
+  var resultChildren = new Array();
+  for (var i = 0; i < numerArr.length; i ++) {
+    var currNumer = numerArr[i];
+    for (var j = 0; j < denomArr.length; j ++) {
+      var currDenom = denomArr[j];
+      var currFrac = new Oper("frac", [currNumer, currDenom]);
+      var simplified = divide(currFrac);
+      if (simplified) {
+        numerArr.splice(i, 1);
+        denomArr.splice(j, 1);
+        resultChildren.push(simplified);
+        break;
+      }
+    }
+  }
+
+  for(var n = 0; n < numerArr.length; n ++) 
+    resultChildren.push(numerArr[n]);
+  
+  for(var d = 0; d < denomArr.length; d ++)
+    resultChildren.push(new Oper("frac", [new Num(1), denomArr[d]]));
+
+  return resultChildren;
+}
 
 //})();
 
