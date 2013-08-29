@@ -56,7 +56,7 @@ $(document).ready(function(event) {
 
 
 
-  currentExp = Parser.StringToTree(poly);
+  currentExp = Parser.StringToTree(test8);
 
   var mathDiv = document.getElementById("mathDisplay"); 
 

@@ -171,16 +171,21 @@ hammertime.on("dragstart", function(event) {
       target.id) {
     if (target.id == "mathDisplay") {
 
+      // How to check whether dragging current selection or other?? 
+
       tapMakeSelection(texMap[texTarget]);
 
       // Default scope for drag-selection is term-level
-      if (sharedParent.parent &&
+      /*
+      if (sharedParent && 
+          sharedParent.parent &&
           sharedParent.parent.val == "mult") {
         sharedParent = sharedParent.parent; 
       }
+      */
 
       dragStart(sharedParent); 
-      
+
     } else if (target.id == "factors") {
       dragStart(currentFactor); 
     }
