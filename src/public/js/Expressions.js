@@ -745,7 +745,7 @@ function insertIntoMultChildren(exp, multChildren) {
     if (currChild.val === "pow" && currChild.children[0].equals(exp)) {
       var currChildPow = currChild.children[1];
       var expPow = new Num(1);
-      multChildren[i] = multiplyPow(exp, currChildPow, exp);
+      multChildren[i] = multiplyPow(exp, currChildPow, expPow);
       matchFound = true;
       break;
     }
