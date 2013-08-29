@@ -45,6 +45,11 @@ function render(tree) {
   }
 
   MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+  window.setTimeout(function() {
+    fadeContainers(1); 
+  }, 30); 
+
 }
 
 var Transforms = {
@@ -262,14 +267,19 @@ var testTransforms = {
           return function(event) {
             var toStore = currentExp.clone(false); 
             history.push(toStore); 
-            Transforms.commute(oper, index, toIndex); 
+
+            fadeContainers(0); 
+
+            window.setTimeout(function() {
+              Transforms.commute(oper, index, toIndex); 
+            }, 300); 
           }; 
         })(toIndex);
 
         targetFuncs.push(transform); 
 
         var comTarget = drawCommuteTarget(children[i]); 
-        comTarget.addEventListener("click", transform); 
+        comTarget.addEventListener("touch", transform); 
       }
     }
   }, 
@@ -284,12 +294,17 @@ var testTransforms = {
       var transform = function(event) {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
-        Transforms.subtractOverEquals(sibling, shared);        
+
+        fadeContainers(0); 
+
+        window.setTimeout(function() {
+          Transforms.subtractOverEquals(sibling, shared);   
+        }, 300);      
       };
       targetFuncs.push(transform); 
 
       var subTarget = drawSubtractTarget(sibling); 
-      subTarget.addEventListener("click", transform); 
+      subTarget.addEventListener("touch", transform); 
     }
 
     if (shared.parent &&
@@ -303,12 +318,17 @@ var testTransforms = {
       var transform = function(event) {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
-        Transforms.subtractOverEquals(sibling, shared); 
+
+        fadeContainers(0); 
+
+        window.setTimeout(function() {
+          Transforms.subtractOverEquals(sibling, shared); 
+        }, 300); 
       };
       targetFuncs.push(transform); 
 
       var subTarget = drawSubtractTarget(sibling); 
-      subTarget.addEventListener("click", transform); 
+      subTarget.addEventListener("touch", transform); 
     }
   }, 
 
@@ -321,12 +341,17 @@ var testTransforms = {
       var transform = function(event) {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
-        Transforms.divideOverEquals(sibling, shared);  
+
+        fadeContainers(0); 
+
+        window.setTimeout(function() {
+          Transforms.divideOverEquals(sibling, shared);  
+        }, 300); 
       }; 
       targetFuncs.push(transform); 
 
       var divTarget = drawDivideTarget(sibling);
-      divTarget.addEventListener("click", transform);      
+      divTarget.addEventListener("touch", transform);      
     }
     if (shared.parent &&
         shared.parent.val == "mult" && 
@@ -339,12 +364,17 @@ var testTransforms = {
       var transform = function(event) {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
-        Transforms.divideOverEquals(sibling, shared);
+
+        fadeContainers(0); 
+
+        window.setTimeout(function() {
+          Transforms.divideOverEquals(sibling, shared);
+        }, 300); 
       }; 
       targetFuncs.push(transform); 
 
       var divTarget = drawDivideTarget(sibling);
-      divTarget.addEventListener("click", transform);  
+      divTarget.addEventListener("touch", transform);  
     }
   }, 
 
@@ -362,12 +392,17 @@ var testTransforms = {
       var transform = function(event) {
         var toStore = currentExp.clone(false); 
         history.push(toStore); 
-        Transforms.multiplyOverEquals(shared, sibling);
+
+        fadeContainers(0); 
+
+        window.setTimeout(function() {
+          Transforms.multiplyOverEquals(shared, sibling);
+        }, 300); 
       }; 
       targetFuncs.push(transform); 
 
-      var multTarget = drawDisOrFacTarget(sibling);
-      multTarget.addEventListener("click", transform);
+      var multTarget = drawDistributionTarget(sibling);
+      multTarget.addEventListener("touch", transform);
 
     }
   },
@@ -387,13 +422,18 @@ var testTransforms = {
           var transform = function(event) {
             var toStore = currentExp.clone(false); 
             history.push(toStore); 
-            Transforms.distribute(shared, distributeOver); 
+
+            fadeContainers(0); 
+
+            window.setTimeout(function() {
+              Transforms.distribute(shared, distributeOver); 
+            }, 300); 
           }; 
           targetFuncs.push(transform); 
 
-          var disTarget = drawDisOrFacTarget(distributeOver);
+          var disTarget = drawDistributionTarget(distributeOver);
 
-          disTarget.addEventListener("click", transform); 
+          disTarget.addEventListener("touch", transform); 
         }
       }
     }
@@ -438,12 +478,17 @@ function canFactor(shared) {
     var transform = function(event) {
       var toStore = currentExp.clone(false); 
       history.push(toStore); 
-      Transforms.factorNum(shared, currentFactor); 
+
+      fadeContainers(0); 
+
+      window.setTimeout(function() {
+        Transforms.factorNum(shared, currentFactor); 
+      }, 300); 
     }; 
     targetFuncs.push(transform); 
 
-    var facTarget = drawDisOrFacTarget(shared); 
-    facTarget.addEventListener("click", transform); 
+    var facTarget = drawFactorTarget(shared); 
+    facTarget.addEventListener("touch", transform); 
 
   } else if (shared.val == "add") {
     var terms = shared.children; 
@@ -458,12 +503,16 @@ function canFactor(shared) {
     var transform = function(event) {
       var toStore = currentExp.clone(false); 
       history.push(toStore); 
-      Transforms.factorPoly(shared, currentFactor); 
+      fadeContainers(0); 
+
+      window.setTimeout(function() {
+        Transforms.factorPoly(shared, currentFactor);
+      }, 300);  
     }; 
     targetFuncs.push(transform); 
 
-    var facTarget = drawDisOrFacTarget(shared); 
-    facTarget.addEventListener("click", transform); 
+    var facTarget = drawFactorTarget(shared); 
+    facTarget.addEventListener("touch", transform); 
   }
   // validate children/parents?? 
 }

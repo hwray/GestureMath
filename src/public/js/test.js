@@ -60,7 +60,7 @@ $(document).ready(function(event) {
 
   var test1Parsed = Parser.StringToTree(multTest3);
 
-  currentExp = Parser.StringToTree(test2);
+  currentExp = Parser.StringToTree(goal);
 
 
   var mathDiv = document.getElementById("mathDisplay"); 

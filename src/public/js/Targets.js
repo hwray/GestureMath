@@ -74,42 +74,60 @@ function getX(tree, pos) {
 }
 
 // BREAK THIS UP TO DETERMINE SYMBOL?? 
-function drawDisOrFacTarget(tree) {
+function drawDistributionTarget(tree) {
   var left = getX(tree, "center");
   var top = document.getElementById("mathDisplay").offsetTop;
-  return drawTarget(top, left, "&#8595;", {tx:60, ty:54});
+  var target = drawTarget(top, left, "&#8595;", {tx:60, ty:54});
+  target.value = "Distribute!"; 
+  return target; 
+}
+
+function drawFactorTarget(tree) {
+  var left = getX(tree, "center");
+  var top = document.getElementById("mathDisplay").offsetTop;
+  var target = drawTarget(top, left, "&#8595;", {tx:60, ty:54});
+  target.value = "Factor!"; 
+  return target; 
 }
 
 function drawDivideTarget(tree) {
   var left = getX(tree, "center");
   var container = document.getElementById("mathDisplay");
   var top = container.offsetTop + container.offsetHeight;
-  return drawTarget(top, left, "&#247;", null);
+  var target = drawTarget(top, left, "&#247;", null);
+  target.value = "Divide!"; 
+  return target; 
 }
+
+    // THIS IS X
+    // symbol = "&#215;";
 
 function drawSubtractTarget(tree) {
   var left = getX(tree, "right"); 
   var container = document.getElementById("mathDisplay"); 
   var top = container.offsetTop + (container.offsetHeight / 2); 
 
-  var symbol = null; 
-  if (tree.val == "neg" &&
-      tree.parent.val == "neg") {
-    // THIS ISN'T WORKING RIGHT NOW!! 
-    symbol = "+"; 
+  var target = null; 
+
+  if (sharedParent.val == "neg" &&
+      sharedParent.parent &&
+      sharedParent.parent.val == "neg") {
+    target = drawTarget(top, left, "+", null); 
+    target.value = "Add!"; 
   } else {
-    // THIS IS X
-    // symbol = "&#215;"; 
-    symbol = "&#8722;";
+    target = drawTarget(top, left, "&#8722;"); 
+    target.value = "Subtract!"; 
   }
 
-  return drawTarget(top, left, symbol, null); 
-}
+  return target; 
+} 
 
 function drawCommuteTarget(tree) {
   var left = getX(tree, "center"); 
   var top = document.getElementById("mathDisplay").offsetTop; 
-  return drawTarget(top, left, "&#8596;", {tx:57, ty:50}); 
+  var target = drawTarget(top, left, "&#8596;", {tx:57, ty:50}); 
+  target.value = "Commute!"; 
+  return target; 
 }
 
 
