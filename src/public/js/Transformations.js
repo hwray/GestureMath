@@ -146,7 +146,7 @@ var Transforms = {
     parentChildren.splice(parentChildren.indexOf(select), 1); 
 
     select = select.getTopMostParent(); 
-    //Mutations.flattenTree(select); 
+    Mutations.flattenTree(select); 
 
     render(select); 
   }, 
