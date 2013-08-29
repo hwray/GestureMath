@@ -97,6 +97,7 @@ function getEventTarget(elem) {
       target.texTarget = elem.id; 
     }
 
+    // Event occurred on a tree transform target
     if (elem.className == "target") 
       break; 
     
@@ -185,11 +186,10 @@ hammertime.on("dragstart", function(event) {
       target.id) {
     if (target.id == "mathDisplay") {
 
-      // How to check whether dragging current selection or other?? 
       var noPrevShared = false;
 
       if (!sharedParent) {
-        noPrevShared = false; 
+        noPrevShared = true; 
       } 
 
       tapMakeSelection(texMap[texTarget]);
@@ -200,6 +200,10 @@ hammertime.on("dragstart", function(event) {
             sharedParent.parent.val == "mult") {
           sharedParent = sharedParent.parent; 
         } 
+
+        for (var func in testTransforms) {
+          testTransforms[func](sharedParent); 
+        }
       }
 
       dragStart(sharedParent); 
@@ -257,6 +261,8 @@ hammertime.on("drag", function(event) {
       } 
       closestTarget = null; 
 
+      clearFeedback(); 
+
     } else if (closest != closestTarget) {
       if (closestTarget) {
         recolorTarget(closestTarget.id, "#06c4f9"); 
@@ -265,6 +271,9 @@ hammertime.on("drag", function(event) {
       closestTarget = closest; 
 
       recolorTarget(closestTarget.id, "red"); 
+
+      var feedbackDiv = document.getElementById("feedback"); 
+      feedbackDiv.innerHTML = closestTarget.value; 
     }
   }
 }); 
@@ -287,9 +296,17 @@ hammertime.on("dragend", function(event) {
     var index = targets.indexOf(closestTarget); 
     var func = targetFuncs[index]; 
     closestTarget = null; 
-    func(event);  
+
+    clearFeedback(); 
+
+    fadeContainers(0); 
+
+    window.setTimeout(function() {
+      func(event); 
+    }, 300); 
   } else {
     colorTreeTex(sharedParent, "#06c4f9"); 
+    clearFeedback(); 
   }
 });
 
@@ -349,7 +366,11 @@ function tapEvalOp(node, index) {
   }
   node = selection.getTopMostParent(); 
 
-  render(node); 
+  fadeContainers(0); 
+
+  window.setTimeout(function() {
+    render(node); 
+  }, 300); 
 }
 
 
@@ -423,4 +444,23 @@ function clearFactors() {
   currentFactor = null; 
   document.getElementById("factors").innerHTML = ""; 
   $( "#factorSlider" ).slider("destroy"); 
+}
+
+function clearFeedback() {
+  var feedbackDiv = document.getElementById("feedback"); 
+  feedbackDiv.innerHTML = ""; 
+}
+
+function fadeContainers(opacity) {
+  var container = document.getElementById("container"); 
+  container.style.opacity = opacity; 
+
+  var history1 = document.getElementById("history1"); 
+  history1.style.opacity = opacity; 
+
+  var history2 = document.getElementById("history2"); 
+  history2.style.opacity = opacity; 
+
+  var history3 = document.getElementById("history3"); 
+  history3.style.opacity = opacity; 
 }
