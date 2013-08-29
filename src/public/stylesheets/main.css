@@ -14,7 +14,7 @@
 
 #factors {
   position: relative;
-  top: 100px;
+  top: 200px;
 }
 
 #factorSlider {
@@ -24,10 +24,25 @@
 
 #dragDiv {
   position: absolute;
+  font-size: 150%;
   color: #06c4f9;
 }
 
-* {
+#feedback {
+  font-family: sans-serif;
+  font-size: 150%;
+  position: absolute;
+  bottom: 0;
+  color: #06c4f9;
+}
+
+#feedback .MathJax_Display {
+  font-size: 50%;
+}
+
+
+
+body {
   background-color: black;
   color: white;
 }

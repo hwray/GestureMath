@@ -172,17 +172,21 @@ hammertime.on("dragstart", function(event) {
     if (target.id == "mathDisplay") {
 
       // How to check whether dragging current selection or other?? 
+      var noPrevShared = false;
+
+      if (!sharedParent) {
+        noPrevShared = false; 
+      } 
 
       tapMakeSelection(texMap[texTarget]);
 
-      // Default scope for drag-selection is term-level
-      /*
-      if (sharedParent && 
-          sharedParent.parent &&
-          sharedParent.parent.val == "mult") {
-        sharedParent = sharedParent.parent; 
+      if (noPrevShared) {
+        if (sharedParent && 
+            sharedParent.parent &&
+            sharedParent.parent.val == "mult") {
+          sharedParent = sharedParent.parent; 
+        } 
       }
-      */
 
       dragStart(sharedParent); 
 
@@ -348,7 +352,7 @@ function dragStart(exp) {
 
   dragDiv = document.createElement("div");
   dragDiv.id = "dragDiv"; 
-  dragDiv.innerHTML = Parser.TreeToTex(exp.clone(false)).texString;  
+  dragDiv.innerHTML = Parser.TreeToTex(exp.clone(false)).texString;   
   dragDiv.style.top = event.gesture.center.pageY - (dragDiv.offsetHeight / 2); 
   dragDiv.style.left = event.gesture.center.pageX - (dragDiv.offsetWidth / 2); 
 

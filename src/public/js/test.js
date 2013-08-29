@@ -6,8 +6,9 @@ $(document).ready(function(event) {
     script.src  = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
 
     var config =  'MathJax.Hub.Config({' +
-                  'tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]},' +
-                  '"HTML-CSS": { scale: 300 }' +
+                  'tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}, ' +
+                  '"HTML-CSS": { scale: 300 }, ' +
+                  'showMathMenu: false' +
                   '});' +
                   'MathJax.Hub.Startup.onload();';
 
@@ -58,7 +59,8 @@ $(document).ready(function(event) {
 
 
 
-  currentExp = Parser.StringToTree(divTest);
+  currentExp = Parser.StringToTree(factor);
+
 
   var mathDiv = document.getElementById("mathDisplay"); 
 

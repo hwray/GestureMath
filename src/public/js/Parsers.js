@@ -262,14 +262,18 @@ Parser = {
             if (expTree.children[i].val == "add" || (i > 0 && expTree.children[i].val === "neg")) {
               texString += "(" + printTreeToTex(expTree.children[i]) + ")"; 
             } else {
-
-              // REFINE FOR MULTIPLE VARS
+              
               if (lastTermIndex != null &&
-                  termOrder.indexOf(expTree.children[i].type) <= lastTermIndex) {
+                  termOrder.indexOf(expTree.children[i].type) < lastTermIndex) {
                 var id = computeID(expTree); 
                 texString += "\\cssId{" + id + "}{*}"; 
                 idArr.push(id); 
-              }
+              } else if (lastTermIndex == 0 &&
+                         expTree.children[i].type == "NUM") {
+                var id = computeID(expTree); 
+                texString += "\\cssId{" + id + "}{*}"; 
+                idArr.push(id);  
+              } 
               texString += printTreeToTex(expTree.children[i]); 
             }
             lastTermIndex = termOrder.indexOf(expTree.children[i].type); 
