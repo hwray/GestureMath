@@ -43,8 +43,6 @@ Mutations = {
         replacement = this.replaceExp(parent, replacement);
       }
     }
-    console.log(replacement)
-
     return replacement;
   },
 

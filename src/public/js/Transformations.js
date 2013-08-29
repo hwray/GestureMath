@@ -97,8 +97,9 @@ var Transforms = {
   },
 
   multiplyOverEquals: function(selected, target) {
-    var multBy = selected.clone(false);
+    
     var muliply = function(exp) {
+      var multBy = selected.clone(false);
       var children = new Array(exp, multBy);
       return new Oper("mult", children);
     }

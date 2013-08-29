@@ -50,13 +50,14 @@ $(document).ready(function(event) {
   var subTest = "(= y (+ (/ 7 x) (- (/  3 x)) ) )"; 
 
   var goal = "(= (+ (* 2 (+ x 5)) (- 7)) (* 3 (+ x (- 2))) )";
+  var divTest = "(= y (/ c (/ a b)))"
 
 
   var test1Parsed = Parser.StringToTree(multTest2);
 
 
 
-  currentExp = Parser.StringToTree(test2);
+  currentExp = Parser.StringToTree(divTest);
 
   var mathDiv = document.getElementById("mathDisplay"); 
 

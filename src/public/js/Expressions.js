@@ -677,9 +677,7 @@ function collapseMultIntoFrac(fracExp, multChildren) {
 
 function fillMultArray(children, exp) {
   var splitObj = splitExp(exp);
-  if (splitObj.notNum && splitObj.notNum.val === "mult") {
-    fillMultArray(children, splitObj.notNum);
-  }
+  
   var numObj = new Num(Math.abs(splitObj.num));
   if (splitObj.num < 0)
     numObj = new Oper("neg", [numObj]);

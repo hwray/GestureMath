@@ -264,7 +264,14 @@ hammertime.on("doubletap", function(event) {
   // BUT WE NEED IT FOR NOW
   event.gesture.stopDetect(); 
   clearTargets(); 
-  canFactor(sharedParent); 
+  if (sharedParent.val === "frac") {
+    history.push(sharedParent.getTopMostParent().clone(true));
+    sharedParent = sharedParent.simplify();
+    var node = sharedParent.getTopMostParent();
+    render(node);
+  } else {
+    canFactor(sharedParent); 
+  }
 }); 
 
 
