@@ -159,23 +159,28 @@ hammertime.on("tap", function(event) {
 hammertime.on("dragstart", function(event) {
   event.gesture.preventDefault(); 
 
-  if (sharedParent || 
-      currentFactor) {
-    var target = event.toElement || event.target;
+  var target = event.toElement || event.target;
 
-    var targetInfo = getEventTarget(target); 
+  var targetInfo = getEventTarget(target); 
 
-    target = targetInfo.elem; 
+  target = targetInfo.elem; 
 
-    var texTarget = targetInfo.texTarget; 
+  var texTarget = targetInfo.texTarget; 
 
-    if (target &&
-        target.id) {
-      if (target.id == "mathDisplay") {
+  if (target &&
+      target.id) {
+    if (target.id == "mathDisplay") {
+      if (sharedParent) {
         dragStart(sharedParent); 
-      } else if (target.id == "factors") {
-        dragStart(currentFactor); 
+      } else {
+        sharedParent = texMap[texTarget]; 
+        if (sharedParent.parent.val == "mult") {
+          sharedParent = sharedParent.parent; 
+        }
+        dragStart(sharedParent); 
       }
+    } else if (target.id == "factors") {
+      dragStart(currentFactor); 
     }
   }
 }); 
@@ -214,7 +219,9 @@ hammertime.on("dragend", function(event) {
   }
   
   if (targets.length == 0) {
-    colorTreeTex(sharedParent, "#06c4f9"); 
+    if (sharedParent) {
+      colorTreeTex(sharedParent, "#06c4f9"); 
+    }
     return; 
   }
 

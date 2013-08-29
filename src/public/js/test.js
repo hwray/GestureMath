@@ -21,7 +21,7 @@ $(document).ready(function(event) {
 
 
   var test = "( = y ( / ( exp ( / ( - ( pow ( + x ( - \\mu ) ) 2 ) ) ( * 2 ( pow \\sigma 2 ) ) ) ) ( * \\sigma ( pow ( * 2 \\pi ) ( / 1 2 ) ) ) ) )"; 
-  var poly = "( = y ( + (* 40 (pow x 2) ) ( - (* 12 (pow x 3) ) ) 20 ) )"; 
+  var poly = "( = y ( + (* 40 (pow x 2) x) ( - (* 12 (pow x 3) 12) ) 20 ) )"; 
 
   var factor = "( = y ( + (* 40 (pow x 2) (pow y 3) (pow n 6)) ( - (* 12 (pow x 3) (pow y 2) (pow n 5)) ) (* 20 x (pow y 2) (pow n 5)) ) )"; 
   var falseFactor = "( = y ( + (* 40 (pow x 2) (pow y 3)) ( - (* 12 (pow y 2) (pow n 5)) ) (* 20 x (pow n 5)) ) )"; 
@@ -50,18 +50,13 @@ $(document).ready(function(event) {
   var goal = "(= (+ (* 2 (+ x 5)) (- 7)) (* 3 (+ x (- 2))) )";
 
 
-  var parsed1 = Parser.StringToTree(test1);
-  var parsed2 = Parser.StringToTree(test2);
-  var parsed3 = Parser.StringToTree(test3);
-
   var test1Parsed = Parser.StringToTree(subTest);
+
 
 
   var mathDiv = document.getElementById("mathDisplay"); 
 
-
-  //currentExp = Parser.StringToTree(goal);
-  currentExp = Parser.StringToTree(addTest2);
+  currentExp = Parser.StringToTree(eval2);
 
   var texObj = Parser.TreeToTex(currentExp, true);
 
