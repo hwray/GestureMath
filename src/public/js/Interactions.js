@@ -298,8 +298,10 @@ function tapEvalOp(node, index) {
     selection = selection.simplify();
   }
 
-  node.children.splice(index + 1, 1);
-  selection = Mutations.replaceExp(node.children[index], selection);
+  if (selection !== node) {
+    node.children.splice(index + 1, 1);
+    selection = Mutations.replaceExp(node.children[index], selection);
+  }
   node = selection.getTopMostParent(); 
 
   render(node); 
