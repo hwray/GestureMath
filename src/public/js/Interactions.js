@@ -366,11 +366,11 @@ function tapEvalOp(node, index) {
   }
   node = selection.getTopMostParent(); 
 
-  fadeContainers(0); 
+  // fadeContainers(0); 
 
-  window.setTimeout(function() {
+  // window.setTimeout(function() {
     render(node); 
-  }, 300); 
+  // }, 300); 
 }
 
 
