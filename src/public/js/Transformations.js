@@ -103,11 +103,14 @@ var Transforms = {
       var children = new Array(exp, multBy);
       return new Oper("mult", children);
     }
+    console.log(selected);
+    console.log(target);
     var toSimplify = Mutations.swapInExp(selected.parent, muliply);
     var toDistribute = Mutations.swapInExp(target, muliply);
 
     
     var simplified = toSimplify.simplify();
+    Mutations.flattenTree(toSimplify);
     var toSimp = simplified.simplify();
     toSimp = toSimp.getTopMostParent(); 
     //console.log(toSimp);
@@ -123,9 +126,9 @@ var Transforms = {
     //one thing is to edit the select appropriately 
     for (var i = 0; i < target.children.length; i++) {
       var mult = new Oper("mult", [select.clone(), target.children[i].clone()]); 
-      mult = mult.simplify();
       mult.parent = target; 
       target.children[i] = mult;
+      mult = mult.simplify();
     }
 
     if (select.val == "add") {
@@ -136,17 +139,26 @@ var Transforms = {
           var first = children[j]; 
           var second = target.children[i].children[1]; 
           var mult = new Oper("mult", [first.clone(), second.clone()]); 
-          newChildren.push(mult);  
+          mult = mult.simplify();
+          newChildren.push(mult);
         }
       }
-      target.children = newChildren; 
+      target.children = newChildren;
+      for(var k = 0; k < newChildren.length; k++) {
+        newChildren[k].parent = target;
+      }
     }
 
-    var parent = select.parent; 
+    var parent = select.parent;
     var parentChildren = parent.children; 
     parentChildren.splice(parentChildren.indexOf(select), 1); 
-
-    select = select.getTopMostParent(); 
+    if (parent.type === "OPER" && !parent.validOpers[parent.val].validate(parent.children)) {
+      if (parent.children.length === 1) {
+        parent = Mutations.replaceExp(parent, parent.children[0]);
+      }
+    }
+    
+    select = select.getTopMostParent();
     Mutations.flattenTree(select); 
 
     render(select); 
