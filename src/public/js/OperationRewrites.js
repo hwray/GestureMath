@@ -222,7 +222,7 @@ var fracTemplate = {
       return new Oper("frac", children);
     },
     rewrite: function(symbolTable) {
-      var power = numericalAddition([symbolTable["a"], new Oper("neg", [new Num(1)])]);
+      var power = numericalAddition(symbolTable["a"], new Oper("neg", [new Num(1)]));
       if (power.val === "neg") {
         var denom = new Func("pow", [symbolTable["x"], power.children[0]]);
         return new Oper("frac", [new Num(1), denom]);
@@ -256,7 +256,7 @@ var fracTemplate = {
       return new Oper("frac", children);
 
     },
-    rewrite: function() {
+    rewrite: function(symbolTable) {
       var power = numericalAddition(symbolTable["a"], new Oper("neg", [symbolTable["b"]]));
       if (power.val === "neg") {
         var denom = new Func("pow", [symbolTable["x"], power.children[0]]);
