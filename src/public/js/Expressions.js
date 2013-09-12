@@ -280,6 +280,10 @@ _.extend(Oper.prototype, Expression.prototype, {
         var product = child1.num * child2.num;
         var numChild = new Num(Math.abs(product));
         if (product < 0) numChild = new Oper("neg", [numChild]);
+        if (product === 0) {
+          numChild = Mutations.replaceExp(exp, numChild);
+          return numChild;
+        }
 
         if(child1.notNum) fillMultArray(children, child1.notNum);
         if(child2.notNum) fillMultArray(children, child2.notNum);
