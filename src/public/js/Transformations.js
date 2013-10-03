@@ -302,23 +302,26 @@ var testTransforms = {
     if (shared.parent &&
         shared.parent.type == "EQUAL") {
 
-      var sibling = null; 
-      shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
+      if (shared.val !== 0) {
 
-      var transform = function(event) {
-        var toStore = currentExp.clone(false); 
-        history.push(toStore); 
+        var sibling = null; 
+        shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
 
-        //fadeContainers(0); 
+        var transform = function(event) {
+          var toStore = currentExp.clone(false); 
+          history.push(toStore); 
 
-        //window.setTimeout(function() {
-          Transforms.subtractOverEquals(sibling, shared);   
-        //}, 300);      
-      };
-      targetFuncs.push(transform); 
+          //fadeContainers(0); 
 
-      var subTarget = drawSubtractTarget(sibling); 
-      subTarget.addEventListener("touch", transform); 
+          //window.setTimeout(function() {
+            Transforms.subtractOverEquals(sibling, shared);   
+          //}, 300);      
+        };
+        targetFuncs.push(transform); 
+
+        var subTarget = drawSubtractTarget(sibling); 
+        subTarget.addEventListener("touch", transform); 
+      }
     }
 
     if (shared.parent &&
@@ -326,30 +329,33 @@ var testTransforms = {
         shared.parent.parent &&
         shared.parent.parent.type == "EQUAL") {
 
-      var sibling = null; 
-      shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
+      if (shared.val !== 0) {
 
-      var transform = function(event) {
-        var toStore = currentExp.clone(false); 
-        history.push(toStore); 
+        var sibling = null; 
+        shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
 
-        //fadeContainers(0); 
+        var transform = function(event) {
+          var toStore = currentExp.clone(false); 
+          history.push(toStore); 
 
-        //window.setTimeout(function() {
-          Transforms.subtractOverEquals(sibling, shared); 
-        //}, 300); 
-      };
-      targetFuncs.push(transform); 
+          //fadeContainers(0); 
 
-      var subTarget = drawSubtractTarget(sibling); 
-      subTarget.addEventListener("touch", transform); 
+          //window.setTimeout(function() {
+            Transforms.subtractOverEquals(sibling, shared); 
+          //}, 300); 
+        };
+        targetFuncs.push(transform); 
+
+        var subTarget = drawSubtractTarget(sibling); 
+        subTarget.addEventListener("touch", transform); 
+      }
     }
   }, 
 
   canDivideOverEquals: function(shared) {
     if (shared.parent &&
         shared.parent.type == "EQUAL") {
-      if (shared.val !== 0) {
+      if (shared.val !== 0 || shared.val !== 1) {
         var zeroDenom = false;
         if (shared.type === "OPER") {
           var simplifiedShare = shared.clone().simplify();
