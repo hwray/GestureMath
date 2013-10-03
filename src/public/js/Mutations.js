@@ -78,13 +78,15 @@ Mutations = {
     // Eliminate "add" or "mult" ops with a single child
     if ((tree.val == "add" ||
         tree.val == "mult") &&
-        tree.children.length == 1) {
-      var parent = tree.parent; 
-      var index = parent.children.indexOf(tree); 
-      var child = tree.children[0]; 
-
-      parent.children[index] = child; 
-      child.parent = parent; 
+        tree.children.length === 1) {
+      var parent = tree.parent;
+      if (parent) {
+        var index = parent.children.indexOf(tree); 
+        var child = tree.children[0];
+        parent.children[index] = child;
+        child.parent = parent; 
+      }
+      
     }
 
     // Eliminate double-nested "add" and "mult" ops
@@ -155,5 +157,7 @@ Mutations = {
         this.flattenTree(tree.children[i]); 
       }
     }
+
+    
   }
 }

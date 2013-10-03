@@ -56,6 +56,7 @@ $(document).ready(function(event) {
 
   var multTest3 = "(= y (* b (/ 1 b)))";
   var multTest4 = "(= y (* (- 10) (- (pow x 3)) x))"
+  var zeroTest = "(=  y (* 0 (/ 1 (+ 1 (- 2)))))"
 
 
   var test1Parsed = Parser.StringToTree(multTest3);

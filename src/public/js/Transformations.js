@@ -349,46 +349,69 @@ var testTransforms = {
   canDivideOverEquals: function(shared) {
     if (shared.parent &&
         shared.parent.type == "EQUAL") {
-      var sibling = null; 
-      shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
+      if (shared.val !== 0) {
+        var zeroDenom = false;
+        if (shared.type === "OPER") {
+          var simplifiedShare = shared.clone().simplify();
+          if (simplifiedShare.val === 0) 
+            zeroDenom = true;
+        }
 
-      var transform = function(event) {
-        var toStore = currentExp.clone(false); 
-        history.push(toStore); 
+        if (!zeroDenom) {
+          var sibling = null; 
+          shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
 
-        //fadeContainers(0); 
+          var transform = function(event) {
+            var toStore = currentExp.clone(false); 
+            history.push(toStore); 
 
-        //window.setTimeout(function() {
-          Transforms.divideOverEquals(sibling, shared);  
-        //}, 300); 
-      }; 
-      targetFuncs.push(transform); 
+            //fadeContainers(0); 
 
-      var divTarget = drawDivideTarget(sibling);
-      divTarget.addEventListener("touch", transform);      
+            //window.setTimeout(function() {
+              Transforms.divideOverEquals(sibling, shared);  
+            //}, 300); 
+          }; 
+          targetFuncs.push(transform); 
+
+          var divTarget = drawDivideTarget(sibling);
+          divTarget.addEventListener("touch", transform); 
+        }
+      }    
     }
     if (shared.parent &&
         shared.parent.val == "mult" && 
         shared.parent.parent &&
         shared.parent.parent.type == "EQUAL") {
 
-      var sibling = null; 
-      shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
-      
-      var transform = function(event) {
-        var toStore = currentExp.clone(false); 
-        history.push(toStore); 
+      var zeroDenom = false;
+      if (shared.val === 0) 
+        zeroDenom = true;
+      else if (shared.type === "OPER") {
+        var simplifiedShare = shared.clone().simplify();
+        if (simplifiedShare.val === 0) 
+          zeroDenom = true;
+      }
 
-        //fadeContainers(0); 
+      if (!zeroDenom) {
 
-        //window.setTimeout(function() {
-          Transforms.divideOverEquals(sibling, shared);
-        //}, 300); 
-      }; 
-      targetFuncs.push(transform); 
+        var sibling = null; 
+        shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
+        
+        var transform = function(event) {
+          var toStore = currentExp.clone(false); 
+          history.push(toStore); 
 
-      var divTarget = drawDivideTarget(sibling);
-      divTarget.addEventListener("touch", transform);  
+          //fadeContainers(0); 
+
+          //window.setTimeout(function() {
+            Transforms.divideOverEquals(sibling, shared);
+          //}, 300); 
+        }; 
+        targetFuncs.push(transform); 
+
+        var divTarget = drawDivideTarget(sibling);
+        divTarget.addEventListener("touch", transform);  
+      }
     }
   }, 
 

@@ -391,7 +391,12 @@ _.extend(Oper.prototype, Expression.prototype, {
     },
 
     "frac": {
-      validate: function(children) { return children.length == 2; }, 
+      validate: function(children) {
+        var denominator = children[1].clone()
+        if (denominator.type === "OPER")
+          denominator = denominator.simplify();
+        return children.length == 2 && denominator.val !== 0; 
+      }, 
       evalOp: function(accum, val) {
         // Eval to decimal? 
         // Simplify numbers? 
