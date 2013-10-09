@@ -4,7 +4,6 @@ var texStr = "";
 
 var texMap = { }; 
 
-var historyCounter = 0; 
 var history = []; 
 
 var sharedParent = null;  
@@ -15,14 +14,7 @@ function render(tree) {
 
   Mutations.flattenTree(tree); 
 
-  currentExp = tree; 
-
-  texMap = { }; 
-  var texObj = Parser.TreeToTex(tree); 
-  texMap = texObj.texMap; 
-
-  texStr = texObj.texString; 
-  document.getElementById("mathDisplay").innerHTML = texStr; 
+  currentExp = tree;
 
   sharedParent = null; 
 
@@ -32,19 +24,25 @@ function render(tree) {
     clearFactors(); 
   }
 
-  historyCounter++; 
-
-  var lastCount = Math.max(0, historyCounter - 3); 
-  var divCount = 1; 
-
-  for (var i = historyCounter - 1; i >= lastCount; i--) {
-    var divStr = "history" + divCount; 
-    var historyDiv = document.getElementById(divStr); 
-    historyDiv.innerHTML = Parser.TreeToTex(history[i]).texString;
-    divCount++; 
+  for (var i = 1; i <= 3; i++) {
+    var divStr = "history" + i; 
+    var historyDiv = document.getElementById(divStr);
+    if (history.length - i >= 0) { 
+      historyDiv.innerHTML = Parser.TreeToTex(history[history.length - i]).texString;
+    }
   }
 
+  // Move this below the history rendering? 
+  var texObj = Parser.TreeToTex(tree); 
+  texMap = texObj.texMap; 
+
+  texStr = texObj.texString; 
+  document.getElementById("mathDisplay").innerHTML = texStr; 
+
+
   MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+
 
 /*
   window.setTimeout(function() {

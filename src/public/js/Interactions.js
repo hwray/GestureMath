@@ -46,6 +46,9 @@ function findSharedParent(exp1, exp2) {
 } 
 
 function colorTreeTex(tree, color) {
+  if (!tree)
+    return; 
+
   var idArr = new Array(); 
   if (tree.idArr) {
     idArr = tree.idArr; 
@@ -426,7 +429,7 @@ function restoreHistory(index) {
   }
   var toStore = currentExp.clone(false); 
   history.push(toStore); 
-  var histIndex = Math.max(0, history.length - (5 - index)); 
+  var histIndex = history.length - index - 1;  
   render(history[histIndex]); 
 }
 
