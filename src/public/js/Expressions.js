@@ -280,6 +280,10 @@ _.extend(Oper.prototype, Expression.prototype, {
         var product = child1.num * child2.num;
         var numChild = new Num(Math.abs(product));
         if (product < 0) numChild = new Oper("neg", [numChild]);
+        if (product === 0) {
+          numChild = Mutations.replaceExp(exp, numChild);
+          return numChild;
+        }
 
         if(child1.notNum) fillMultArray(children, child1.notNum);
         if(child2.notNum) fillMultArray(children, child2.notNum);
@@ -387,7 +391,12 @@ _.extend(Oper.prototype, Expression.prototype, {
     },
 
     "frac": {
-      validate: function(children) { return children.length == 2; }, 
+      validate: function(children) {
+        var denominator = children[1].clone()
+        if (denominator.type === "OPER")
+          denominator = denominator.simplify();
+        return children.length == 2 && denominator.val !== 0; 
+      }, 
       evalOp: function(accum, val) {
         // Eval to decimal? 
         // Simplify numbers? 
@@ -427,7 +436,7 @@ _.extend(Oper.prototype, Expression.prototype, {
               simplifiedSymbolic = new Oper("mult", simplifiedChildren);
               simplifiedSymbolic = simplifiedSymbolic.getTopMostParent().simplify();
               Mutations.flattenTree(simplifiedSymbolic);
-              if (simplifiedSymbolic.type === "OPER")
+              if (simplifiedSymbolic.val === "frac" || simplifiedSymbolic.val ==="mult")
                 simplifiedSymbolic = simplifiedSymbolic.getTopMostParent().simplify();
 
             } else {
@@ -646,8 +655,10 @@ function splitExp(exp) {
   }
   if (exp.val === "mult") {
     var clone = exp.clone(false)
-    
-    for (var i = 0; i < clone.children.length; i++) {
+
+    var i = 0;
+    while (i < clone.children.length)
+    {
       var currChild = clone.children[i];
       if (currChild.type === "NUM") {
         num *= currChild.val;
@@ -655,7 +666,8 @@ function splitExp(exp) {
       } else if (currChild.val ==="neg" && currChild.children[0].type === "NUM") {
         num *= -1 * currChild.children[0].val;
         clone.children.splice(i, 1);
-      } 
+      } else 
+        i++;
     }
 
     if (clone.validOpers[clone.val].validate(clone.children)) {

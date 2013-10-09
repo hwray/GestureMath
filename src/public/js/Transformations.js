@@ -108,11 +108,14 @@ var Transforms = {
       var children = new Array(exp, multBy);
       return new Oper("mult", children);
     }
+    console.log(selected);
+    console.log(target);
     var toSimplify = Mutations.swapInExp(selected.parent, muliply);
     var toDistribute = Mutations.swapInExp(target, muliply);
 
     
     var simplified = toSimplify.simplify();
+    Mutations.flattenTree(toSimplify);
     var toSimp = simplified.simplify();
     toSimp = toSimp.getTopMostParent(); 
     //console.log(toSimp);
@@ -128,9 +131,9 @@ var Transforms = {
     //one thing is to edit the select appropriately 
     for (var i = 0; i < target.children.length; i++) {
       var mult = new Oper("mult", [select.clone(), target.children[i].clone()]); 
-      mult = mult.simplify();
       mult.parent = target; 
       target.children[i] = mult;
+      mult = mult.simplify();
     }
 
     if (select.val == "add") {
@@ -141,17 +144,26 @@ var Transforms = {
           var first = children[j]; 
           var second = target.children[i].children[1]; 
           var mult = new Oper("mult", [first.clone(), second.clone()]); 
-          newChildren.push(mult);  
+          mult = mult.simplify();
+          newChildren.push(mult);
         }
       }
-      target.children = newChildren; 
+      target.children = newChildren;
+      for(var k = 0; k < newChildren.length; k++) {
+        newChildren[k].parent = target;
+      }
     }
 
-    var parent = select.parent; 
+    var parent = select.parent;
     var parentChildren = parent.children; 
     parentChildren.splice(parentChildren.indexOf(select), 1); 
-
-    select = select.getTopMostParent(); 
+    if (parent.type === "OPER" && !parent.validOpers[parent.val].validate(parent.children)) {
+      if (parent.children.length === 1) {
+        parent = Mutations.replaceExp(parent, parent.children[0]);
+      }
+    }
+    
+    select = select.getTopMostParent();
     Mutations.flattenTree(select); 
 
     render(select); 
@@ -288,23 +300,26 @@ var testTransforms = {
     if (shared.parent &&
         shared.parent.type == "EQUAL") {
 
-      var sibling = null; 
-      shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
+      if (shared.val !== 0) {
 
-      var transform = function(event) {
-        var toStore = currentExp.clone(false); 
-        history.push(toStore); 
+        var sibling = null; 
+        shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
 
-        //fadeContainers(0); 
+        var transform = function(event) {
+          var toStore = currentExp.clone(false); 
+          history.push(toStore); 
 
-        //window.setTimeout(function() {
-          Transforms.subtractOverEquals(sibling, shared);   
-        //}, 300);      
-      };
-      targetFuncs.push(transform); 
+          //fadeContainers(0); 
 
-      var subTarget = drawSubtractTarget(sibling); 
-      subTarget.addEventListener("touch", transform); 
+          //window.setTimeout(function() {
+            Transforms.subtractOverEquals(sibling, shared);   
+          //}, 300);      
+        };
+        targetFuncs.push(transform); 
+
+        var subTarget = drawSubtractTarget(sibling); 
+        subTarget.addEventListener("touch", transform); 
+      }
     }
 
     if (shared.parent &&
@@ -312,69 +327,95 @@ var testTransforms = {
         shared.parent.parent &&
         shared.parent.parent.type == "EQUAL") {
 
-      var sibling = null; 
-      shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
+      if (shared.val !== 0) {
 
-      var transform = function(event) {
-        var toStore = currentExp.clone(false); 
-        history.push(toStore); 
+        var sibling = null; 
+        shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
 
-        //fadeContainers(0); 
+        var transform = function(event) {
+          var toStore = currentExp.clone(false); 
+          history.push(toStore); 
 
-        //window.setTimeout(function() {
-          Transforms.subtractOverEquals(sibling, shared); 
-        //}, 300); 
-      };
-      targetFuncs.push(transform); 
+          //fadeContainers(0); 
 
-      var subTarget = drawSubtractTarget(sibling); 
-      subTarget.addEventListener("touch", transform); 
+          //window.setTimeout(function() {
+            Transforms.subtractOverEquals(sibling, shared); 
+          //}, 300); 
+        };
+        targetFuncs.push(transform); 
+
+        var subTarget = drawSubtractTarget(sibling); 
+        subTarget.addEventListener("touch", transform); 
+      }
     }
   }, 
 
   canDivideOverEquals: function(shared) {
     if (shared.parent &&
         shared.parent.type == "EQUAL") {
-      var sibling = null; 
-      shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
+      if (shared.val !== 0 || shared.val !== 1) {
+        var zeroDenom = false;
+        if (shared.type === "OPER") {
+          var simplifiedShare = shared.clone().simplify();
+          if (simplifiedShare.val === 0) 
+            zeroDenom = true;
+        }
 
-      var transform = function(event) {
-        var toStore = currentExp.clone(false); 
-        history.push(toStore); 
+        if (!zeroDenom) {
+          var sibling = null; 
+          shared.parent.children[0] === shared? sibling = shared.parent.children[1] : sibling = shared.parent.children[0];
 
-        //fadeContainers(0); 
+          var transform = function(event) {
+            var toStore = currentExp.clone(false); 
+            history.push(toStore); 
 
-        //window.setTimeout(function() {
-          Transforms.divideOverEquals(sibling, shared);  
-        //}, 300); 
-      }; 
-      targetFuncs.push(transform); 
+            //fadeContainers(0); 
 
-      var divTarget = drawDivideTarget(sibling);
-      divTarget.addEventListener("touch", transform);      
+            //window.setTimeout(function() {
+              Transforms.divideOverEquals(sibling, shared);  
+            //}, 300); 
+          }; 
+          targetFuncs.push(transform); 
+
+          var divTarget = drawDivideTarget(sibling);
+          divTarget.addEventListener("touch", transform); 
+        }
+      }    
     }
     if (shared.parent &&
         shared.parent.val == "mult" && 
         shared.parent.parent &&
         shared.parent.parent.type == "EQUAL") {
 
-      var sibling = null; 
-      shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
-      
-      var transform = function(event) {
-        var toStore = currentExp.clone(false); 
-        history.push(toStore); 
+      var zeroDenom = false;
+      if (shared.val === 0) 
+        zeroDenom = true;
+      else if (shared.type === "OPER") {
+        var simplifiedShare = shared.clone().simplify();
+        if (simplifiedShare.val === 0) 
+          zeroDenom = true;
+      }
 
-        //fadeContainers(0); 
+      if (!zeroDenom) {
 
-        //window.setTimeout(function() {
-          Transforms.divideOverEquals(sibling, shared);
-        //}, 300); 
-      }; 
-      targetFuncs.push(transform); 
+        var sibling = null; 
+        shared.parent.parent.children[0] === shared.parent? sibling = shared.parent.parent.children[1] : sibling = shared.parent.parent.children[0];
+        
+        var transform = function(event) {
+          var toStore = currentExp.clone(false); 
+          history.push(toStore); 
 
-      var divTarget = drawDivideTarget(sibling);
-      divTarget.addEventListener("touch", transform);  
+          //fadeContainers(0); 
+
+          //window.setTimeout(function() {
+            Transforms.divideOverEquals(sibling, shared);
+          //}, 300); 
+        }; 
+        targetFuncs.push(transform); 
+
+        var divTarget = drawDivideTarget(sibling);
+        divTarget.addEventListener("touch", transform);  
+      }
     }
   }, 
 
