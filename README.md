@@ -27,17 +27,18 @@ GestureMath
 * **If you make a mistake, use the scrolling history window at the top of the screen to roll back to any previous step of the equation.**
 
 * **Although GestureMath was designed with basic algebra learners in mind, it can also support more advanced equations.**
- * Mathematical constants
+
+* Mathematical constants
 
 ![Normal distribution example](http://i102.photobucket.com/albums/m93/hwray/IMG_0033_zps547df9dc.png)
 
- * Complex factoring
+* Complex factoring
 
 ![Factoring example 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0037_zps958acfea.png)
 ![Factoring example 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0038_zps022a6cc4.png)
 ![Factoring example 3](http://i102.photobucket.com/albums/m93/hwray/IMG_0039_zps885287aa.png)
 
- * Trigonometric and logarithmic identities
+* Trigonometric and logarithmic identities
 ![Trigonometry example](http://i102.photobucket.com/albums/m93/hwray/IMG_0034_zps646a1103.png)
 ![Logarithms example 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0035_zpsd0ba8d7e.png)
 ![Logarithms example 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0036_zps2012300d.png)
