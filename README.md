@@ -14,11 +14,19 @@ GestureMath
 
 ![Step 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0021_zpscaa0130a.png)
 ![Step 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0022_zpsb36b746e.png)
-![Step 3](http://i102.photobucket.com/albums/m93/hwray/IMG_0023_zpsd5019a16.png)
-![Step 4](http://i102.photobucket.com/albums/m93/hwray/IMG_0024_zps78c87537.png)
-![Step 5](http://i102.photobucket.com/albums/m93/hwray/IMG_0025_zpsa160b389.png)
-![Step 6](http://i102.photobucket.com/albums/m93/hwray/IMG_0026_zpsc60dfa0b.png)
-![Step 7](http://i102.photobucket.com/albums/m93/hwray/IMG_0027_zpsf2be7a0a.png)
-![Step 8](http://i102.photobucket.com/albums/m93/hwray/IMG_0029_zpsb147b22b.png)
-![Step 9](http://i102.photobucket.com/albums/m93/hwray/IMG_0032_zps5987f298.png)
-![Step 10](http://i102.photobucket.com/albums/m93/hwray/IMG_0031_zps7a90895a.png)
+![Step 3](http://i102.photobucket.com/albums/m93/hwray/IMG_0024_zps78c87537.png)
+![Step 4](http://i102.photobucket.com/albums/m93/hwray/IMG_0025_zpsa160b389.png)
+![Step 5](http://i102.photobucket.com/albums/m93/hwray/IMG_0027_zpsf2be7a0a.png)
+![Step 6](http://i102.photobucket.com/albums/m93/hwray/IMG_0029_zpsb147b22b.png)
+![Step 7](http://i102.photobucket.com/albums/m93/hwray/IMG_0032_zps5987f298.png)
+![Step 8](http://i102.photobucket.com/albums/m93/hwray/IMG_0031_zps7a90895a.png)
+
+![Normal distribution example](http://i102.photobucket.com/albums/m93/hwray/IMG_0033_zps547df9dc.png)
+![Trigonometry example](http://i102.photobucket.com/albums/m93/hwray/IMG_0034_zps646a1103.png)
+
+![Logarithms example 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0035_zpsd0ba8d7e.png)
+![Logarithms example 2](http://s102.photobucket.com/user/hwray/media/IMG_0036_zps2012300d.png.html)
+
+![Factoring example 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0037_zps958acfea.png)
+![Factoring example 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0038_zps022a6cc4.png)
+![Factoring example 3](http://i102.photobucket.com/albums/m93/hwray/IMG_0039_zps885287aa.png)
