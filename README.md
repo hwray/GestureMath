@@ -15,14 +15,12 @@ GestureMath
 * **First, select part of the equation to interact with.**
  * Dynamic targets will appear to indicate what operations you can perform with the selected term(s). 
 
-![Step 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0021_zpscaa0130a.png)
-![Step 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0022_zpsb36b746e.png)
-![Step 3](http://i102.photobucket.com/albums/m93/hwray/IMG_0024_zps78c87537.png)
-![Step 4](http://i102.photobucket.com/albums/m93/hwray/IMG_0025_zpsa160b389.png)
-![Step 5](http://i102.photobucket.com/albums/m93/hwray/IMG_0027_zpsf2be7a0a.png)
-![Step 6](http://i102.photobucket.com/albums/m93/hwray/IMG_0029_zpsb147b22b.png)
-![Step 7](http://i102.photobucket.com/albums/m93/hwray/IMG_0032_zps5987f298.png)
-![Step 8](http://i102.photobucket.com/albums/m93/hwray/IMG_0031_zps7a90895a.png)
+![Step 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0022_zpsb36b746e.png)
+![Step 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0025_zpsa160b389.png)
+![Step 3](http://i102.photobucket.com/albums/m93/hwray/IMG_0027_zpsf2be7a0a.png)
+![Step 4](http://i102.photobucket.com/albums/m93/hwray/IMG_0029_zpsb147b22b.png)
+![Step 5](http://i102.photobucket.com/albums/m93/hwray/IMG_0032_zps5987f298.png)
+![Step 6](http://i102.photobucket.com/albums/m93/hwray/IMG_0031_zps7a90895a.png)
 
 * **If you make a mistake, use the scrolling history window at the top of the screen to roll back to any previous step of the equation.**
 
