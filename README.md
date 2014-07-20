@@ -25,7 +25,7 @@ GestureMath
 ![Trigonometry example](http://i102.photobucket.com/albums/m93/hwray/IMG_0034_zps646a1103.png)
 
 ![Logarithms example 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0035_zpsd0ba8d7e.png)
-![Logarithms example 2](http://s102.photobucket.com/user/hwray/media/IMG_0036_zps2012300d.png.html)
+![Logarithms example 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0036_zps2012300d.png)
 
 ![Factoring example 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0037_zps958acfea.png)
 ![Factoring example 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0038_zps022a6cc4.png)
