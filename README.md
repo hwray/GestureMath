@@ -34,9 +34,8 @@ GestureMath
 
 * Complex factoring
 
-![Factoring example 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0037_zps958acfea.png)
-![Factoring example 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0038_zps022a6cc4.png)
-![Factoring example 3](http://i102.photobucket.com/albums/m93/hwray/IMG_0039_zps885287aa.png)
+![Factoring example 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0038_zps022a6cc4.png)
+![Factoring example 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0039_zps885287aa.png)
 
 * Trigonometric and logarithmic identities
 
