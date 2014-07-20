@@ -39,6 +39,7 @@ GestureMath
 ![Factoring example 3](http://i102.photobucket.com/albums/m93/hwray/IMG_0039_zps885287aa.png)
 
 * Trigonometric and logarithmic identities
+
 ![Trigonometry example](http://i102.photobucket.com/albums/m93/hwray/IMG_0034_zps646a1103.png)
 ![Logarithms example 1](http://i102.photobucket.com/albums/m93/hwray/IMG_0035_zpsd0ba8d7e.png)
 ![Logarithms example 2](http://i102.photobucket.com/albums/m93/hwray/IMG_0036_zps2012300d.png)
