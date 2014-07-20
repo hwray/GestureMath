@@ -19,6 +19,6 @@ GestureMath
 ![Step 5](http://i102.photobucket.com/albums/m93/hwray/IMG_0025_zpsa160b389.png)
 ![Step 6](http://i102.photobucket.com/albums/m93/hwray/IMG_0026_zpsc60dfa0b.png)
 ![Step 7](http://i102.photobucket.com/albums/m93/hwray/IMG_0027_zpsf2be7a0a.png)
-![Step 8](http://i102.photobucket.com/albums/m93/hwray/IMG_0032_zps5987f298.png)
-![Step 9](http://i102.photobucket.com/albums/m93/hwray/IMG_0029_zpsb147b22b.png)
+![Step 8](http://i102.photobucket.com/albums/m93/hwray/IMG_0029_zpsb147b22b.png)
+![Step 9](http://i102.photobucket.com/albums/m93/hwray/IMG_0032_zps5987f298.png)
 ![Step 10](http://i102.photobucket.com/albums/m93/hwray/IMG_0031_zps7a90895a.png)
